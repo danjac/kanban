@@ -1,0 +1,41 @@
+{
+  "name": "kanban",
+  "private": true,
+  "version": "0.0.1",
+  "description": "",
+  "repository": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^5.2.17",
+    "babel-loader": "^5.0.0",
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-filter": "^2.0.2",
+    "gulp-minify-css": "^1.1.1",
+    "gulp-plumber": "^1.0.0",
+    "gulp-shell": "^0.4.1",
+    "gulp-uglify": "^1.2.0",
+    "gulp-util": "^3.0.4",
+    "main-bower-files": "^2.7.1",
+    "node-libs-browser": "^0.5.0",
+    "react": "^0.13.3",
+    "react-hot-loader": "^1.2.7",
+    "webpack": "^1.9.4",
+    "webpack-dev-server": "^1.8.2"
+  },
+  "dependencies": {
+    "babel-runtime": "^5.4.7",
+    "css-loader": "^0.14.2",
+    "flummox": "^4.0.0-alpha2",
+    "lodash": "^3.9.2",
+    "promise": "^7.0.1",
+    "react": "^0.13.3",
+    "react-bootstrap": "^0.22.6",
+    "react-dnd": "^1.0.0",
+    "style-loader": "^0.12.3",
+    "superagent": "^1.2.0",
+    "superagent-prefix": "0.0.2",
+    "superagent-promise": "^0.2.0"
+  },
+  "scripts": {}
+}

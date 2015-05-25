@@ -1,0 +1,10 @@
+{
+  "name": "kanban",
+  "description": "",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.3.2"
+  }
+}
