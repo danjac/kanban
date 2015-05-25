@@ -9,8 +9,10 @@ export default class TaskListStore extends Store {
 
         this.register(actions.getBoard, this.handleNewBoard);
         this.register(actions.createTaskList, this.handleNewTaskList);
-        this.register(actions.newTask, this.handleNewTask);
-        this.register(actions.taskRemoved, this.handleTaskRemoved);
+        this.register(actions.createTask, this.handleNewTask);
+        this.register(actions.moveTask, this.handleTaskMoved);
+        this.register(actions.deleteTask, this.handleTaskRemoved);
+        this.register(actions.deleteTaskList, this.handleTaskListRemoved);
 
         this.taskListMap = {};
 
@@ -21,36 +23,56 @@ export default class TaskListStore extends Store {
     }
 
     handleNewBoard(taskLists) {
+        console.log(taskLists);
         this.taskListMap = {};
-        _.map(taskLists, (result) => {
-            this.taskListMap[result.name] = result;
+        taskLists.forEach((result) => {
+            console.log("RESULT", result);
+            this.taskListMap[result.id] = result;
         }.bind(this));
-        this.dispatchTaskLists();
+        this.dispatch();
     }
 
-    handleNewTaskList(name) {
-        this.taskListMap[name] = {
-            name: name,
+    handleNewTaskList(list) {
+        this.taskListMap[list.id] = {
+            name: list.name,
             tasks: []
         };
-        this.dispatchTaskLists();
+        this.dispatch();
     }
 
-    handleNewTask(obj) {
-        const {name, task} = obj;
-        const list = this.taskListMap[name] || [];
+    handleNewTask(payload) {
+        const {list, task} = payload;
         list.tasks.push(task);
-        this.dispatchTaskLists();
+        this.dispatch();
     }
 
-    handleTaskRemoved(obj) {
-        const {name, index} = obj;
-        const list = this.taskListMap[name] || [];
-        list.tasks.splice(index, 1);
-        this.dispatchTaskLists();
+    handleTaskListRemoved(list) {
+        delete this.taskListMap[list.id];
+        this.dispatch();
     }
 
-    dispatchTaskLists() {
+    handleTaskRemoved(task) {
+        const lists = _.values(this.taskListMap);
+        lists.map((list) => {
+            _.remove(list.tasks, (t) => t.id === task.id);
+        });
+        this.dispatch();
+    }
+
+    handleTaskMoved(payload) {
+        const {list, task} = payload;
+        const lists = _.values(this.taskListMap);
+        lists.map((target) => {
+            if (target.id === list.id) {
+                target.tasks.push(task);
+            } else {
+                _.remove(target.tasks, (t) => t.id === task.id);
+            }
+        });
+        this.dispatch();
+    }
+
+    dispatch() {
         this.setState({ taskLists:  _.values(this.taskListMap) });
     }
 

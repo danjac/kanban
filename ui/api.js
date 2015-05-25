@@ -13,9 +13,6 @@ class Api {
         .end()
         .then((res) => {
             return res.body.lists;
-        })
-        .catch((err) => {
-            console.log(err);
         });
     }
 
@@ -26,28 +23,41 @@ class Api {
         .send({ name: name })
         .use(this.prefix)
         .send({ name: name })
-        .end();
+        .end()
+        .then((res) => {
+            return res.body;
+        });
     }
 
-    newTask(name, task) {
+    newTask(listId, text) {
         return request
-        .put("/task/" + name)
+        .put("/task/" + listId)
         .set("Content-Type", "application/json")
         .use(this.prefix)
-        .send({ text: task })
-        .end();
+        .send({ text: text })
+        .end()
+        .then((res) => {
+            return res.body;
+        });
     }
 
-    deleteTask(name, index) {
+    deleteTask(taskId) {
         return request
-        .del("/" + name + "/task/" + index)
+        .del("/task/" + taskId)
         .use(this.prefix)
         .end();
     }
 
-    moveTask(oldName, newName, index) {
+    deleteTaskList(listId) {
         return request
-        .put("/move/" + oldName + "/" + newName + "/" + index)
+        .del("/board/" + listId)
+        .use(this.prefix)
+        .end();
+    }
+
+    moveTask(listId, taskId) {
+        return request
+        .put("/move/" + taskId + "/" + listId)
         .use(this.prefix)
         .end();
     }

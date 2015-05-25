@@ -17,7 +17,7 @@ const TaskSource = {
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
             // update the task list
             const actions = item.flux.getActions("taskLists");
-            actions.moveTask(item.name, dropResult.name, item.text, item.index);
+            actions.moveTask(dropResult.list, item.task);
         }
 
     }
@@ -41,13 +41,13 @@ export default class Task extends React.Component {
     handleDelete(event) {
         event.preventDefault();
         const actions = this.props.flux.getActions("taskLists");
-        actions.deleteTask(this.props.name, this.props.index);
+        actions.deleteTask(this.props.task);
     }
 
     render() {
         const isDragging = this.props.isDragging,
               connectDragSource = this.props.connectDragSource,
-              text = this.props.text,
+              text = this.props.task.text,
               style = {opacity: isDragging? 0.5 : 1},
               handleDelete = this.handleDelete.bind(this);
 

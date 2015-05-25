@@ -17,7 +17,8 @@ class TaskBoard extends React.Component {
             <Row>
                 <Col xs={6} md={6}>
                 {this.props.taskLists.map((list) => {
-                    return <TaskList flux={this.props.flux} key={list.name} data={list} />;
+                    console.log(list)
+                    return <TaskList flux={this.props.flux} key={list.id} data={list} />;
                 })}
             </Col>
             </Row>
@@ -42,7 +43,6 @@ export default class Container extends React.Component {
     handleNewList(event) {
         event.preventDefault();
         const name = this.refs.name.getValue().trim();
-        console.log("NAME", name)
         this.refs.name.getInputDOMNode().value = "";
         if (name) {
             this.actions.createTaskList(name);

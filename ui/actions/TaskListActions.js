@@ -12,32 +12,28 @@ export default class TaskListActions extends Actions {
         }
     }
 
-    moveTask(oldName, newName, task, index) {
-        this.taskRemoved(oldName, index);
-        this.newTask(newName, task);
-        api.moveTask(oldName, newName, index);
+    async createTaskList(name) {
+        const list = await api.newTaskList(name);
+        return list;
     }
 
-    createTaskList(name) {
-        api.newTaskList(name);
-        return name;
+    async createTask(list, text) {
+        const task = await api.newTask(list.id, text);
+        return {list, task};
     }
 
-    createTask(name, task) {
-        api.newTask(name, task);
-        this.newTask(name, task);
+    moveTask(list, task) {
+        api.moveTask(list.id, task.id);
+        return {list, task};
     }
 
-    newTask(name, task) {
-        return {name: name, task: task};
+    deleteTaskList(list) {
+        api.deleteTaskList(list.id);
+        return list;
     }
 
-    taskRemoved(name, index) {
-        return {name: name, index: index};
-    }
-
-    deleteTask(name, index) {
-        this.taskRemoved(name, index);
-        api.deleteTask(name, index);
+    deleteTask(task) {
+        api.deleteTask(task.id);
+        return task;
     }
 }

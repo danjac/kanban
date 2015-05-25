@@ -1,104 +1,46 @@
 package main
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/gorp.v1"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Task struct {
-	Text string `json:"text", required:true`
+	Id         int64  `db:"id" json:"id"`
+	TaskListId int64  `db:"task_list_id" json:"-"`
+	Text       string `db:"text" json:"text" required:true`
 }
 
 type TaskList struct {
-	Name  string  `json:"name", required:true`
-	Tasks []*Task `json:"tasks"`
+	Id    int64   `db:"id"  json:"id"`
+	Name  string  `db:"name" json:"name" required:true`
+	Tasks []*Task `db:"-" json:"tasks"`
 }
 
-func (list *TaskList) Len() int {
-	return len(list.Tasks)
-}
-
-func (list *TaskList) AddTask(task *Task) *Task {
-	list.Tasks = append(list.Tasks, task)
-	return task
-}
-
-func (list *TaskList) DeleteTask(taskID int64) *Task {
-	if int(taskID) > list.Len()-1 {
-		return nil
-	}
-	task := list.Tasks[taskID]
-	list.Tasks = append(list.Tasks[:taskID], list.Tasks[taskID+1:]...)
-	return task
-}
-
-func NewTaskList(name string) *TaskList {
-	list := &TaskList{Name: name}
-	list.Tasks = make([]*Task, 0)
-	return list
-}
-
-type Board map[string]*TaskList
-
-func (board Board) GetTaskLists() []*TaskList {
-	lists := make([]*TaskList, 0, len(board))
-	for _, value := range board {
-		lists = append(lists, value)
-	}
-	return lists
-}
-
-func (board Board) AddTaskList(list *TaskList) *TaskList {
-	board[list.Name] = list
-	return list
-}
-
-var DB Board
-
-func initBoard() Board {
-	board := make(Board)
-
-	todo := board.AddTaskList(NewTaskList("Todo"))
-	todo.AddTask(&Task{"Write example React app"})
-	todo.AddTask(&Task{"Write some documentation"})
-
-	done := board.AddTaskList(NewTaskList("Done"))
-	done.AddTask(&Task{"Learn the basics of React"})
-
-	return board
-}
-
-func getIntParam(c *gin.Context, param string) int64 {
-	num, err := strconv.ParseInt(c.Params.ByName(param), 10, 64)
+func initDB() *gorp.DbMap {
+	db, err := sql.Open("sqlite3", "/tmp/kanban.sqlite")
 	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
-		return -1
+		panic(err)
 	}
-	return num
-}
-
-func getTaskList(c *gin.Context, param string) *TaskList {
-
-	listID := c.Params.ByName(param)
-	if listID == "" {
-		return nil
+	dbMap := &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
+	dbMap.AddTableWithName(TaskList{}, "tasklists").SetKeys(true, "id")
+	dbMap.AddTableWithName(Task{}, "tasks").SetKeys(true, "id")
+	if err = dbMap.CreateTablesIfNotExists(); err != nil {
+		panic(err)
 	}
-
-	list, ok := DB[listID]
-	if !ok {
-		c.AbortWithStatus(http.StatusNotFound)
-		return nil
-	}
-	return list
-
+	return dbMap
 }
 
 func main() {
-	DB = initBoard()
 
+	dbMap := initDB()
 	r := gin.Default()
 
 	r.Use(static.Serve("/", static.LocalFile("static", false)))
@@ -106,75 +48,140 @@ func main() {
 	api := r.Group("/api/v1")
 
 	api.GET("/board/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"lists": DB.GetTaskLists()})
+
+		var lists []TaskList
+		if _, err := dbMap.Select(&lists, "select * from tasklists order by id desc"); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		var tasks []Task
+		if _, err := dbMap.Select(&tasks, "select * from tasks order by id desc"); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		var result []TaskList
+
+		for _, list := range lists {
+			if list.Tasks == nil {
+				list.Tasks = make([]*Task, 0)
+			}
+			for _, task := range tasks {
+				if list.Id == task.TaskListId {
+					list.Tasks = append(list.Tasks, &task)
+				}
+			}
+			result = append(result, list)
+		}
+
+		c.JSON(http.StatusOK, gin.H{"lists": result})
 	})
 
 	api.POST("/board/", func(c *gin.Context) {
 
-		s := &struct {
-			Name string `json:"name",required:true`
-		}{}
+		list := &TaskList{}
 
-		if err := c.Bind(s); err != nil {
+		if err := c.Bind(list); err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
-		DB.AddTaskList(NewTaskList(s.Name))
+		if err := dbMap.Insert(list); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, list)
+	})
+
+	api.DELETE("/board/:id/", func(c *gin.Context) {
+
+		list := &TaskList{}
+
+		if err := dbMap.SelectOne(list, "select * from tasklists where id=?", c.Params.ByName("id")); err != nil {
+			switch err {
+			case sql.ErrNoRows:
+				c.AbortWithStatus(http.StatusNotFound)
+				return
+			default:
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+		}
+
+		if _, err := dbMap.Delete(list); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 
 		c.String(http.StatusOK, "ok")
 	})
 
-	api.PUT("/move/:list_id/:new_list_id/:task_id", func(c *gin.Context) {
-		oldList := getTaskList(c, "list_id")
-		if oldList == nil {
+	api.PUT("/move/:task_id/:new_list_id", func(c *gin.Context) {
+
+		task := &Task{}
+		if err := dbMap.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("task_id")); err != nil {
+			switch err {
+			case sql.ErrNoRows:
+				c.AbortWithStatus(http.StatusNotFound)
+				return
+			default:
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+		}
+		newListId, err := strconv.ParseInt(c.Params.ByName("new_list_id"), 10, 64)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		newList := getTaskList(c, "new_list_id")
-		if newList == nil {
+		task.TaskListId = newListId
+		if _, err := dbMap.Update(task); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		taskId := getIntParam(c, "task_id")
-		if taskId == -1 {
-			return
-		}
-		task := oldList.DeleteTask(taskId)
-		newList.AddTask(task)
+
 		c.String(http.StatusOK, "ok")
 	})
 
 	api.PUT("/task/:id/", func(c *gin.Context) {
-
-		list := getTaskList(c, "id")
-		if list == nil {
-			return
-		}
-
-		var task Task
-
-		if err := c.Bind(&task); err != nil {
+		listId, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
+		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
-		list.AddTask(&task)
-		c.String(http.StatusOK, "ok")
+		task := &Task{TaskListId: listId}
+		if err := c.Bind(task); err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		if err := dbMap.Insert(task); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 
+		c.JSON(http.StatusOK, task)
 	})
 
-	api.DELETE("/:list_id/task/:task_id/", func(c *gin.Context) {
+	api.DELETE("task/:id/", func(c *gin.Context) {
+		task := &Task{}
+		if err := dbMap.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("id")); err != nil {
+			switch err {
+			case sql.ErrNoRows:
+				c.AbortWithStatus(http.StatusNotFound)
+				return
+			default:
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+		}
 
-		list := getTaskList(c, "list_id")
-
-		if list == nil {
+		if _, err := dbMap.Delete(task); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		taskID := getIntParam(c, "task_id")
-		if taskID == -1 {
-			return
-		}
-		list.DeleteTask(taskID)
 		c.String(http.StatusOK, "ok")
 	})
 
