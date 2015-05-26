@@ -1,5 +1,5 @@
 import React from 'react';
-import {Input, Panel, Button, Grid, Row, Col} from 'react-bootstrap';
+import {Input, Panel, Glyphicon} from 'react-bootstrap';
 import {DropTarget} from 'react-dnd';
 
 import {ItemTypes} from '../constants';
@@ -60,19 +60,13 @@ export default class TaskList extends React.Component {
               style = {backgroundColor: bgColor};
 
         const header = (
-                <Row>
-                    <Col xs={6}>
-                        <h3>{name}</h3>
-                    </Col>
-                    <Col offset={3} xs={3}>
-                        <Button onClick={this.handleDeleteList}>Delete</Button>
-                    </Col>
-                </Row>
+            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;{name}
+            </h3>
         );
 
         return connectDropTarget(
 
-            <Panel style={style} header={header}>
+            <Panel bsStyle="primary" style={style} header={header}>
                 <form onSubmit={this.handleNewTask}>
                     <Input type="text"
                            ref="newTask"

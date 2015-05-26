@@ -41,7 +41,7 @@ export default class TaskListStore extends Store {
 
     handleNewTask(payload) {
         const {list, task} = payload;
-        list.tasks.push(task);
+        list.tasks.unshift(task);
         this.dispatch();
     }
 
@@ -63,7 +63,7 @@ export default class TaskListStore extends Store {
         const lists = _.values(this.taskListMap);
         lists.map((target) => {
             if (target.id === list.id) {
-                target.tasks.push(task);
+                target.tasks.unshift(task);
             } else {
                 _.remove(target.tasks, (t) => t.id === task.id);
             }

@@ -3,6 +3,7 @@
 
 import React from 'react';
 import FluxComponent from 'flummox/component';
+import _ from 'lodash';
 import {Grid, Row, Col, Input} from 'react-bootstrap';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
@@ -11,17 +12,27 @@ import TaskList from './TaskList';
 
 
 class TaskBoard extends React.Component {
+
     render() {
+
+        const rows = _.chunk(this.props.taskLists, 4);
+
         return (
             <Grid>
-            <Row>
-                <Col xs={6} md={6}>
-                {this.props.taskLists.map((list) => {
-                    return <TaskList flux={this.props.flux} key={list.id} list={list} />;
-                })}
-            </Col>
-            </Row>
-            </Grid>
+            {rows.map((row) => {
+            return (
+                <Row>
+                    {row.map((list) => {
+                        return (
+                            <Col xs={3}>
+                                <TaskList flux={this.props.flux} key={list.id} list={list} />;
+                            </Col>
+                        )
+                    })}
+                </Row>
+            );
+            })}
+        </Grid>
         );
     }
 }
