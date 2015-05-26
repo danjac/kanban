@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-gonic/contrib/rest"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/gorp.v1"
@@ -38,6 +39,78 @@ func initDB() *gorp.DbMap {
 	return dbMap
 }
 
+type TaskListApi struct {
+	DB *gorp.DbMap
+}
+
+func (api *TaskListApi) CreateHandler(c *gin.Context) {
+	list := &TaskList{}
+
+	if err := c.Bind(list); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := api.DB.Insert(list); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, list)
+
+}
+
+func (api *TaskListApi) ListHandler(c *gin.Context) {
+	var lists []TaskList
+	if _, err := api.DB.Select(&lists, "select * from tasklists order by id desc"); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	var tasks []Task
+	if _, err := api.DB.Select(&tasks, "select * from tasks order by id desc"); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	var result []TaskList
+
+	for _, list := range lists {
+		if list.Tasks == nil {
+			list.Tasks = make([]*Task, 0)
+		}
+		for _, task := range tasks {
+			if list.Id == task.TaskListId {
+				list.Tasks = append(list.Tasks, &task)
+			}
+		}
+		result = append(result, list)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"lists": result})
+}
+
+func (api *TaskListApi) DeleteHandler(c *gin.Context) {
+	list := &TaskList{}
+
+	if err := api.DB.SelectOne(list, "select * from tasklists where id=?", c.Params.ByName("id")); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			c.AbortWithStatus(http.StatusNotFound)
+			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	}
+
+	if _, err := api.DB.Delete(list); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.String(http.StatusOK, "ok")
+}
+
 func main() {
 
 	dbMap := initDB()
@@ -46,76 +119,7 @@ func main() {
 	r.Use(static.Serve("/", static.LocalFile("static", false)))
 
 	api := r.Group("/api/v1")
-
-	api.GET("/board/", func(c *gin.Context) {
-
-		var lists []TaskList
-		if _, err := dbMap.Select(&lists, "select * from tasklists order by id desc"); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-		var tasks []Task
-		if _, err := dbMap.Select(&tasks, "select * from tasks order by id desc"); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-
-		var result []TaskList
-
-		for _, list := range lists {
-			if list.Tasks == nil {
-				list.Tasks = make([]*Task, 0)
-			}
-			for _, task := range tasks {
-				if list.Id == task.TaskListId {
-					list.Tasks = append(list.Tasks, &task)
-				}
-			}
-			result = append(result, list)
-		}
-
-		c.JSON(http.StatusOK, gin.H{"lists": result})
-	})
-
-	api.POST("/board/", func(c *gin.Context) {
-
-		list := &TaskList{}
-
-		if err := c.Bind(list); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		if err := dbMap.Insert(list); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-
-		c.JSON(http.StatusOK, list)
-	})
-
-	api.DELETE("/board/:id/", func(c *gin.Context) {
-
-		list := &TaskList{}
-
-		if err := dbMap.SelectOne(list, "select * from tasklists where id=?", c.Params.ByName("id")); err != nil {
-			switch err {
-			case sql.ErrNoRows:
-				c.AbortWithStatus(http.StatusNotFound)
-				return
-			default:
-				c.AbortWithError(http.StatusInternalServerError, err)
-				return
-			}
-		}
-
-		if _, err := dbMap.Delete(list); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-
-		c.String(http.StatusOK, "ok")
-	})
+	rest.CRUD(api, "/board/", &TaskListApi{dbMap})
 
 	api.PUT("/move/:task_id/:new_list_id", func(c *gin.Context) {
 

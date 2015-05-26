@@ -7,7 +7,7 @@ import Task from './Task';
 
 const TaskTarget = {
     drop(props) {
-        return {list: props.data};
+        return {list: props.list};
     }
 };
 
@@ -41,19 +41,19 @@ export default class TaskList extends React.Component {
         const text = this.refs.newTask.getValue().trim();
         this.refs.newTask.getInputDOMNode().value = "";
         if (text) {
-            this.actions.createTask(this.props.data, text);
+            this.actions.createTask(this.props.list, text);
         }
     }
 
     handleDeleteList(event) {
         event.preventDefault();
-        this.actions.deleteTaskList(this.props.data);
+        this.actions.deleteTaskList(this.props.list);
     }
 
     render() {
 
-        const {data, canDrop, isOver, connectDropTarget, flux} = this.props;
-        const {id, name, tasks} = data;
+        const {list, canDrop, isOver, connectDropTarget, flux} = this.props;
+        const {id, name, tasks} = list;
 
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#888' : '#fff',
@@ -78,7 +78,7 @@ export default class TaskList extends React.Component {
                            ref="newTask"
                            placeholder="Add a task" />
                 </form>
-                {tasks.map((task) => {
+                {(tasks || []).map((task) => {
                     return <Task key={task.id}
                                  task={task}
                                  flux={flux} />;

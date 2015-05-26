@@ -17,8 +17,7 @@ class TaskBoard extends React.Component {
             <Row>
                 <Col xs={6} md={6}>
                 {this.props.taskLists.map((list) => {
-                    console.log(list)
-                    return <TaskList flux={this.props.flux} key={list.id} data={list} />;
+                    return <TaskList flux={this.props.flux} key={list.id} list={list} />;
                 })}
             </Col>
             </Row>

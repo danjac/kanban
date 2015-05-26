@@ -23,10 +23,8 @@ export default class TaskListStore extends Store {
     }
 
     handleNewBoard(taskLists) {
-        console.log(taskLists);
         this.taskListMap = {};
         taskLists.forEach((result) => {
-            console.log("RESULT", result);
             this.taskListMap[result.id] = result;
         }.bind(this));
         this.dispatch();
@@ -34,6 +32,7 @@ export default class TaskListStore extends Store {
 
     handleNewTaskList(list) {
         this.taskListMap[list.id] = {
+            id: list.id,
             name: list.name,
             tasks: []
         };
