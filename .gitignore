@@ -1,5 +1,7 @@
 bower_components
-public
+static/js
+static/css
+static/fonts
 node_modules
 *.sqlite3
 *.swp
