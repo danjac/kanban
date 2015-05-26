@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button} from 'react-bootstrap';
+import {Glyphicon} from 'react-bootstrap';
 import {DragSource} from 'react-dnd';
 
 import {ItemTypes} from '../constants';
@@ -53,7 +53,7 @@ export default class Task extends React.Component {
 
         return connectDragSource(
             <li style={style}>
-                <Button bsStyle="danger" onClick={handleDelete}>Delete</Button>&nbsp;
+                <a onClick={handleDelete}><Glyphicon glyph="trash" /></a>&nbsp;
                 {text}
             </li>
         );

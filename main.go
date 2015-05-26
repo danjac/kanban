@@ -91,8 +91,9 @@ func (api *TaskListApi) ListHandler(c *gin.Context) {
 
 func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	list := &TaskList{}
+	listId := c.Params.ByName("id")
 
-	if err := api.DB.SelectOne(list, "select * from tasklists where id=?", c.Params.ByName("id")); err != nil {
+	if err := api.DB.SelectOne(list, "select * from tasklists where id=?", listId); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			c.AbortWithStatus(http.StatusNotFound)
@@ -104,6 +105,11 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	}
 
 	if _, err := api.DB.Delete(list); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if _, err := api.DB.Exec("delete from tasks where task_list_id=?", listId); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
