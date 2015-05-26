@@ -26,7 +26,7 @@ module.exports = {
         loaders: [
             {
                 test: /\.(js|jsx)$/,
-                loaders: ['react-hot', 'babel?stage=1&optional=runtime'],
+                loaders: ['react-hot', 'babel?stage=1&optional[]=runtime'],
                 include: path.join(__dirname, 'ui')
             }, {
                 test: /\.css$/,

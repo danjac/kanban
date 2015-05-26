@@ -52,10 +52,10 @@ export default class Task extends React.Component {
               handleDelete = this.handleDelete.bind(this);
 
         return connectDragSource(
-            <div style={style}>
+            <li style={style}>
                 <Button bsStyle="danger" onClick={handleDelete}>Delete</Button>&nbsp;
                 {text}
-            </div>
+            </li>
         );
     }
 

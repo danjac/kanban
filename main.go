@@ -20,9 +20,9 @@ type Task struct {
 }
 
 type TaskList struct {
-	Id    int64   `db:"id"  json:"id"`
-	Name  string  `db:"name" json:"name" required:true`
-	Tasks []*Task `db:"-" json:"tasks"`
+	Id    int64  `db:"id"  json:"id"`
+	Name  string `db:"name" json:"name" required:true`
+	Tasks []Task `db:"-" json:"tasks"`
 }
 
 func initDB() *gorp.DbMap {
@@ -76,11 +76,11 @@ func (api *TaskListApi) ListHandler(c *gin.Context) {
 
 	for _, list := range lists {
 		if list.Tasks == nil {
-			list.Tasks = make([]*Task, 0)
+			list.Tasks = make([]Task, 0)
 		}
 		for _, task := range tasks {
 			if list.Id == task.TaskListId {
-				list.Tasks = append(list.Tasks, &task)
+				list.Tasks = append(list.Tasks, task)
 			}
 		}
 		result = append(result, list)

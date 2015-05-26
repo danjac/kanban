@@ -78,11 +78,13 @@ export default class TaskList extends React.Component {
                            ref="newTask"
                            placeholder="Add a task" />
                 </form>
+                <ul className="list-unstyled">
                 {(tasks || []).map((task) => {
                     return <Task key={task.id}
                                  task={task}
                                  flux={flux} />;
                 })}
+                </ul>
             </Panel>
         );
     }
