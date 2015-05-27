@@ -1,6 +1,3 @@
-// code here
-//require("./app.css");
-
 import React from 'react';
 
 import AppFlux from './flux';

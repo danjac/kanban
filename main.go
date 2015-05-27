@@ -39,6 +39,19 @@ func initDB() *gorp.DbMap {
 	return dbMap
 }
 
+func handleError(c *gin.Context, err error) {
+	switch err {
+	case strconv.NumError:
+		c.AbortWithError(http.StatusBadRequest, err)
+		break
+	case sql.ErrNoRows:
+		c.AbortWithStatus(http.StatusNotFound)
+		break
+	default:
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+}
+
 type TaskListApi struct {
 	DB *gorp.DbMap
 }
@@ -47,12 +60,12 @@ func (api *TaskListApi) CreateHandler(c *gin.Context) {
 	list := &TaskList{}
 
 	if err := c.Bind(list); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		handleError(c, err)
 		return
 	}
 
 	if err := api.DB.Insert(list); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		handleError(c, err)
 		return
 	}
 
@@ -63,12 +76,12 @@ func (api *TaskListApi) CreateHandler(c *gin.Context) {
 func (api *TaskListApi) ListHandler(c *gin.Context) {
 	var lists []TaskList
 	if _, err := api.DB.Select(&lists, "select * from tasklists order by id desc"); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		handleError(c, err)
 		return
 	}
 	var tasks []Task
 	if _, err := api.DB.Select(&tasks, "select * from tasks order by id desc"); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		handleError(c, err)
 		return
 	}
 
@@ -97,21 +110,21 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	if err := api.DB.SelectOne(list, "select * from tasklists where id=?", listId); err != nil {
 		switch err {
 		case sql.ErrNoRows:
-			c.AbortWithStatus(http.StatusNotFound)
+			handleError(c, err)
 			return
 		default:
-			c.AbortWithError(http.StatusInternalServerError, err)
+			handleError(c, err)
 			return
 		}
 	}
 
 	if _, err := api.DB.Delete(list); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		handleError(c, err)
 		return
 	}
 
 	if _, err := api.DB.Exec("delete from tasks where task_list_id=?", listId); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		handleError(c, err)
 		return
 	}
 
@@ -132,23 +145,17 @@ func main() {
 
 		task := &Task{}
 		if err := dbMap.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("task_id")); err != nil {
-			switch err {
-			case sql.ErrNoRows:
-				c.AbortWithStatus(http.StatusNotFound)
-				return
-			default:
-				c.AbortWithError(http.StatusInternalServerError, err)
-				return
-			}
+			handleError(c, err)
+			return
 		}
 		newListId, err := strconv.ParseInt(c.Params.ByName("new_list_id"), 10, 64)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			handleError(c, err)
 			return
 		}
 		task.TaskListId = newListId
 		if _, err := dbMap.Update(task); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			handleError(c, err)
 			return
 		}
 
@@ -158,17 +165,17 @@ func main() {
 	api.PUT("/task/:id/", func(c *gin.Context) {
 		listId, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			handleError(c, err)
 			return
 		}
 
 		task := &Task{TaskListId: listId}
 		if err := c.Bind(task); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			handleError(c, err)
 			return
 		}
 		if err := dbMap.Insert(task); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			handleError(c, err)
 			return
 		}
 
@@ -178,18 +185,12 @@ func main() {
 	api.DELETE("task/:id/", func(c *gin.Context) {
 		task := &Task{}
 		if err := dbMap.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("id")); err != nil {
-			switch err {
-			case sql.ErrNoRows:
-				c.AbortWithStatus(http.StatusNotFound)
-				return
-			default:
-				c.AbortWithError(http.StatusInternalServerError, err)
-				return
-			}
+			handleError(c, err)
+			return
 		}
 
 		if _, err := dbMap.Delete(task); err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			handleError(c, err)
 			return
 		}
 
