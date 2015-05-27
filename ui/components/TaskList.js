@@ -67,7 +67,8 @@ export default class TaskList extends React.Component {
         return connectDropTarget(
 
             <Panel bsStyle="primary" style={style} header={header}>
-                <form onSubmit={this.handleNewTask}>
+                <form ref="newTaskForm"
+                      onSubmit={this.handleNewTask}>
                     <Input type="text"
                            ref="newTask"
                            placeholder="Add a task" />

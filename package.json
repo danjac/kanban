@@ -60,6 +60,6 @@
     "tap": "^1.2.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "/usr/bin/mocha"
   }
 }

@@ -7,14 +7,18 @@ import AppFlux from '../../ui/flux';
 import api from '../../ui/api';
 import Container from '../../ui/components/Container';
 
-describe('root', function () {
+describe('container should just work', function () {
 
     it('renders the root container!', function () {
         const flux = new AppFlux();
         sinon.stub(api, "getBoard").returns({ lists: [
             {
             name: "test",
-            tasks: []
+            tasks: [
+                {
+                    text: "testing"
+                }
+            ]
             }] });
         const root = TestUtils.renderIntoDocument(<Container flux={flux}/>);
 
