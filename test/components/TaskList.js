@@ -34,18 +34,20 @@ describe('task list', function() {
 
         const TaskListContext = wrapContext(TaskList);
 
-        const component = TestUtils.renderIntoDocument(
+        const root = TestUtils.renderIntoDocument(
                 <TaskListContext flux={flux}
                                  list={list}
                                  isOver={false}
                                  connectDropTarget={connect} />);
 
-        console.log(component)
+
+        const component = TestUtils.findRenderedComponentWithType(root, TaskList).decoratedComponentInstance;
+
         sinon.stub(actions, "createTask");
 
         component.refs.newTask.getInputDOMNode().value = "new task!";
-        TestUtils.simulate.submit(component.refs.newTaskForm.getDOMNode());
-        assert(actions.createTask.calledOnce);
+        TestUtils.Simulate.submit(component.refs.newTaskForm.getDOMNode());
+        expect(actions.createTask.calledOnce).toBe(true);
 
     });
 
@@ -56,10 +58,12 @@ describe('task list', function() {
         const connect = function(el) { return el; };
 
         const list = {
+            id: 1,
             name: "testing",
             tasks: [
                 {
-                    text: "test1"
+                    text: "test1",
+                    id: 1
                 }
             ]
         };
