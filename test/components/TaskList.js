@@ -4,20 +4,8 @@ import expect from 'expect';
 import TestUtils from 'react/lib/ReactTestUtils';
 import AppFlux from '../../ui/flux';
 import TaskList from '../../ui/components/TaskList';
-import TestBackend from 'react-dnd/modules/backends/Test';
-import {DragDropContext} from 'react-dnd';
 
-
-
-function wrapContext(DecoratedComponent) {
-    @DragDropContext(TestBackend)
-    class TestContextContainer extends React.Component {
-        render() {
-            return <DecoratedComponent {...this.props} />;
-        }
-    }
-    return TestContextContainer;
-}
+import {makeTestContainer} from '../utils';
 
 describe('task list', function() {
     it('handles a new task', function() {
@@ -32,7 +20,7 @@ describe('task list', function() {
             ]
         };
 
-        const TaskListContext = wrapContext(TaskList);
+        const TaskListContext = makeTestContainer(TaskList);
 
         const root = TestUtils.renderIntoDocument(
                 <TaskListContext flux={flux}
@@ -68,7 +56,7 @@ describe('task list', function() {
             ]
         };
 
-        const TaskListContext = wrapContext(TaskList);
+        const TaskListContext = makeTestContainer(TaskList);
 
         const component = TestUtils.renderIntoDocument(
                 <TaskListContext flux={flux}

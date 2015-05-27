@@ -90,6 +90,7 @@ func (api *TaskListApi) ListHandler(c *gin.Context) {
 }
 
 func (api *TaskListApi) DeleteHandler(c *gin.Context) {
+
 	list := &TaskList{}
 	listId := c.Params.ByName("id")
 
