@@ -1,0 +1,4 @@
+--debug
+--recursive
+--harmony-generators
+--compilers js:babel/register

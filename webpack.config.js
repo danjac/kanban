@@ -28,10 +28,6 @@ module.exports = {
                 test: /\.(js|jsx)$/,
                 loaders: ['react-hot', 'babel?stage=1&optional[]=runtime'],
                 include: path.join(__dirname, 'ui')
-            }, {
-                test: /\.css$/,
-                loader: "style-loader!css-loader",
-                include: path.join(__dirname, 'ui')
             }
         ]
     }
