@@ -108,14 +108,8 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	listId := c.Params.ByName("id")
 
 	if err := api.DB.SelectOne(list, "select * from tasklists where id=?", listId); err != nil {
-		switch err {
-		case sql.ErrNoRows:
-			handleError(c, err)
-			return
-		default:
-			handleError(c, err)
-			return
-		}
+		handleError(c, err)
+		return
 	}
 
 	if _, err := api.DB.Delete(list); err != nil {
