@@ -40,6 +40,7 @@ describe('task list', function() {
                                  isOver={false}
                                  connectDropTarget={connect} />);
 
+        console.log(component)
         sinon.stub(actions, "createTask");
 
         component.refs.newTask.getInputDOMNode().value = "new task!";
