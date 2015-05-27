@@ -1,5 +1,5 @@
 import React from 'react';
-import {Input, Panel, Glyphicon} from 'react-bootstrap';
+import {Input, Panel, Glyphicon, ListGroup} from 'react-bootstrap';
 import {DropTarget} from 'react-dnd';
 
 import {ItemTypes} from '../constants';
@@ -73,13 +73,13 @@ export default class TaskList extends React.Component {
                            ref="newTask"
                            placeholder="Add a task" />
                 </form>
-                <ul className="list-unstyled">
+                <ListGroup>
                 {(tasks || []).map((task) => {
                     return <Task key={task.id}
                                  task={task}
                                  flux={flux} />;
                 })}
-                </ul>
+                </ListGroup>
             </Panel>
         );
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Glyphicon} from 'react-bootstrap';
+import {Glyphicon, ListGroupItem} from 'react-bootstrap';
 import {DragSource} from 'react-dnd';
 
 import {ItemTypes} from '../constants';
@@ -52,10 +52,10 @@ export default class Task extends React.Component {
               handleDelete = this.handleDelete.bind(this);
 
         return connectDragSource(
-            <li style={style}>
+            <ListGroupItem style={style}>
                 <a onClick={handleDelete}><Glyphicon glyph="trash" /></a>&nbsp;
                 {text}
-            </li>
+            </ListGroupItem>
         );
     }
 
