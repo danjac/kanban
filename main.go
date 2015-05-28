@@ -168,7 +168,7 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 		return
 	}
 
-	if err := dbMap.SelectOne(task, "select * from tasks where id=?", taskId); err != nil {
+	if err := api.DB.SelectOne(task, "select * from tasks where id=?", taskId); err != nil {
 		handleError(c, err)
 		return
 	}
@@ -181,7 +181,7 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 	}
 
 	task.TaskListId = newListId
-	if _, err := dbMap.Update(task); err != nil {
+	if _, err := api.DB.Update(task); err != nil {
 		handleError(c, err)
 		return
 	}
