@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -25,6 +26,8 @@ type TaskList struct {
 	Tasks []Task `db:"-" json:"tasks"`
 }
 
+var errNumError = errors.New("Invalid parameter")
+
 func initDB() *gorp.DbMap {
 	db, err := sql.Open("sqlite3", "/tmp/kanban.sqlite")
 	if err != nil {
@@ -39,9 +42,17 @@ func initDB() *gorp.DbMap {
 	return dbMap
 }
 
+func getIntParam(c *gin.Context, name string) (int64, error) {
+	result, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
+	if err != nil {
+		return result, errNumError
+	}
+	return result, nil
+}
+
 func handleError(c *gin.Context, err error) {
 	switch err {
-	case strconv.NumError:
+	case errNumError:
 		c.AbortWithError(http.StatusBadRequest, err)
 		break
 	case sql.ErrNoRows:
@@ -105,7 +116,12 @@ func (api *TaskListApi) ListHandler(c *gin.Context) {
 func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 
 	list := &TaskList{}
-	listId := c.Params.ByName("id")
+
+	listId, err := getIntParam(c, "id")
+	if err != nil {
+		handleError(c, err)
+		return
+	}
 
 	if err := api.DB.SelectOne(list, "select * from tasklists where id=?", listId); err != nil {
 		handleError(c, err)
@@ -127,7 +143,7 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 
 func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
 
-	listId, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
+	listId, err := getIntParam(c, "id")
 	if err != nil {
 		handleError(c, err)
 		return
@@ -150,7 +166,7 @@ func NewTaskListApi(r *gin.RouterGroup, prefix string, dbMap *gorp.DbMap) *TaskL
 	api := &TaskListApi{dbMap}
 
 	rest.CRUD(r, prefix, api)
-	r.PUT(prefix+":id/add/", api.AddTaskHandler)
+	r.POST(prefix+":id/add/", api.AddTaskHandler)
 	return api
 }
 
@@ -161,7 +177,7 @@ type TaskApi struct {
 func (api *TaskApi) MoveHandler(c *gin.Context) {
 	task := &Task{}
 
-	taskId, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
+	taskId, err := getIntParam(c, "id")
 
 	if err != nil {
 		handleError(c, err)
