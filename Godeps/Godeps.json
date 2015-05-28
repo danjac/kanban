@@ -1,0 +1,45 @@
+{
+	"ImportPath": "github.com/danjac/kanban",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/gin-gonic/contrib/rest",
+			"Rev": "8cd6643cdcdfe5c50973a8e5a11934f7315d58d6"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/contrib/static",
+			"Rev": "8cd6643cdcdfe5c50973a8e5a11934f7315d58d6"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin",
+			"Comment": "v1.0rc1-18-g40d41bb",
+			"Rev": "40d41bbe96b58cec476932a1c118df315256133a"
+		},
+		{
+			"ImportPath": "github.com/manucorporat/sse",
+			"Rev": "b7eeebd8987e6b233e43db2551d43f71b2e115d5"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Rev": "d67e0b7d1797975196499f79bcc322c08b9f218b"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Rev": "25d045f12a64283630fdedec899655cc5710b683"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "621fff363a1d9ad7fdd0bfa9d80a42881267deb4"
+		},
+		{
+			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
+			"Comment": "v5.4",
+			"Rev": "07cbdd2e6dfd947b002e83c13b775c7580fab2d5"
+		},
+		{
+			"ImportPath": "gopkg.in/gorp.v1",
+			"Comment": "v1.7.1",
+			"Rev": "c87af80f3cc5036b55b83d77171e156791085e2e"
+		}
+	]
+}
