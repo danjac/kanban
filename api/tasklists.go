@@ -55,6 +55,29 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	c.String(http.StatusOK, "ok")
 }
 
+func (api *TaskListApi) UpdateHandler(c *gin.Context) {
+
+	listId, err := getIntParam(c, "id")
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	list := &models.TaskList{Id: listId}
+
+	if err := c.Bind(list); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	if err := api.DB.UpdateTaskList(list); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	c.String(http.StatusOK, "ok")
+
+}
+
 func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
 
 	listId, err := getIntParam(c, "id")

@@ -13,6 +13,8 @@ export default class TaskListStore extends Store {
         this.register(actions.moveTask, this.handleTaskMoved);
         this.register(actions.deleteTask, this.handleTaskRemoved);
         this.register(actions.deleteTaskList, this.handleTaskListRemoved);
+        this.register(actions.updateTaskListName, this.handleUpdateTaskListName);
+        this.register(actions.toggleTaskListEditMode, this.handleToggleTaskListEditMode);
 
         this.taskListMap = {};
 
@@ -36,6 +38,19 @@ export default class TaskListStore extends Store {
             name: list.name,
             tasks: []
         };
+        this.dispatch();
+    }
+
+    handleUpdateTaskListName(payload) {
+        const {list, name} = payload;
+        list.name = name;
+        this.taskListMap[list.id] = list;
+        this.dispatch();
+    }
+
+    handleToggleTaskListEditMode(list) {
+        list.isEditing = !(list.isEditing);
+        this.taskListMap[list.id] = list;
         this.dispatch();
     }
 

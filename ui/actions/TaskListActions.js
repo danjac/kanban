@@ -22,6 +22,15 @@ export default class TaskListActions extends Actions {
         return {list, task};
     }
 
+    toggleTaskListEditMode(list) {
+        return list;
+    }
+
+    updateTaskListName(list, name) {
+        api.updateTaskListName(list.id, name);
+        return {list, name};
+    }
+
     moveTask(list, task) {
         api.moveTask(list.id, task.id);
         return {list, task};

@@ -29,6 +29,16 @@ class Api {
         });
     }
 
+    updateTaskListName(listId, name) {
+        return request
+        .put("/board/" + listId + "/")
+        .set("Content-Type", "application/json")
+        .send({ name: name })
+        .use(this.prefix)
+        .send({ name: name })
+        .end()
+    }
+
     newTask(listId, text) {
         return request
         .post("/board/" + listId + "/add/")

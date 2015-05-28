@@ -34,6 +34,9 @@ export default class TaskList extends React.Component {
         this.actions = props.flux.getActions("taskLists");
         this.handleNewTask = this.handleNewTask.bind(this);
         this.handleDeleteList = this.handleDeleteList.bind(this);
+        this.handleUpdateName = this.handleUpdateName.bind(this);
+        this.handleEditMode = this.handleEditMode.bind(this);
+        ///
     }
 
     handleNewTask(event) {
@@ -50,19 +53,43 @@ export default class TaskList extends React.Component {
         this.actions.deleteTaskList(this.props.list);
     }
 
+    handleEditMode(event) {
+        event.preventDefault();
+        this.actions.toggleTaskListEditMode(this.props.list);
+    }
+
+    handleUpdateName(event) {
+
+        event.preventDefault();
+        this.actions.toggleTaskListEditMode(this.props.list);
+
+        const name = this.refs.editName.getValue().trim();
+
+        if (name) {
+            this.actions.updateTaskListName(this.props.list, name);
+        }
+    }
+
     render() {
 
         const {list, canDrop, isOver, connectDropTarget, flux} = this.props;
-        const {id, name, tasks} = list;
+        const {id, name, tasks, isEditing} = list;
 
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#FFFE85' : '#fff',
               style = {backgroundColor: bgColor};
 
-        const header = (
-            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;{name}
-            </h3>
+        let header = (
+            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name}</span></h3>
         );
+
+        if (isEditing) {
+            header = (
+                <form ref="editNameForm" onSubmit={this.handleUpdateName}>
+                    <Input type="text" ref="editName" defaultValue={name} />
+                </form>
+            );
+        }
 
         return connectDropTarget(
 
