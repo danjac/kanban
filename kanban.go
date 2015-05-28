@@ -36,10 +36,10 @@ func main() {
 
 	r.Use(static.Serve("/", static.LocalFile("static", false)))
 
-	apiGroup := r.Group("/api/v1")
+	g := r.Group("/api/v1")
 
-	api.NewTaskListApi(apiGroup, "/board/", dataManager)
-	api.NewTaskApi(apiGroup, "/task/", dataManager)
+	api.NewTaskListApi(g, "/board/", dataManager)
+	api.NewTaskApi(g, "/task/", dataManager)
 
 	r.Run(":8080")
 }
