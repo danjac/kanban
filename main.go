@@ -189,7 +189,7 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 		return
 	}
 
-	newListId, err := strconv.ParseInt(c.Params.ByName("new_list_id"), 10, 64)
+	newListId, err := getIntParam(c, "new_list_id")
 
 	if err != nil {
 		handleError(c, err)
@@ -208,7 +208,13 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 func (api *TaskApi) DeleteHandler(c *gin.Context) {
 	task := &Task{}
 
-	if err := api.DB.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("id")); err != nil {
+	taskId, err := getIntParam(c, name)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	if err := api.DB.SelectOne(task, "select * from tasks where id=?", taskId); err != nil {
 		handleError(c, err)
 		return
 	}
