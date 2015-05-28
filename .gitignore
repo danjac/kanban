@@ -3,6 +3,7 @@ static/js
 static/css
 static/fonts
 kanban
+pkg
 node_modules
 *.sqlite3
 *.swp
