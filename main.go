@@ -125,6 +125,96 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	c.String(http.StatusOK, "ok")
 }
 
+func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
+
+	listId, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	task := &Task{TaskListId: listId}
+	if err := c.Bind(task); err != nil {
+		handleError(c, err)
+		return
+	}
+	if err := api.DB.Insert(task); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, task)
+}
+
+func NewTaskListApi(r *gin.RouterGroup, prefix string, dbMap *gorp.DbMap) *TaskListApi {
+	api := &TaskListApi{dbMap}
+
+	rest.CRUD(r, prefix, api)
+	r.PUT(prefix+":id/add/", api.AddTaskHandler)
+	return api
+}
+
+type TaskApi struct {
+	DB *gorp.DbMap
+}
+
+func (api *TaskApi) MoveHandler(c *gin.Context) {
+	task := &Task{}
+
+	taskId, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
+
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	if err := dbMap.SelectOne(task, "select * from tasks where id=?", taskId); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	newListId, err := strconv.ParseInt(c.Params.ByName("new_list_id"), 10, 64)
+
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	task.TaskListId = newListId
+	if _, err := dbMap.Update(task); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	c.String(http.StatusOK, "ok")
+}
+
+func (api *TaskApi) DeleteHandler(c *gin.Context) {
+	task := &Task{}
+
+	if err := api.DB.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("id")); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	if _, err := api.DB.Delete(task); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	c.String(http.StatusOK, "ok")
+}
+
+func NewTaskApi(r *gin.RouterGroup, prefix string, dbMap *gorp.DbMap) *TaskApi {
+	api := &TaskApi{dbMap}
+
+	rest.CRUD(r, prefix, api)
+
+	r.PUT(prefix+":id/move/:new_list_id", api.MoveHandler)
+
+	return api
+}
+
 func main() {
 
 	dbMap := initDB()
@@ -133,63 +223,9 @@ func main() {
 	r.Use(static.Serve("/", static.LocalFile("static", false)))
 
 	api := r.Group("/api/v1")
-	rest.CRUD(api, "/board/", &TaskListApi{dbMap})
 
-	api.PUT("/move/:task_id/:new_list_id", func(c *gin.Context) {
-
-		task := &Task{}
-		if err := dbMap.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("task_id")); err != nil {
-			handleError(c, err)
-			return
-		}
-		newListId, err := strconv.ParseInt(c.Params.ByName("new_list_id"), 10, 64)
-		if err != nil {
-			handleError(c, err)
-			return
-		}
-		task.TaskListId = newListId
-		if _, err := dbMap.Update(task); err != nil {
-			handleError(c, err)
-			return
-		}
-
-		c.String(http.StatusOK, "ok")
-	})
-
-	api.PUT("/task/:id/", func(c *gin.Context) {
-		listId, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
-		if err != nil {
-			handleError(c, err)
-			return
-		}
-
-		task := &Task{TaskListId: listId}
-		if err := c.Bind(task); err != nil {
-			handleError(c, err)
-			return
-		}
-		if err := dbMap.Insert(task); err != nil {
-			handleError(c, err)
-			return
-		}
-
-		c.JSON(http.StatusOK, task)
-	})
-
-	api.DELETE("task/:id/", func(c *gin.Context) {
-		task := &Task{}
-		if err := dbMap.SelectOne(task, "select * from tasks where id=?", c.Params.ByName("id")); err != nil {
-			handleError(c, err)
-			return
-		}
-
-		if _, err := dbMap.Delete(task); err != nil {
-			handleError(c, err)
-			return
-		}
-
-		c.String(http.StatusOK, "ok")
-	})
+	NewTaskListApi(api, "/board/", dbMap)
+	NewTaskApi(api, "/task/", dbMap)
 
 	r.Run(":8080")
 }

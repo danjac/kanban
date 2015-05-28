@@ -56,7 +56,7 @@ export default class TaskList extends React.Component {
         const {id, name, tasks} = list;
 
         const isActive = canDrop && isOver,
-              bgColor = isActive ? '#888' : '#fff',
+              bgColor = isActive ? '#FFFE85' : '#fff',
               style = {backgroundColor: bgColor};
 
         const header = (

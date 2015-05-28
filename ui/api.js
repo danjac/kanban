@@ -31,7 +31,7 @@ class Api {
 
     newTask(listId, text) {
         return request
-        .put("/task/" + listId)
+        .post("/board/" + listId + "/add/")
         .set("Content-Type", "application/json")
         .use(this.prefix)
         .send({ text: text })
@@ -41,13 +41,6 @@ class Api {
         });
     }
 
-    deleteTask(taskId) {
-        return request
-        .del("/task/" + taskId)
-        .use(this.prefix)
-        .end();
-    }
-
     deleteTaskList(listId) {
         return request
         .del("/board/" + listId)
@@ -55,9 +48,16 @@ class Api {
         .end();
     }
 
+    deleteTask(taskId) {
+        return request
+        .del("/task/" + taskId)
+        .use(this.prefix)
+        .end();
+    }
+
     moveTask(listId, taskId) {
         return request
-        .put("/move/" + taskId + "/" + listId)
+        .put("/task/" + taskId + "/move/" + listId)
         .use(this.prefix)
         .end();
     }

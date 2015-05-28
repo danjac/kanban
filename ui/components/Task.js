@@ -1,7 +1,6 @@
 import React from 'react';
 import {Glyphicon, ListGroupItem} from 'react-bootstrap';
 import {DragSource} from 'react-dnd';
-
 import {ItemTypes} from '../constants';
 
 const TaskSource = {
