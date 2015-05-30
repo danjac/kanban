@@ -1,5 +1,21 @@
-import _ from 'lodash';
+import Immutable from 'immutable';
 import {Store} from 'flummox';
+
+
+const TaskList = Immutable.Record({
+    id: undefined,
+    name: '',
+    isEditing: false,
+    tasks: Immutable.List()
+});
+
+
+const Task = Immutable.Record({
+    id: undefined,
+    text: '',
+    taskListId: undefined
+});
+
 
 export default class TaskListStore extends Store {
     constructor(flux) {
@@ -7,87 +23,116 @@ export default class TaskListStore extends Store {
 
         const actions = flux.getActions('taskLists');
 
-        this.register(actions.getBoard, this.handleNewBoard);
-        this.register(actions.createTaskList, this.handleNewTaskList);
-        this.register(actions.createTask, this.handleNewTask);
-        this.register(actions.moveTask, this.handleTaskMoved);
-        this.register(actions.deleteTask, this.handleTaskRemoved);
-        this.register(actions.deleteTaskList, this.handleTaskListRemoved);
-        this.register(actions.updateTaskListName, this.handleUpdateTaskListName);
-        this.register(actions.toggleTaskListEditMode, this.handleToggleTaskListEditMode);
+        this.register(actions.getBoard, this.onNewBoard);
+        this.register(actions.createTaskList, this.onNewTaskList);
+        this.register(actions.createTask, this.onNewTask);
+        this.register(actions.moveTask, this.onTaskMoved);
+        this.register(actions.deleteTask, this.onTaskRemoved);
+        this.register(actions.deleteTaskList, this.onTaskListRemoved);
+        this.register(actions.updateTaskListName, this.onUpdateTaskListName);
+        this.register(actions.toggleTaskListEditMode, this.onToggleTaskListEditMode);
 
-        this.taskListMap = {};
+        this.taskListMap = Immutable.OrderedMap();
 
         this.state = {
-            taskLists: []
+            taskLists: Immutable.List()
         };
 
     }
 
-    handleNewBoard(taskLists) {
-        this.taskListMap = {};
+    onNewBoard(taskLists) {
+        this.taskListMap = this.taskListMap.clear();
         taskLists.forEach((result) => {
-            this.taskListMap[result.id] = result;
+
+            let tasks = Immutable.List();
+
+            result.tasks.forEach((task) => {
+                tasks = tasks.push(new Task({
+                    id: task.id,
+                    text: task.text,
+                    taskListId: task.taskListId
+                }));
+            });
+
+            const rec = new TaskList({
+                id: result.id,
+                name: result.name,
+                tasks: tasks
+            });
+
+            this.taskListMap = this.taskListMap.set(result.id, new TaskList({
+                id: result.id,
+                name: result.name,
+                tasks: tasks
+            }));
+
         }.bind(this));
         this.dispatch();
     }
 
-    handleNewTaskList(list) {
-        this.taskListMap[list.id] = {
-            id: list.id,
-            name: list.name,
-            tasks: []
-        };
+    onNewTaskList(list) {
+        this.updateList(new TaskList(list).set("tasks", Immutable.List()));
         this.dispatch();
     }
 
-    handleUpdateTaskListName(payload) {
+    onUpdateTaskListName(payload) {
         const {list, name} = payload;
-        list.name = name;
-        this.taskListMap[list.id] = list;
+        this.updateList(this.getList(list.id).set("name", name));
         this.dispatch();
     }
 
-    handleToggleTaskListEditMode(list) {
-        list.isEditing = !(list.isEditing);
-        this.taskListMap[list.id] = list;
+    onToggleTaskListEditMode(list) {
+        const rec = this.getList(list.id);
+        this.updateList(rec.set("isEditing", !rec.isEditing));
         this.dispatch();
     }
 
-    handleNewTask(payload) {
+    onNewTask(payload) {
         const {list, task} = payload;
-        list.tasks.unshift(task);
+        this.updateList(this.addTask(this.getList(list.id), new Task(task)));
         this.dispatch();
     }
 
-    handleTaskListRemoved(list) {
-        delete this.taskListMap[list.id];
+    onTaskListRemoved(list) {
+        this.taskListMap = this.taskListMap.delete(list.id);
         this.dispatch();
     }
 
-    handleTaskRemoved(task) {
-        const lists = _.values(this.taskListMap);
-        lists.map((list) => {
-            _.remove(list.tasks, (t) => t.id === task.id);
-        });
+    onTaskRemoved(task) {
+        this.updateList(this.removeTask(task));
         this.dispatch();
     }
 
-    handleTaskMoved(payload) {
+    onTaskMoved(payload) {
         const {list, task} = payload;
-        const lists = _.values(this.taskListMap);
-        lists.map((target) => {
-            if (target.id === list.id) {
-                target.tasks.unshift(task);
-            } else {
-                _.remove(target.tasks, (t) => t.id === task.id);
-            }
-        });
+
+        this.updateList(this.removeTask(task));
+        const newTaskRec = new Task(task).set("taskListId", list.id);
+        this.updateList(this.addTask(this.getList(list.id), newTaskRec));
+
         this.dispatch();
     }
+
+    updateList(newList) {
+        this.taskListMap = this.taskListMap.set(newList.id, newList);
+    }
+
+    getList(id) {
+        return this.taskListMap.get(id);
+    }
+
+    addTask(list, task) {
+        return list.set("tasks", list.tasks.unshift(task));
+    }
+
+    removeTask(task) {
+        const list = this.getList(task.taskListId);
+        const tasks = list.tasks.filterNot((t) => t.id === task.id);
+        return list.set("tasks", tasks);
+     }
 
     dispatch() {
-        this.setState({ taskLists:  _.values(this.taskListMap) });
+        this.setState({ taskLists:  this.taskListMap.toList() });
     }
 
 }
