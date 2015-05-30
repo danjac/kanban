@@ -26,9 +26,8 @@ const TaskListSource = {
             // remove item from Task lists A and put in B
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
             // update the task list
-            //`const actions = item.flux.getActions("taskLists");
-            //actions.moveTask(dropResult.list, item.task);
-            console.log(dropResult, item);
+            const actions = item.flux.getActions("taskLists");
+            actions.moveTaskList(dropResult.list, item.list);
         }
 
     }

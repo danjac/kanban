@@ -13,6 +13,7 @@ type DataManager interface {
 	CreateTaskList(*models.TaskList) error
 	CreateTask(*models.Task) error
 	MoveTask(int64, int64) error
+	MoveTaskList(int64, int64) error
 }
 
 type sqliteDataManager struct {
@@ -58,7 +59,7 @@ func (db *sqliteDataManager) UpdateTaskList(list *models.TaskList) error {
 func (db *sqliteDataManager) DeleteTaskList(listId int64) error {
 	list := &models.TaskList{}
 
-	if err := db.SelectOne(list, "select * from tasklists where id=?", listId); err != nil {
+	if err := db.SelectOne(list, "select * from tasklists where id=? order by ordering desc", listId); err != nil {
 		return err
 	}
 
@@ -73,11 +74,51 @@ func (db *sqliteDataManager) DeleteTaskList(listId int64) error {
 }
 
 func (db *sqliteDataManager) CreateTaskList(list *models.TaskList) error {
+
+	maxOrder, err := db.SelectInt("select max(ordering) from tasklists")
+	if err != nil {
+	}
+	list.Ordering = maxOrder + 1
 	return db.Insert(list)
 }
 
 func (db *sqliteDataManager) CreateTask(task *models.Task) error {
 	return db.Insert(task)
+}
+
+func (db *sqliteDataManager) MoveTaskList(listId int64, targetListId int64) error {
+
+	var (
+		list       models.TaskList
+		targetList models.TaskList
+	)
+
+	if err := db.SelectOne(list, "select * from tasklists where id=?", listId); err != nil {
+		return err
+	}
+
+	if err := db.SelectOne(targetList, "select * from tasklists where id=?", targetListId); err != nil {
+		return err
+	}
+
+	ordering := list.Ordering
+	targetOrdering := targetList.Ordering
+
+	list.Ordering = targetOrdering
+	targetList.Ordering = ordering
+
+	_, err := db.Update(list)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Update(targetList)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func (db *sqliteDataManager) MoveTask(taskId int64, newListId int64) error {

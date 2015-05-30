@@ -7,7 +7,8 @@ type Task struct {
 }
 
 type TaskList struct {
-	Id    int64  `db:"id"  json:"id"`
-	Name  string `db:"name" json:"name" required:true`
-	Tasks []Task `db:"-" json:"tasks"`
+	Id       int64  `db:"id"  json:"id"`
+	Ordering int64  `db:"ordering" json:"ordering"`
+	Name     string `db:"name" json:"name" required:true`
+	Tasks    []Task `db:"-" json:"tasks"`
 }

@@ -2,15 +2,16 @@ import Immutable from 'immutable';
 import {Store} from 'flummox';
 
 
-const TaskList = Immutable.Record({
+const TaskList = new Immutable.Record({
     id: undefined,
     name: '',
     isEditing: false,
-    tasks: Immutable.List()
+    ordering: 0,
+    tasks: new Immutable.List()
 });
 
 
-const Task = Immutable.Record({
+const Task = new Immutable.Record({
     id: undefined,
     text: '',
     taskListId: undefined
@@ -26,16 +27,17 @@ export default class TaskListStore extends Store {
         this.register(actions.getBoard, this.onNewBoard);
         this.register(actions.createTaskList, this.onNewTaskList);
         this.register(actions.createTask, this.onNewTask);
+        this.register(actions.moveTaskList, this.onTaskListMoved);
         this.register(actions.moveTask, this.onTaskMoved);
         this.register(actions.deleteTask, this.onTaskRemoved);
         this.register(actions.deleteTaskList, this.onTaskListRemoved);
         this.register(actions.updateTaskListName, this.onUpdateTaskListName);
         this.register(actions.toggleTaskListEditMode, this.onToggleTaskListEditMode);
 
-        this.taskListMap = Immutable.OrderedMap();
+        this.taskListMap = new Immutable.OrderedMap();
 
         this.state = {
-            taskLists: Immutable.List()
+            taskLists: new Immutable.List()
         };
 
     }
@@ -44,7 +46,7 @@ export default class TaskListStore extends Store {
         this.taskListMap = this.taskListMap.clear();
         taskLists.forEach((result) => {
 
-            let tasks = Immutable.List();
+            let tasks = new Immutable.List();
 
             result.tasks.forEach((task) => {
                 tasks = tasks.push(new Task(task));
@@ -58,8 +60,19 @@ export default class TaskListStore extends Store {
     }
 
     onNewTaskList(list) {
-        this.saveList(new TaskList(list).set("tasks", Immutable.List()));
+        this.saveList(new TaskList(list).set("tasks", new Immutable.List()));
         this.dispatch();
+    }
+
+    onTaskListMoved(payload) {
+        const {list, targetList} = payload;
+        const ordering = list.ordering,
+              targetOrdering = targetList.ordering;
+
+        this.saveList(this.getList(list.id).set("ordering", targetOrdering));
+        this.saveList(this.getList(targetList.id).set("ordering", ordering));
+        this.dispatch();
+
     }
 
     onUpdateTaskListName(payload) {
@@ -119,7 +132,10 @@ export default class TaskListStore extends Store {
      }
 
     dispatch() {
-        this.setState({ taskLists:  this.taskListMap.toList() });
+        const result = this.taskListMap.toList().sort((a, b) => {
+            return (a.ordering === b.ordering) ? 0 : (a.ordering > b.ordering ? 1 : -1);
+        });
+        this.setState({ taskLists: result });
     }
 
 }

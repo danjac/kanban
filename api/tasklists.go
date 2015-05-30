@@ -55,6 +55,29 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	c.String(http.StatusOK, "ok")
 }
 
+func (api *TaskListApi) MoveHandler(c *gin.Context) {
+
+	listId, err := getIntParam(c, "id")
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	targetListId, err := getIntParam(c, "target_list_id")
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	if err := api.DB.MoveTaskList(listId, targetListId); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	c.String(http.StatusOK, "ok")
+
+}
+
 func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 
 	listId, err := getIntParam(c, "id")
@@ -103,6 +126,7 @@ func NewTaskListApi(r *gin.RouterGroup, prefix string, dataMgr db.DataManager) *
 	api := &TaskListApi{dataMgr}
 
 	rest.CRUD(r, prefix, api)
+	r.PUT(prefix+":id/move/:target_list_id", api.MoveHandler)
 	r.POST(prefix+":id/add/", api.AddTaskHandler)
 	return api
 }

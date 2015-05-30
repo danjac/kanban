@@ -36,6 +36,11 @@ export default class TaskListActions extends Actions {
         return {list, task};
     }
 
+    moveTaskList(list, targetList) {
+        // api.moveTaskList(list.id, targetList.id);
+        return {list, targetList};
+    }
+
     deleteTaskList(list) {
         api.deleteTaskList(list.id);
         return list;
