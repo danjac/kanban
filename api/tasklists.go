@@ -87,7 +87,7 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 	}
 
 	s := &struct {
-		Name string `json:"name" required:true`
+		Name string `json:"name" binding:"required"`
 	}{}
 
 	if err := c.Bind(s); err != nil {
