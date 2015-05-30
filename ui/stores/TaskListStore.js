@@ -47,49 +47,36 @@ export default class TaskListStore extends Store {
             let tasks = Immutable.List();
 
             result.tasks.forEach((task) => {
-                tasks = tasks.push(new Task({
-                    id: task.id,
-                    text: task.text,
-                    taskListId: task.taskListId
-                }));
+                tasks = tasks.push(new Task(task));
             });
 
-            const rec = new TaskList({
-                id: result.id,
-                name: result.name,
-                tasks: tasks
-            });
-
-            this.taskListMap = this.taskListMap.set(result.id, new TaskList({
-                id: result.id,
-                name: result.name,
-                tasks: tasks
-            }));
+            const taskList = new TaskList(result).set("tasks", tasks);
+            this.saveList(taskList);
 
         }.bind(this));
         this.dispatch();
     }
 
     onNewTaskList(list) {
-        this.updateList(new TaskList(list).set("tasks", Immutable.List()));
+        this.saveList(new TaskList(list).set("tasks", Immutable.List()));
         this.dispatch();
     }
 
     onUpdateTaskListName(payload) {
         const {list, name} = payload;
-        this.updateList(this.getList(list.id).set("name", name));
+        this.saveList(this.getList(list.id).set("name", name));
         this.dispatch();
     }
 
     onToggleTaskListEditMode(list) {
         const rec = this.getList(list.id);
-        this.updateList(rec.set("isEditing", !rec.isEditing));
+        this.saveList(rec.set("isEditing", !rec.isEditing));
         this.dispatch();
     }
 
     onNewTask(payload) {
         const {list, task} = payload;
-        this.updateList(this.addTask(this.getList(list.id), new Task(task)));
+        this.saveList(this.addTask(this.getList(list.id), new Task(task)));
         this.dispatch();
     }
 
@@ -99,21 +86,21 @@ export default class TaskListStore extends Store {
     }
 
     onTaskRemoved(task) {
-        this.updateList(this.removeTask(task));
+        this.saveList(this.removeTask(task));
         this.dispatch();
     }
 
     onTaskMoved(payload) {
         const {list, task} = payload;
 
-        this.updateList(this.removeTask(task));
+        this.saveList(this.removeTask(task));
         const newTaskRec = new Task(task).set("taskListId", list.id);
-        this.updateList(this.addTask(this.getList(list.id), newTaskRec));
+        this.saveList(this.addTask(this.getList(list.id), newTaskRec));
 
         this.dispatch();
     }
 
-    updateList(newList) {
+    saveList(newList) {
         this.taskListMap = this.taskListMap.set(newList.id, newList);
     }
 
