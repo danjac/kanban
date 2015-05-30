@@ -5,6 +5,7 @@ import {ItemTypes} from '../constants';
 
 const TaskSource = {
     beginDrag(props) {
+        console.log("beginning task drag", props);
         return props;
     },
 

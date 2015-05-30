@@ -1,5 +1,7 @@
 export const ItemTypes = {
-    TASK: 'task'
+    TASK: 'task',
+    TASKLIST: 'taskList'
 };
+
 
 

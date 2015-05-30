@@ -1,18 +1,47 @@
+import _ from 'lodash';
 import React from 'react';
 import {Input, Panel, Glyphicon, ListGroup} from 'react-bootstrap';
-import {DropTarget} from 'react-dnd';
+import {DropTarget, DragSource} from 'react-dnd';
 
 import {ItemTypes} from '../constants';
 import Task from './Task';
 
-const TaskTarget = {
+const TaskListTarget = {
     drop(props) {
+        console.log("dropping into", props);
         return {list: props.list};
     }
 };
 
+const TaskListSource = {
+    beginDrag(props) {
+        console.log("begin list drag");
+        return props;
+    },
 
-@DropTarget(ItemTypes.TASK, TaskTarget, (connect, monitor) => {
+    endDrag(props, monitor) {
+        const item = monitor.getItem(),
+              dropResult = monitor.getDropResult();
+        if (dropResult) {
+            // remove item from Task lists A and put in B
+            //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
+            // update the task list
+            //`const actions = item.flux.getActions("taskLists");
+            //actions.moveTask(dropResult.list, item.task);
+            console.log(dropResult, item);
+        }
+
+    }
+};
+
+
+@DragSource(ItemTypes.TASKLIST, TaskListSource, (connect,monitor) => {
+    return {
+        connectDragSource: connect.dragSource(),
+        isDragging: monitor.isDragging()
+    };
+})
+@DropTarget([ItemTypes.TASKLIST, ItemTypes.TASK], TaskListTarget, (connect, monitor) => {
     return {
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),
@@ -72,12 +101,21 @@ export default class TaskList extends React.Component {
 
     render() {
 
-        const {list, canDrop, isOver, connectDropTarget, flux} = this.props;
+        const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging, flux} = this.props;
         const {id, name, tasks, isEditing} = list;
 
         const isActive = canDrop && isOver,
-              bgColor = isActive ? '#FFFE85' : '#fff',
-              style = {backgroundColor: bgColor};
+              bgColor = isActive ? '#FFFE85' : '#fff';
+
+        let style = {backgroundColor: bgColor};
+
+        if (isDragging) {
+            style = _.assign(style, {
+                opacity: 0.5,
+                border: 'dashed 1pt #333'
+            });
+        }
+
 
         let header = (
             <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name}</span></h3>
@@ -91,7 +129,7 @@ export default class TaskList extends React.Component {
             );
         }
 
-        return connectDropTarget(
+        return connectDragSource(connectDropTarget(
 
             <Panel bsStyle="primary" style={style} header={header}>
                 <form ref="newTaskForm"
@@ -108,7 +146,7 @@ export default class TaskList extends React.Component {
                 })}
                 </ListGroup>
             </Panel>
-        );
+        ));
     }
 }
 
