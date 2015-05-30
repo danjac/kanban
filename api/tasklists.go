@@ -85,14 +85,17 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 		handleError(c, err)
 		return
 	}
-	list := &models.TaskList{Id: listId}
 
-	if err := c.Bind(list); err != nil {
+	s := &struct {
+		Name string `json:"name" required:true`
+	}{}
+
+	if err := c.Bind(s); err != nil {
 		handleError(c, err)
 		return
 	}
 
-	if err := api.DB.UpdateTaskList(list); err != nil {
+	if err := api.DB.UpdateTaskList(listId, s.Name); err != nil {
 		handleError(c, err)
 		return
 	}

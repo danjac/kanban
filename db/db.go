@@ -10,7 +10,7 @@ import (
 type DataManager interface {
 	GetTaskLists() ([]models.TaskList, error)
 	DeleteTaskList(int64) error
-	UpdateTaskList(*models.TaskList) error
+	UpdateTaskList(int64, string) error
 	DeleteTask(int64) error
 	CreateTaskList(*models.TaskList) error
 	CreateTask(*models.Task) error
@@ -53,8 +53,8 @@ func (db *sqliteDataManager) GetTaskLists() ([]models.TaskList, error) {
 	return result, nil
 }
 
-func (db *sqliteDataManager) UpdateTaskList(list *models.TaskList) error {
-	_, err := db.Update(list)
+func (db *sqliteDataManager) UpdateTaskList(listId int64, name string) error {
+	_, err := db.Exec("update tasklists set name=? where id=?", name, listId)
 	return err
 }
 

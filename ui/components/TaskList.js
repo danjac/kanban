@@ -131,7 +131,7 @@ export default class TaskList extends React.Component {
 
 
         let header = (
-            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name} ({ordering})</span></h3>
+            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name}</span></h3>
         );
 
         if (isEditing) {
