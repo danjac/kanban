@@ -65,6 +65,13 @@ class Api {
         .end();
     }
 
+    moveTaskList(listId, targetListId) {
+        return request
+        .put("/board/" + listId + "/move/" + targetListId)
+        .use(this.prefix)
+        .end();
+    }
+
     moveTask(listId, taskId) {
         return request
         .put("/task/" + taskId + "/move/" + listId)

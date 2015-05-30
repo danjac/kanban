@@ -66,6 +66,10 @@ export default class TaskListStore extends Store {
 
     onTaskListMoved(payload) {
         const {list, targetList} = payload;
+
+        if (list === undefined || targetList === undefined) {
+            return;
+        }
         const ordering = list.ordering,
               targetOrdering = targetList.ordering;
 

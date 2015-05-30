@@ -98,10 +98,24 @@ export default class TaskList extends React.Component {
         }
     }
 
+    shouldFocusEditName() {
+        if (this.props.list.isEditing && this.refs.editName) {
+            React.findDOMNode(this.refs.editName.getInputDOMNode()).select();
+        }
+    }
+
+    componentDidMount() {
+        this.shouldFocusEditName();
+    }
+
+    componentDidUpdate() {
+        this.shouldFocusEditName();
+    }
+
     render() {
 
         const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging, flux} = this.props;
-        const {id, name, tasks, isEditing} = list;
+        const {id, name, tasks, isEditing, ordering} = list;
 
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#FFFE85' : '#fff';
@@ -117,7 +131,7 @@ export default class TaskList extends React.Component {
 
 
         let header = (
-            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name}</span></h3>
+            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name} ({ordering})</span></h3>
         );
 
         if (isEditing) {

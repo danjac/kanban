@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/danjac/kanban/models"
 	"gopkg.in/gorp.v1"
 )
@@ -74,11 +76,12 @@ func (db *sqliteDataManager) DeleteTaskList(listId int64) error {
 }
 
 func (db *sqliteDataManager) CreateTaskList(list *models.TaskList) error {
-
 	maxOrder, err := db.SelectInt("select max(ordering) from tasklists")
 	if err != nil {
+		maxOrder = 0
 	}
 	list.Ordering = maxOrder + 1
+	fmt.Println("ORDER", list.Ordering)
 	return db.Insert(list)
 }
 
@@ -93,11 +96,11 @@ func (db *sqliteDataManager) MoveTaskList(listId int64, targetListId int64) erro
 		targetList models.TaskList
 	)
 
-	if err := db.SelectOne(list, "select * from tasklists where id=?", listId); err != nil {
+	if err := db.SelectOne(&list, "select * from tasklists where id=?", listId); err != nil {
 		return err
 	}
 
-	if err := db.SelectOne(targetList, "select * from tasklists where id=?", targetListId); err != nil {
+	if err := db.SelectOne(&targetList, "select * from tasklists where id=?", targetListId); err != nil {
 		return err
 	}
 
@@ -107,12 +110,12 @@ func (db *sqliteDataManager) MoveTaskList(listId int64, targetListId int64) erro
 	list.Ordering = targetOrdering
 	targetList.Ordering = ordering
 
-	_, err := db.Update(list)
+	_, err := db.Update(&list)
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Update(targetList)
+	_, err = db.Update(&targetList)
 	if err != nil {
 		return err
 	}

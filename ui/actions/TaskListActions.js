@@ -37,7 +37,10 @@ export default class TaskListActions extends Actions {
     }
 
     moveTaskList(list, targetList) {
-        // api.moveTaskList(list.id, targetList.id);
+        if (list.id === targetList.id) {
+            return {};
+        }
+        api.moveTaskList(list.id, targetList.id);
         return {list, targetList};
     }
 
