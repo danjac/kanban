@@ -12,7 +12,7 @@ import (
 var errInvalidParameter = errors.New("Invalid parameter")
 
 func getIntParam(c *gin.Context, name string) (int64, error) {
-	result, err := strconv.ParseInt(c.Params.ByName("id"), 10, 64)
+	result, err := strconv.ParseInt(c.Params.ByName(name), 10, 64)
 	if err != nil {
 		return result, errInvalidParameter
 	}
