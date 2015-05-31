@@ -102,10 +102,6 @@ export default class TaskList extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.shouldFocusEditName();
-    }
-
     componentDidUpdate() {
         this.shouldFocusEditName();
     }

@@ -5,13 +5,13 @@ import {ItemTypes} from '../constants';
 
 const TaskSource = {
     beginDrag(props) {
-        console.log("beginning task drag", props);
         return props;
     },
 
     endDrag(props, monitor) {
         const item = monitor.getItem(),
               dropResult = monitor.getDropResult();
+
         if (dropResult) {
             // remove item from Task lists A and put in B
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);

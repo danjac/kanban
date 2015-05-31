@@ -36,6 +36,7 @@ class TaskBoard extends React.Component {
     }
 }
 
+
 @DragDropContext(HTML5Backend)
 export default class Container extends React.Component {
 
@@ -60,20 +61,32 @@ export default class Container extends React.Component {
 
     header() {
         return (
-            <Grid>
-                <Row>
+
+            <header className="container">
+                <div className="page-header">
                     <h1 style={{ color: 'white'}}>Kanban Board 看板</h1>
-                </Row>
-                <Row>
-                    <form onSubmit={this.handleNewList}>
-                        <Input ref="name"
-                               type="text"
-                               bsSize="large"
-                               placeholder="Add a new list" />
-                    </form>
-                </Row>
-            </Grid>
+                </div>
+                <form onSubmit={this.handleNewList}>
+                    <Input ref="name"
+                           type="text"
+                           bsSize="large"
+                           placeholder="Add a new list" />
+                </form>
+            </header>
         );
+    }
+
+    footer() {
+        return (
+        <footer className="container">
+            <p className="text-center">
+                <small>
+                    &copy; { new Date().getFullYear() } Dan Jacob <a target="_blank" href="https://github.com/danjac/kanban">Github</a>
+                </small>
+            </p>
+        </footer>
+        );
+
     }
 
     render() {
@@ -83,6 +96,7 @@ export default class Container extends React.Component {
                 <FluxComponent flux={this.props.flux} connectToStores={['taskLists']}>
                     <TaskBoard />
                 </FluxComponent>
+                {this.footer()}
             </Grid>
         );
     }
