@@ -8,14 +8,12 @@ import Task from './Task';
 
 const TaskListTarget = {
     drop(props) {
-        console.log("dropping into", props);
         return {list: props.list};
     }
 };
 
 const TaskListSource = {
     beginDrag(props) {
-        console.log("begin list drag");
         return props;
     },
 
