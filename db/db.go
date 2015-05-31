@@ -88,32 +88,24 @@ func (db *sqliteDataManager) CreateTask(task *models.Task) error {
 
 func (db *sqliteDataManager) MoveTaskList(listId int64, targetListId int64) error {
 
-	var (
-		list       models.TaskList
-		targetList models.TaskList
-	)
+	selectSql := "select ordering from tasklists where id=?"
+	updateSql := "update tasklists set ordering=? where id=?"
 
-	if err := db.SelectOne(&list, "select * from tasklists where id=?", listId); err != nil {
-		return err
-	}
-
-	if err := db.SelectOne(&targetList, "select * from tasklists where id=?", targetListId); err != nil {
-		return err
-	}
-
-	ordering := list.Ordering
-	targetOrdering := targetList.Ordering
-
-	list.Ordering = targetOrdering
-	targetList.Ordering = ordering
-
-	_, err := db.Update(&list)
+	ordering, err := db.SelectInt(selectSql, listId)
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Update(&targetList)
+	targetOrdering, err := db.SelectInt(selectSql, targetListId)
 	if err != nil {
+		return err
+	}
+
+	if _, err := db.Exec(updateSql, targetOrdering, listId); err != nil {
+		return err
+	}
+
+	if _, err := db.Exec(updateSql, ordering, targetListId); err != nil {
 		return err
 	}
 
