@@ -20,7 +20,7 @@ class TaskBoard extends React.Component {
             <Grid>
             {rows.map((row) => {
             return (
-                <Row>
+                <Row style={{ minHeight: 320 }}>
                     {row.map((list) => {
                         return (
                             <Col xs={3}>
@@ -58,20 +58,32 @@ export default class Container extends React.Component {
         }
     }
 
+    header() {
+        return (
+            <Grid>
+                <Row>
+                    <h1 style={{ color: 'white'}}>Kanban Board 看板</h1>
+                </Row>
+                <Row>
+                    <form onSubmit={this.handleNewList}>
+                        <Input ref="name"
+                               type="text"
+                               bsSize="large"
+                               placeholder="Add a new list" />
+                    </form>
+                </Row>
+            </Grid>
+        );
+    }
+
     render() {
         return (
-            <div className="container">
-                <h1 style={{ color: 'white'}}>Kanban Board 看板</h1>
-                <form onSubmit={this.handleNewList}>
-                    <Input ref="name"
-                           type="text"
-                           bsSize="large"
-                           placeholder="Add a new list" />
-                </form>
+            <Grid>
+                {this.header()}
                 <FluxComponent flux={this.props.flux} connectToStores={['taskLists']}>
                     <TaskBoard />
                 </FluxComponent>
-            </div>
+            </Grid>
         );
     }
 }

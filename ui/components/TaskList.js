@@ -118,7 +118,7 @@ export default class TaskList extends React.Component {
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#FFFE85' : '#fff';
 
-        let style = {backgroundColor: bgColor};
+        let style = {backgroundColor: bgColor, minHeight: 300};
 
         if (isDragging) {
             style = _.assign(style, {
