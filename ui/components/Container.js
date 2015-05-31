@@ -16,7 +16,6 @@ class TaskBoard extends React.Component {
     render() {
 
         const rows = _.chunk(this.props.taskLists.toJS(), 4);
-
         return (
             <Grid>
             {rows.map((row) => {
@@ -62,7 +61,7 @@ export default class Container extends React.Component {
     render() {
         return (
             <div className="container">
-                <h1>Kanban Board</h1>
+                <h1 style={{ color: 'white'}}>Kanban Board 看板</h1>
                 <form onSubmit={this.handleNewList}>
                     <Input ref="name"
                            type="text"

@@ -44,6 +44,7 @@ export default class TaskListStore extends Store {
 
     onNewBoard(taskLists) {
         this.taskListMap = this.taskListMap.clear();
+        taskLists = taskLists || [];
         taskLists.forEach((result) => {
 
             let tasks = new Immutable.List();
