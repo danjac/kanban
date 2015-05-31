@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const OK = "ok"
+
 var errInvalidParameter = errors.New("Invalid parameter")
 
 func getIntParam(c *gin.Context, name string) (int64, error) {

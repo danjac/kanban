@@ -33,7 +33,7 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "ok")
+	c.String(http.StatusOK, OK)
 }
 
 func (api *TaskApi) DeleteHandler(c *gin.Context) {
@@ -49,7 +49,7 @@ func (api *TaskApi) DeleteHandler(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "ok")
+	c.String(http.StatusOK, OK)
 }
 
 func NewTaskApi(r *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskApi {

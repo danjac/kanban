@@ -52,7 +52,7 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "ok")
+	c.String(http.StatusOK, OK)
 }
 
 func (api *TaskListApi) MoveHandler(c *gin.Context) {
@@ -74,7 +74,7 @@ func (api *TaskListApi) MoveHandler(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "ok")
+	c.String(http.StatusOK, OK)
 
 }
 
@@ -100,7 +100,7 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "ok")
+	c.String(http.StatusOK, OK)
 
 }
 
