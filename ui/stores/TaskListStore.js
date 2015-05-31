@@ -47,11 +47,7 @@ export default class TaskListStore extends Store {
         taskLists = taskLists || [];
         taskLists.forEach((result) => {
 
-            let tasks = new Immutable.List();
-
-            result.tasks.forEach((task) => {
-                tasks = tasks.push(new Task(task));
-            });
+            const tasks = new Immutable.List(result.tasks.map((task) => new Task(task)));
 
             const taskList = new TaskList(result).set("tasks", tasks);
             this.saveList(taskList);
