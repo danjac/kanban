@@ -21,7 +21,7 @@ func TestListHandler(t *testing.T) {
 	}
 	api := &TaskListApi{&fakeDb{}}
 	api.ListHandler(c)
-	if w.Code != 200 {
+	if w.Code != http.StatusOK {
 		t.Fail()
 	}
 
