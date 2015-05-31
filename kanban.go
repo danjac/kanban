@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -13,8 +14,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func initDB() *gorp.DbMap {
-	db, err := sql.Open("sqlite3", "/tmp/kanban.sqlite")
+func initDB(dbName string) *gorp.DbMap {
+	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
 		panic(err)
 	}
@@ -27,9 +28,14 @@ func initDB() *gorp.DbMap {
 	return dbMap
 }
 
+var dbName = flag.String("db", "/tmp/kanban.sqlite", "sqlite database filename")
+
 func main() {
 
-	dbMap := initDB()
+	flag.Parse()
+
+	dbMap := initDB(*dbName)
+
 	dataManager := db.NewDataManager(dbMap)
 
 	r := gin.Default()
