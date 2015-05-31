@@ -19,9 +19,8 @@ class Api {
     newTaskList(name) {
         return request
         .post("/board/")
-        .set("Content-Type", "application/json")
-        .send({ name: name })
         .use(this.prefix)
+        .set("Content-Type", "application/json")
         .send({ name: name })
         .end()
         .then((res) => {
@@ -32,9 +31,8 @@ class Api {
     updateTaskListName(listId, name) {
         return request
         .put("/board/" + listId + "/")
-        .set("Content-Type", "application/json")
-        .send({ name: name })
         .use(this.prefix)
+        .set("Content-Type", "application/json")
         .send({ name: name })
         .end()
     }
@@ -42,8 +40,8 @@ class Api {
     newTask(listId, text) {
         return request
         .post("/board/" + listId + "/add/")
-        .set("Content-Type", "application/json")
         .use(this.prefix)
+        .set("Content-Type", "application/json")
         .send({ text: text })
         .end()
         .then((res) => {
