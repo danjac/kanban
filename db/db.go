@@ -1,8 +1,6 @@
 package db
 
 import (
-	"fmt"
-
 	"github.com/danjac/kanban/models"
 	"gopkg.in/gorp.v1"
 )
@@ -81,7 +79,6 @@ func (db *sqliteDataManager) CreateTaskList(list *models.TaskList) error {
 		maxOrder = 0
 	}
 	list.Ordering = maxOrder + 1
-	fmt.Println("ORDER", list.Ordering)
 	return db.Insert(list)
 }
 
