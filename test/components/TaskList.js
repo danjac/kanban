@@ -30,11 +30,12 @@ describe('task list', function() {
 
 
         const component = TestUtils.findRenderedComponentWithType(root, TaskList).decoratedComponentInstance;
+        const refs = component.decoratedComponentInstance.refs;
 
         sinon.stub(actions, "createTask");
 
-        component.refs.newTask.getInputDOMNode().value = "new task!";
-        TestUtils.Simulate.submit(component.refs.newTaskForm.getDOMNode());
+        refs.newTask.getInputDOMNode().value = "new task!";
+        TestUtils.Simulate.submit(refs.newTaskForm.getDOMNode());
         expect(actions.createTask.calledOnce).toBe(true);
 
     });
