@@ -135,7 +135,9 @@ export default class TaskList extends React.Component {
         if (isEditing) {
             header = (
                 <form ref="editNameForm" onSubmit={this.handleUpdateName}>
-                    <Input type="text" ref="editName" defaultValue={name} />
+                    <Input type="text"
+                           ref="editName"
+                           defaultValue={name} />
                 </form>
             );
         }
