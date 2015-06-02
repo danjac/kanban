@@ -1,5 +1,6 @@
 var bowerFiles = require('main-bower-files'),
     gulp = require('gulp'),
+    _ = require('lodash'),
     util = require('gulp-util'),
     plumber = require('gulp-plumber'),
     shell = require('gulp-shell'),
