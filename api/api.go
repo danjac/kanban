@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -11,21 +10,17 @@ import (
 
 const OK = "ok"
 
-var errInvalidParameter = errors.New("Invalid parameter")
-
-func getIntParam(c *gin.Context, name string) (int64, error) {
+func int64Param(c *gin.Context, name string) (int64, error) {
 	result, err := strconv.ParseInt(c.Params.ByName(name), 10, 64)
 	if err != nil {
-		return result, errInvalidParameter
+		c.AbortWithStatus(http.StatusNotFound)
+		return result, err
 	}
 	return result, nil
 }
 
-func handleError(c *gin.Context, err error) {
+func abortWithSqlErr(c *gin.Context, err error) {
 	switch err {
-	case errInvalidParameter:
-		c.AbortWithError(http.StatusBadRequest, err)
-		break
 	case sql.ErrNoRows:
 		c.AbortWithStatus(http.StatusNotFound)
 		break

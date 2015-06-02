@@ -14,15 +14,15 @@ type TaskListApi struct {
 }
 
 func (api *TaskListApi) CreateHandler(c *gin.Context) {
+
 	list := &models.TaskList{}
 
 	if err := c.Bind(list); err != nil {
-		handleError(c, err)
 		return
 	}
 
 	if err := api.DB.CreateTaskList(list); err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
@@ -33,7 +33,7 @@ func (api *TaskListApi) CreateHandler(c *gin.Context) {
 func (api *TaskListApi) ListHandler(c *gin.Context) {
 	taskLists, err := api.DB.GetTaskLists()
 	if err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"lists": taskLists})
@@ -41,14 +41,13 @@ func (api *TaskListApi) ListHandler(c *gin.Context) {
 
 func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 
-	listId, err := getIntParam(c, "id")
+	listId, err := int64Param(c, "id")
 	if err != nil {
-		handleError(c, err)
 		return
 	}
 
 	if err := api.DB.DeleteTaskList(listId); err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
@@ -57,20 +56,19 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 
 func (api *TaskListApi) MoveHandler(c *gin.Context) {
 
-	listId, err := getIntParam(c, "id")
+	listId, err := int64Param(c, "id")
 	if err != nil {
-		handleError(c, err)
 		return
 	}
 
-	targetListId, err := getIntParam(c, "target_list_id")
+	targetListId, err := int64Param(c, "target_list_id")
 	if err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
 	if err := api.DB.MoveTaskList(listId, targetListId); err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
@@ -80,9 +78,9 @@ func (api *TaskListApi) MoveHandler(c *gin.Context) {
 
 func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 
-	listId, err := getIntParam(c, "id")
+	listId, err := int64Param(c, "id")
 	if err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
@@ -91,12 +89,11 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 	}{}
 
 	if err := c.Bind(s); err != nil {
-		handleError(c, err)
 		return
 	}
 
 	if err := api.DB.UpdateTaskList(listId, s.Name); err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
@@ -106,19 +103,17 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 
 func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
 
-	listId, err := getIntParam(c, "id")
+	listId, err := int64Param(c, "id")
 	if err != nil {
-		handleError(c, err)
 		return
 	}
 
 	task := &models.Task{TaskListId: listId}
 	if err := c.Bind(task); err != nil {
-		handleError(c, err)
 		return
 	}
 	if err := api.DB.CreateTask(task); err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 

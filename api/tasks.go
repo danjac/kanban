@@ -14,22 +14,19 @@ type TaskApi struct {
 
 func (api *TaskApi) MoveHandler(c *gin.Context) {
 
-	taskId, err := getIntParam(c, "id")
+	taskId, err := int64Param(c, "id")
 
 	if err != nil {
-		handleError(c, err)
 		return
 	}
 
-	newListId, err := getIntParam(c, "new_list_id")
-
+	newListId, err := int64Param(c, "new_list_id")
 	if err != nil {
-		handleError(c, err)
 		return
 	}
 
 	if err := api.DB.MoveTask(taskId, newListId); err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
@@ -38,14 +35,13 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 
 func (api *TaskApi) DeleteHandler(c *gin.Context) {
 
-	taskId, err := getIntParam(c, "id")
+	taskId, err := int64Param(c, "id")
 	if err != nil {
-		handleError(c, err)
 		return
 	}
 
 	if err := api.DB.DeleteTask(taskId); err != nil {
-		handleError(c, err)
+		abortWithSqlErr(c, err)
 		return
 	}
 
