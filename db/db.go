@@ -7,13 +7,13 @@ import (
 
 type DataManager interface {
 	GetTaskLists() ([]models.TaskList, error)
-	DeleteTaskList(int64) error
-	UpdateTaskList(int64, string) error
-	DeleteTask(int64) error
+	DeleteTaskList(int) error
+	UpdateTaskList(int, string) error
+	DeleteTask(int) error
 	CreateTaskList(*models.TaskList) error
 	CreateTask(*models.Task) error
-	MoveTask(int64, int64) error
-	MoveTaskList(int64, int64) error
+	MoveTask(int, int) error
+	MoveTaskList(int, int) error
 }
 
 type sqliteDataManager struct {
@@ -51,12 +51,12 @@ func (db *sqliteDataManager) GetTaskLists() ([]models.TaskList, error) {
 	return result, nil
 }
 
-func (db *sqliteDataManager) UpdateTaskList(listId int64, name string) error {
+func (db *sqliteDataManager) UpdateTaskList(listId int, name string) error {
 	_, err := db.Exec("update tasklists set name=? where id=?", name, listId)
 	return err
 }
 
-func (db *sqliteDataManager) DeleteTaskList(listId int64) error {
+func (db *sqliteDataManager) DeleteTaskList(listId int) error {
 	list := &models.TaskList{}
 
 	if err := db.SelectOne(list, "select * from tasklists where id=? order by ordering desc", listId); err != nil {
@@ -78,7 +78,7 @@ func (db *sqliteDataManager) CreateTaskList(list *models.TaskList) error {
 	if err != nil {
 		maxOrder = 0
 	}
-	list.Ordering = maxOrder + 1
+	list.Ordering = int(maxOrder) + 1
 	return db.Insert(list)
 }
 
@@ -86,7 +86,7 @@ func (db *sqliteDataManager) CreateTask(task *models.Task) error {
 	return db.Insert(task)
 }
 
-func (db *sqliteDataManager) MoveTaskList(listId int64, targetListId int64) error {
+func (db *sqliteDataManager) MoveTaskList(listId int, targetListId int) error {
 
 	selectSql := "select ordering from tasklists where id=?"
 	updateSql := "update tasklists set ordering=? where id=?"
@@ -113,7 +113,7 @@ func (db *sqliteDataManager) MoveTaskList(listId int64, targetListId int64) erro
 
 }
 
-func (db *sqliteDataManager) MoveTask(taskId int64, newListId int64) error {
+func (db *sqliteDataManager) MoveTask(taskId int, newListId int) error {
 
 	task := &models.Task{}
 
@@ -127,7 +127,7 @@ func (db *sqliteDataManager) MoveTask(taskId int64, newListId int64) error {
 	return err
 }
 
-func (db *sqliteDataManager) DeleteTask(taskId int64) error {
+func (db *sqliteDataManager) DeleteTask(taskId int) error {
 	task := &models.Task{}
 
 	if err := db.SelectOne(task, "select * from tasks where id=?", taskId); err != nil {

@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/danjac/kanban/db"
 	"github.com/danjac/kanban/models"
@@ -41,48 +42,32 @@ func (api *TaskListApi) ListHandler(c *gin.Context) {
 
 func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 
-	listId, err := int64Param(c, "id")
-	if err != nil {
-		return
-	}
-
+	listId, _ := strconv.Atoi(c.Params.ByName("id"))
 	if err := api.DB.DeleteTaskList(listId); err != nil {
 		abortWithSqlErr(c, err)
 		return
 	}
 
-	c.String(http.StatusOK, OK)
+	c.String(http.StatusOK, statusOK)
 }
 
 func (api *TaskListApi) MoveHandler(c *gin.Context) {
 
-	listId, err := int64Param(c, "id")
-	if err != nil {
-		return
-	}
-
-	targetListId, err := int64Param(c, "target_list_id")
-	if err != nil {
-		abortWithSqlErr(c, err)
-		return
-	}
+	listId, _ := strconv.Atoi(c.Params.ByName("id"))
+	targetListId, _ := strconv.Atoi(c.Params.ByName("target_list_id"))
 
 	if err := api.DB.MoveTaskList(listId, targetListId); err != nil {
 		abortWithSqlErr(c, err)
 		return
 	}
 
-	c.String(http.StatusOK, OK)
+	c.String(http.StatusOK, statusOK)
 
 }
 
 func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 
-	listId, err := int64Param(c, "id")
-	if err != nil {
-		abortWithSqlErr(c, err)
-		return
-	}
+	listId, _ := strconv.Atoi(c.Params.ByName("id"))
 
 	s := &struct {
 		Name string `json:"name" binding:"required"`
@@ -97,16 +82,13 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, OK)
+	c.String(http.StatusOK, statusOK)
 
 }
 
 func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
 
-	listId, err := int64Param(c, "id")
-	if err != nil {
-		return
-	}
+	listId, _ := strconv.Atoi(c.Params.ByName("id"))
 
 	task := &models.Task{TaskListId: listId}
 	if err := c.Bind(task); err != nil {

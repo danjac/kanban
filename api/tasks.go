@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/danjac/kanban/db"
 	"github.com/gin-gonic/contrib/rest"
@@ -14,37 +15,27 @@ type TaskApi struct {
 
 func (api *TaskApi) MoveHandler(c *gin.Context) {
 
-	taskId, err := int64Param(c, "id")
-	if err != nil {
-		return
-	}
-
-	newListId, err := int64Param(c, "new_list_id")
-	if err != nil {
-		return
-	}
+	taskId, _ := strconv.Atoi(c.Params.ByName("id"))
+	newListId, _ := strconv.Atoi(c.Params.ByName("new_list_id"))
 
 	if err := api.DB.MoveTask(taskId, newListId); err != nil {
 		abortWithSqlErr(c, err)
 		return
 	}
 
-	c.String(http.StatusOK, OK)
+	c.String(http.StatusOK, statusOK)
 }
 
 func (api *TaskApi) DeleteHandler(c *gin.Context) {
 
-	taskId, err := int64Param(c, "id")
-	if err != nil {
-		return
-	}
+	taskId, _ := strconv.Atoi(c.Params.ByName("id"))
 
 	if err := api.DB.DeleteTask(taskId); err != nil {
 		abortWithSqlErr(c, err)
 		return
 	}
 
-	c.String(http.StatusOK, OK)
+	c.String(http.StatusOK, statusOK)
 }
 
 func NewTaskApi(r *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskApi {

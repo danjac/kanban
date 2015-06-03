@@ -54,15 +54,15 @@ func (db *fakeDb) GetTaskLists() ([]models.TaskList, error) {
 	return result, nil
 }
 
-func (db *fakeDb) DeleteTaskList(id int64) error {
+func (db *fakeDb) DeleteTaskList(id int) error {
 	return nil
 }
 
-func (db *fakeDb) UpdateTaskList(id int64, name string) error {
+func (db *fakeDb) UpdateTaskList(id int, name string) error {
 	return nil
 }
 
-func (db *fakeDb) DeleteTask(id int64) error {
+func (db *fakeDb) DeleteTask(id int) error {
 	return nil
 }
 
@@ -74,10 +74,10 @@ func (db *fakeDb) CreateTask(list *models.Task) error {
 	return nil
 }
 
-func (db *fakeDb) MoveTaskList(id int64, targetId int64) error {
+func (db *fakeDb) MoveTaskList(id int, targetId int) error {
 	return nil
 }
 
-func (db *fakeDb) MoveTask(id int64, targetId int64) error {
+func (db *fakeDb) MoveTask(id int, targetId int) error {
 	return nil
 }
