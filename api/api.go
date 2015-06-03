@@ -9,7 +9,7 @@ import (
 
 const statusOK = "ok"
 
-func abortWithSqlErr(c *gin.Context, err error) {
+func abortWithDBError(c *gin.Context, err error) {
 	switch err {
 	case sql.ErrNoRows:
 		c.AbortWithStatus(http.StatusNotFound)

@@ -19,7 +19,7 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 	newListId, _ := strconv.Atoi(c.Params.ByName("new_list_id"))
 
 	if err := api.DB.MoveTask(taskId, newListId); err != nil {
-		abortWithSqlErr(c, err)
+		abortWithDBError(c, err)
 		return
 	}
 
@@ -31,7 +31,7 @@ func (api *TaskApi) DeleteHandler(c *gin.Context) {
 	taskId, _ := strconv.Atoi(c.Params.ByName("id"))
 
 	if err := api.DB.DeleteTask(taskId); err != nil {
-		abortWithSqlErr(c, err)
+		abortWithDBError(c, err)
 		return
 	}
 
