@@ -15,7 +15,6 @@ type TaskApi struct {
 func (api *TaskApi) MoveHandler(c *gin.Context) {
 
 	taskId, err := int64Param(c, "id")
-
 	if err != nil {
 		return
 	}

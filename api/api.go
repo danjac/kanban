@@ -13,7 +13,7 @@ const OK = "ok"
 func int64Param(c *gin.Context, name string) (int64, error) {
 	result, err := strconv.ParseInt(c.Params.ByName(name), 10, 64)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatus(http.StatusBadRequest)
 		return result, err
 	}
 	return result, nil
