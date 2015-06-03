@@ -15,6 +15,13 @@ class TaskBoard extends React.Component {
 
     render() {
 
+        if (!this.props.isLoaded) {
+            return  (
+            <p className="text-center">
+                <img alt="loading..." src="/images/ajax-loader.gif" />
+            </p>
+            );
+        }
         const rows = _.chunk(this.props.taskLists.toJS(), 4);
         return (
             <Grid>

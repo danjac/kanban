@@ -37,6 +37,7 @@ export default class TaskListStore extends Store {
         this.taskListMap = new Immutable.OrderedMap();
 
         this.state = {
+            isLoaded: false,
             taskLists: new Immutable.List()
         };
 
@@ -136,7 +137,7 @@ export default class TaskListStore extends Store {
         const result = this.taskListMap.toList().sort((a, b) => {
             return (a.ordering === b.ordering) ? 0 : (a.ordering > b.ordering ? 1 : -1);
         });
-        this.setState({ taskLists: result });
+        this.setState({ taskLists: result, isLoaded: true });
     }
 
 }
