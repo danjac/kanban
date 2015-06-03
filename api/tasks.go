@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -19,7 +20,11 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 	newListId, _ := strconv.Atoi(c.Params.ByName("new_list_id"))
 
 	if err := api.DB.MoveTask(taskId, newListId); err != nil {
-		abortWithDBError(c, err)
+		if err == sql.ErrNoRows {
+			c.AbortWithStatus(http.StatusNotFound)
+		} else {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -31,7 +36,7 @@ func (api *TaskApi) DeleteHandler(c *gin.Context) {
 	taskId, _ := strconv.Atoi(c.Params.ByName("id"))
 
 	if err := api.DB.DeleteTask(taskId); err != nil {
-		abortWithDBError(c, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 

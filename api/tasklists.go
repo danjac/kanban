@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -23,7 +24,7 @@ func (api *TaskListApi) CreateHandler(c *gin.Context) {
 	}
 
 	if err := api.DB.CreateTaskList(list); err != nil {
-		abortWithDBError(c, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -34,7 +35,7 @@ func (api *TaskListApi) CreateHandler(c *gin.Context) {
 func (api *TaskListApi) ListHandler(c *gin.Context) {
 	taskLists, err := api.DB.GetTaskLists()
 	if err != nil {
-		abortWithDBError(c, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"lists": taskLists})
@@ -44,7 +45,7 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 
 	listId, _ := strconv.Atoi(c.Params.ByName("id"))
 	if err := api.DB.DeleteTaskList(listId); err != nil {
-		abortWithDBError(c, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -57,7 +58,11 @@ func (api *TaskListApi) MoveHandler(c *gin.Context) {
 	targetListId, _ := strconv.Atoi(c.Params.ByName("target_list_id"))
 
 	if err := api.DB.MoveTaskList(listId, targetListId); err != nil {
-		abortWithDBError(c, err)
+		if err == sql.ErrNoRows {
+			c.AbortWithStatus(http.StatusNotFound)
+		} else {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -78,7 +83,7 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 	}
 
 	if err := api.DB.UpdateTaskList(listId, s.Name); err != nil {
-		abortWithDBError(c, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -95,7 +100,7 @@ func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
 		return
 	}
 	if err := api.DB.CreateTask(task); err != nil {
-		abortWithDBError(c, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
