@@ -58,7 +58,7 @@ func (db *sqliteDataManager) UpdateTaskList(listId int, name string) error {
 
 func (db *sqliteDataManager) DeleteTaskList(listId int) error {
 
-	if _, err := db.Exec("delete * from tasklists where id=? ", listId); err != nil {
+	if _, err := db.Exec("delete from tasklists where id=? ", listId); err != nil {
 		return err
 	}
 
