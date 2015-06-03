@@ -96,15 +96,20 @@ func (db *sqliteDataManager) MoveTaskList(listId int, targetListId int) error {
 		return err
 	}
 
-	if _, err := db.Exec(updateSql, targetOrdering, listId); err != nil {
+	t, err := db.Begin()
+	if err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(updateSql, ordering, targetListId); err != nil {
+	if _, err := t.Exec(updateSql, targetOrdering, listId); err != nil {
 		return err
 	}
 
-	return nil
+	if _, err := t.Exec(updateSql, ordering, targetListId); err != nil {
+		return err
+	}
+
+	return t.Commit()
 
 }
 
