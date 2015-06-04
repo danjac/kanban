@@ -34,15 +34,11 @@ func main() {
 
 	flag.Parse()
 
-	dbMap := initDB(*dbName)
-
-	dataManager := db.NewDataManager(dbMap)
-
 	r := gin.Default()
 
 	r.Use(static.Serve("/", static.LocalFile("static", false)))
 
-	api.New(r, "/api/v1", dataManager)
+	api.New(r, "/api/v1", db.NewDataManager(initDb(*dbName)))
 
 	r.Run(":8080")
 }
