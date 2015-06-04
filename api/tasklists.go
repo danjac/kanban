@@ -107,11 +107,11 @@ func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func NewTaskListApi(r *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskListApi {
+func NewTaskListApi(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskListApi {
 	api := &TaskListApi{dataMgr}
 
-	rest.CRUD(r, prefix, api)
-	r.PUT(prefix+":id/move/:target_list_id", api.MoveHandler)
-	r.POST(prefix+":id/add/", api.AddTaskHandler)
+	rest.CRUD(g, prefix, api)
+	g.PUT(prefix+":id/move/:target_list_id", api.MoveHandler)
+	g.POST(prefix+":id/add/", api.AddTaskHandler)
 	return api
 }

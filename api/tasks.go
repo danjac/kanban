@@ -43,12 +43,12 @@ func (api *TaskApi) DeleteHandler(c *gin.Context) {
 	c.String(http.StatusOK, statusOK)
 }
 
-func NewTaskApi(r *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskApi {
+func NewTaskApi(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskApi {
 	api := &TaskApi{dataMgr}
 
-	rest.CRUD(r, prefix, api)
+	rest.CRUD(g, prefix, api)
 
-	r.PUT(prefix+":id/move/:new_list_id", api.MoveHandler)
+	g.PUT(prefix+":id/move/:new_list_id", api.MoveHandler)
 
 	return api
 }
