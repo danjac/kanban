@@ -58,14 +58,19 @@ func (db *sqliteDataManager) UpdateTaskList(listId int, name string) error {
 
 func (db *sqliteDataManager) DeleteTaskList(listId int) error {
 
-	if _, err := db.Exec("delete from tasklists where id=? ", listId); err != nil {
+	t, err := db.Begin()
+	if err != nil {
 		return err
 	}
 
-	if _, err := db.Exec("delete from tasks where task_list_id=?", listId); err != nil {
+	if _, err := t.Exec("delete from tasklists where id=? ", listId); err != nil {
 		return err
 	}
-	return nil
+
+	if _, err := t.Exec("delete from tasks where task_list_id=?", listId); err != nil {
+		return err
+	}
+	return t.Commit()
 }
 
 func (db *sqliteDataManager) CreateTaskList(list *models.TaskList) error {
