@@ -47,13 +47,11 @@ const TaskListSource = {
 })
 export default class TaskList extends React.Component {
 
-    /*
     static propTypes = {
         connectDropTarget: React.PropTypes.func.isRequired,
         isOver: React.PropTypes.bool.isRequired,
         canDrop: React.PropTypes.bool.isRequired
     }
-    */
 
     constructor(props) {
         super(props);

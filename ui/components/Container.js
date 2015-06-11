@@ -2,11 +2,11 @@
 //require("./app.css");
 
 import React from 'react';
-import FluxComponent from 'flummox/component';
 import _ from 'lodash';
 import {Grid, Row, Col, Input} from 'react-bootstrap';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
+import {FluxComponent} from 'flummox';
 
 import TaskList from './TaskList';
 
