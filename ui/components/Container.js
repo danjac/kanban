@@ -28,12 +28,12 @@ class TaskBoard extends React.Component {
         const rows = _.chunk(this.props.taskLists.toJS(), 4);
         return (
             <Grid>
-            {rows.map((row) => {
+            {rows.map((row, rowIndex) => {
             return (
-                <Row style={{ minHeight: 320 }}>
-                    {row.map((list) => {
+                <Row key={rowIndex} style={{ minHeight: 320 }}>
+                    {row.map((list, colIndex) => {
                         return (
-                            <Col xs={3}>
+                            <Col key={colIndex} xs={3}>
                                 <TaskList flux={this.props.flux} key={list.id} list={list} />
                             </Col>
                         )

@@ -34,7 +34,7 @@ export default class Task extends React.Component {
 
     static propTypes = {
         flux: React.PropTypes.any,
-        text: React.PropTypes.string.isRequired,
+        task: React.PropTypes.object.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
         connectDragSource: React.PropTypes.func.isRequired
     }
