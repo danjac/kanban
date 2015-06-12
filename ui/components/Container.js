@@ -6,10 +6,9 @@ import _ from 'lodash';
 import {Grid, Row, Col, Input} from 'react-bootstrap';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
-import {FluxComponent} from 'flummox';
+import FluxComponent from 'flummox/component';
 
 import TaskList from './TaskList';
-
 
 class TaskBoard extends React.Component {
 

@@ -45,7 +45,7 @@
     "babel": "^5.4.7",
     "babel-runtime": "^5.4.7",
     "css-loader": "^0.14.2",
-    "flummox": "^4.0.0-rc1",
+    "flummox": "^3.5.2",
     "immutable": "^3.7.3",
     "lodash": "^3.9.2",
     "lru-cache": "^2.6.4",
