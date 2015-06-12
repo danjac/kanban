@@ -53,6 +53,10 @@ export default class TaskList extends React.Component {
         canDrop: React.PropTypes.bool.isRequired
     }
 
+    static contentTypes = {
+        flux: React.PropTypes.any
+    }
+
     constructor(props) {
         super(props);
         this.actions = props.flux.getActions("taskLists");

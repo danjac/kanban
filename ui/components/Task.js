@@ -31,11 +31,17 @@ const TaskSource = {
     };
 })
 export default class Task extends React.Component {
+
     static propTypes = {
         text: React.PropTypes.string.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
         connectDragSource: React.PropTypes.func.isRequired
     }
+
+    static contentTypes = {
+        flux: React.PropTypes.any
+    }
+
     handleDelete(event) {
         event.preventDefault();
         const actions = this.props.flux.getActions("taskLists");

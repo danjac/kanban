@@ -12,6 +12,10 @@ import TaskList from './TaskList';
 
 class TaskBoard extends React.Component {
 
+    static contentTypes = {
+        flux: React.PropTypes.any
+    }
+
     render() {
 
         if (!this.props.isLoaded) {
@@ -30,7 +34,7 @@ class TaskBoard extends React.Component {
                     {row.map((list) => {
                         return (
                             <Col xs={3}>
-                                <TaskList flux={this.props.flux} key={list.id} list={list} />
+                                <TaskList key={list.id} list={list} />
                             </Col>
                         )
                     })}
