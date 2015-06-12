@@ -33,13 +33,10 @@ const TaskSource = {
 export default class Task extends React.Component {
 
     static propTypes = {
+        flux: React.PropTypes.any,
         text: React.PropTypes.string.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
         connectDragSource: React.PropTypes.func.isRequired
-    }
-
-    static contentTypes = {
-        flux: React.PropTypes.any
     }
 
     handleDelete(event) {

@@ -48,13 +48,10 @@ const TaskListSource = {
 export default class TaskList extends React.Component {
 
     static propTypes = {
+        flux: React.PropTypes.any,
         connectDropTarget: React.PropTypes.func.isRequired,
         isOver: React.PropTypes.bool.isRequired,
         canDrop: React.PropTypes.bool.isRequired
-    }
-
-    static contentTypes = {
-        flux: React.PropTypes.any
     }
 
     constructor(props) {

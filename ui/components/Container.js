@@ -34,7 +34,7 @@ class TaskBoard extends React.Component {
                     {row.map((list) => {
                         return (
                             <Col xs={3}>
-                                <TaskList key={list.id} list={list} />
+                                <TaskList flux={this.props.flux} key={list.id} list={list} />
                             </Col>
                         )
                     })}
