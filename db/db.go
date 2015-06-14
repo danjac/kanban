@@ -6,17 +6,31 @@ import (
 )
 
 /*
-DataManager handles all data layer functionality
+TaskListManager handles tasklist related data
 */
-type DataManager interface {
+type TaskListManager interface {
+	CreateTaskList(*models.TaskList) error
 	GetTaskLists() ([]models.TaskList, error)
 	DeleteTaskList(int) error
 	UpdateTaskList(int, string) error
+	MoveTaskList(int, int) error
+}
+
+/*
+TaskManager handles tasklist related data
+*/
+type TaskManager interface {
 	DeleteTask(int) error
-	CreateTaskList(*models.TaskList) error
 	CreateTask(*models.Task) error
 	MoveTask(int, int) error
-	MoveTaskList(int, int) error
+}
+
+/*
+DataManager handles all data layer functionality
+*/
+type DataManager interface {
+	TaskListManager
+	TaskManager
 }
 
 type defaultDataManager struct {
