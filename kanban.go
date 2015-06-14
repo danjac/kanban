@@ -14,6 +14,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var dbName = flag.String("db", "/tmp/kanban.sqlite", "sqlite database filename")
+
 func initDB(dbName string) (*gorp.DbMap, error) {
 	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
@@ -27,8 +29,6 @@ func initDB(dbName string) (*gorp.DbMap, error) {
 	}
 	return dbMap, nil
 }
-
-var dbName = flag.String("db", "/tmp/kanban.sqlite", "sqlite database filename")
 
 func main() {
 

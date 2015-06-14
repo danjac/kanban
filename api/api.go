@@ -8,7 +8,7 @@ import (
 const statusOK = "OK"
 
 /*
-New creares a new API instance with all routes
+New creares a new API instance with all routes configured
 */
 func New(r *gin.Engine, prefix string, dataMgr db.DataManager) *gin.RouterGroup {
 

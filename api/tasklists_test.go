@@ -9,6 +9,7 @@ import (
 )
 
 func TestListHandler(t *testing.T) {
+
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 

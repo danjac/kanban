@@ -1,7 +1,7 @@
 package models
 
 /*
-Task models a single task
+Task models a single task object
 */
 type Task struct {
 	ID         int    `db:"id" json:"id"`
