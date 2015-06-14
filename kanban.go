@@ -38,7 +38,7 @@ func main() {
 
 	r.Use(static.Serve("/", static.LocalFile("static", false)))
 
-	api.New(r, "/api/v1", db.NewDataManager(initDb(*dbName)))
+	api.New(r, "/api/v1", db.NewDataManager(initDB(*dbName)))
 
 	r.Run(":8080")
 }
