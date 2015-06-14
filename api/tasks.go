@@ -22,14 +22,14 @@ MoveHandler moves a task from one list to another
 */
 func (api *TaskAPI) MoveHandler(c *gin.Context) {
 
-	taskID, err := strconv.Atoi(c.Params.ByName("ID"))
+	taskID, err := strconv.Atoi(c.Params.ByName("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	newListID, err := strconv.Atoi(c.Params.ByName("new_list_ID"))
+	newListID, err := strconv.Atoi(c.Params.ByName("new_list_id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -53,7 +53,7 @@ DeleteHandler removes a task
 */
 func (api *TaskAPI) DeleteHandler(c *gin.Context) {
 
-	taskID, err := strconv.Atoi(c.Params.ByName("ID"))
+	taskID, err := strconv.Atoi(c.Params.ByName("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -76,7 +76,7 @@ func NewTaskAPI(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *Task
 
 	rest.CRUD(g, prefix, api)
 
-	g.PUT(prefix+":ID/move/:new_list_ID", api.MoveHandler)
+	g.PUT(prefix+":id/move/:new_list_id", api.MoveHandler)
 
 	return api
 }

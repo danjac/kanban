@@ -40,6 +40,7 @@ export default class Task extends React.Component {
     }
 
     handleDelete(event) {
+        console.log("deleting...");
         event.preventDefault();
         const actions = this.props.flux.getActions("taskLists");
         actions.deleteTask(this.props.task);

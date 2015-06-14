@@ -32,11 +32,11 @@ func NewDataManager(dbMap *gorp.DbMap) DataManager {
 
 func (db *sqliteDataManager) GetTaskLists() ([]models.TaskList, error) {
 	var lists []models.TaskList
-	if _, err := db.Select(&lists, "select * from tasklists order by ID desc"); err != nil {
+	if _, err := db.Select(&lists, "select * from tasklists order by id desc"); err != nil {
 		return nil, err
 	}
 	var tasks []models.Task
-	if _, err := db.Select(&tasks, "select * from tasks order by ID desc"); err != nil {
+	if _, err := db.Select(&tasks, "select * from tasks order by id desc"); err != nil {
 		return nil, err
 	}
 
@@ -58,7 +58,7 @@ func (db *sqliteDataManager) GetTaskLists() ([]models.TaskList, error) {
 }
 
 func (db *sqliteDataManager) UpdateTaskList(listID int, name string) error {
-	_, err := db.Exec("update tasklists set name=? where ID=?", name, listID)
+	_, err := db.Exec("update tasklists set name=? where id=?", name, listID)
 	return err
 }
 
@@ -69,11 +69,11 @@ func (db *sqliteDataManager) DeleteTaskList(listID int) error {
 		return err
 	}
 
-	if _, err := t.Exec("delete from tasklists where ID=? ", listID); err != nil {
+	if _, err := t.Exec("delete from tasklists where id=? ", listID); err != nil {
 		return err
 	}
 
-	if _, err := t.Exec("delete from tasks where task_list_ID=?", listID); err != nil {
+	if _, err := t.Exec("delete from tasks where task_list_id=?", listID); err != nil {
 		return err
 	}
 	return t.Commit()
@@ -94,8 +94,8 @@ func (db *sqliteDataManager) CreateTask(task *models.Task) error {
 
 func (db *sqliteDataManager) MoveTaskList(listID int, targetListID int) error {
 
-	selectSql := "select ordering from tasklists where ID=?"
-	updateSql := "update tasklists set ordering=? where ID=?"
+	selectSql := "select ordering from tasklists where id=?"
+	updateSql := "update tasklists set ordering=? where id=?"
 
 	ordering, err := db.SelectInt(selectSql, listID)
 	if err != nil {
@@ -128,7 +128,7 @@ func (db *sqliteDataManager) MoveTask(taskID int, newListID int) error {
 
 	task := &models.Task{}
 
-	if err := db.SelectOne(task, "select * from tasks where ID=?", taskID); err != nil {
+	if err := db.SelectOne(task, "select * from tasks where id=?", taskID); err != nil {
 		return err
 	}
 
@@ -141,7 +141,7 @@ func (db *sqliteDataManager) MoveTask(taskID int, newListID int) error {
 func (db *sqliteDataManager) DeleteTask(taskID int) error {
 	task := &models.Task{}
 
-	if err := db.SelectOne(task, "select * from tasks where ID=?", taskID); err != nil {
+	if err := db.SelectOne(task, "select * from tasks where id=?", taskID); err != nil {
 		return err
 	}
 
