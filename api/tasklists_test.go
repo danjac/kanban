@@ -19,7 +19,7 @@ func TestListHandler(t *testing.T) {
 		Request: req,
 		Writer:  gin.ResponseWriter(writer),
 	}
-	api := &TaskListApi{&fakeDb{}}
+	api := &TaskListAPI{&fakeDb{}}
 	api.ListHandler(c)
 	if w.Code != http.StatusOK {
 		t.Fail()

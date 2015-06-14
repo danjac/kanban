@@ -10,16 +10,33 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type TaskApi struct {
+/*
+TaskAPI represents a set of task-related routes
+*/
+type TaskAPI struct {
 	DB db.DataManager
 }
 
-func (api *TaskApi) MoveHandler(c *gin.Context) {
+/*
+MoveHandler moves a task from one list to another
+*/
+func (api *TaskAPI) MoveHandler(c *gin.Context) {
 
-	taskId, _ := strconv.Atoi(c.Params.ByName("id"))
-	newListId, _ := strconv.Atoi(c.Params.ByName("new_list_id"))
+	taskID, err := strconv.Atoi(c.Params.ByName("ID"))
 
-	if err := api.DB.MoveTask(taskId, newListId); err != nil {
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	newListID, err := strconv.Atoi(c.Params.ByName("new_list_ID"))
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := api.DB.MoveTask(taskID, newListID); err != nil {
 		if err == sql.ErrNoRows {
 			c.AbortWithStatus(http.StatusNotFound)
 		} else {
@@ -31,11 +48,19 @@ func (api *TaskApi) MoveHandler(c *gin.Context) {
 	c.String(http.StatusOK, statusOK)
 }
 
-func (api *TaskApi) DeleteHandler(c *gin.Context) {
+/*
+DeleteHandler removes a task
+*/
+func (api *TaskAPI) DeleteHandler(c *gin.Context) {
 
-	taskId, _ := strconv.Atoi(c.Params.ByName("id"))
+	taskID, err := strconv.Atoi(c.Params.ByName("ID"))
 
-	if err := api.DB.DeleteTask(taskId); err != nil {
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := api.DB.DeleteTask(taskID); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -43,12 +68,15 @@ func (api *TaskApi) DeleteHandler(c *gin.Context) {
 	c.String(http.StatusOK, statusOK)
 }
 
-func NewTaskApi(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskApi {
-	api := &TaskApi{dataMgr}
+/*
+NewTaskAPI returns a new TaskAPI instance
+*/
+func NewTaskAPI(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskAPI {
+	api := &TaskAPI{dataMgr}
 
 	rest.CRUD(g, prefix, api)
 
-	g.PUT(prefix+":id/move/:new_list_id", api.MoveHandler)
+	g.PUT(prefix+":ID/move/:new_list_ID", api.MoveHandler)
 
 	return api
 }

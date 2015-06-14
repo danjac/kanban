@@ -5,6 +5,9 @@ import (
 	"gopkg.in/gorp.v1"
 )
 
+/*
+DataManager handles all data layer functionality
+*/
 type DataManager interface {
 	GetTaskLists() ([]models.TaskList, error)
 	DeleteTaskList(int) error
@@ -20,17 +23,20 @@ type sqliteDataManager struct {
 	*gorp.DbMap
 }
 
+/*
+NewDataManager returns the default DataManager implementation instance
+*/
 func NewDataManager(dbMap *gorp.DbMap) DataManager {
 	return &sqliteDataManager{dbMap}
 }
 
 func (db *sqliteDataManager) GetTaskLists() ([]models.TaskList, error) {
 	var lists []models.TaskList
-	if _, err := db.Select(&lists, "select * from tasklists order by id desc"); err != nil {
+	if _, err := db.Select(&lists, "select * from tasklists order by ID desc"); err != nil {
 		return nil, err
 	}
 	var tasks []models.Task
-	if _, err := db.Select(&tasks, "select * from tasks order by id desc"); err != nil {
+	if _, err := db.Select(&tasks, "select * from tasks order by ID desc"); err != nil {
 		return nil, err
 	}
 
@@ -41,7 +47,7 @@ func (db *sqliteDataManager) GetTaskLists() ([]models.TaskList, error) {
 			list.Tasks = make([]models.Task, 0)
 		}
 		for _, task := range tasks {
-			if list.Id == task.TaskListId {
+			if list.ID == task.TaskListID {
 				list.Tasks = append(list.Tasks, task)
 			}
 		}
@@ -51,23 +57,23 @@ func (db *sqliteDataManager) GetTaskLists() ([]models.TaskList, error) {
 	return result, nil
 }
 
-func (db *sqliteDataManager) UpdateTaskList(listId int, name string) error {
-	_, err := db.Exec("update tasklists set name=? where id=?", name, listId)
+func (db *sqliteDataManager) UpdateTaskList(listID int, name string) error {
+	_, err := db.Exec("update tasklists set name=? where ID=?", name, listID)
 	return err
 }
 
-func (db *sqliteDataManager) DeleteTaskList(listId int) error {
+func (db *sqliteDataManager) DeleteTaskList(listID int) error {
 
 	t, err := db.Begin()
 	if err != nil {
 		return err
 	}
 
-	if _, err := t.Exec("delete from tasklists where id=? ", listId); err != nil {
+	if _, err := t.Exec("delete from tasklists where ID=? ", listID); err != nil {
 		return err
 	}
 
-	if _, err := t.Exec("delete from tasks where task_list_id=?", listId); err != nil {
+	if _, err := t.Exec("delete from tasks where task_list_ID=?", listID); err != nil {
 		return err
 	}
 	return t.Commit()
@@ -86,17 +92,17 @@ func (db *sqliteDataManager) CreateTask(task *models.Task) error {
 	return db.Insert(task)
 }
 
-func (db *sqliteDataManager) MoveTaskList(listId int, targetListId int) error {
+func (db *sqliteDataManager) MoveTaskList(listID int, targetListID int) error {
 
-	selectSql := "select ordering from tasklists where id=?"
-	updateSql := "update tasklists set ordering=? where id=?"
+	selectSql := "select ordering from tasklists where ID=?"
+	updateSql := "update tasklists set ordering=? where ID=?"
 
-	ordering, err := db.SelectInt(selectSql, listId)
+	ordering, err := db.SelectInt(selectSql, listID)
 	if err != nil {
 		return err
 	}
 
-	targetOrdering, err := db.SelectInt(selectSql, targetListId)
+	targetOrdering, err := db.SelectInt(selectSql, targetListID)
 	if err != nil {
 		return err
 	}
@@ -106,11 +112,11 @@ func (db *sqliteDataManager) MoveTaskList(listId int, targetListId int) error {
 		return err
 	}
 
-	if _, err := t.Exec(updateSql, targetOrdering, listId); err != nil {
+	if _, err := t.Exec(updateSql, targetOrdering, listID); err != nil {
 		return err
 	}
 
-	if _, err := t.Exec(updateSql, ordering, targetListId); err != nil {
+	if _, err := t.Exec(updateSql, ordering, targetListID); err != nil {
 		return err
 	}
 
@@ -118,24 +124,24 @@ func (db *sqliteDataManager) MoveTaskList(listId int, targetListId int) error {
 
 }
 
-func (db *sqliteDataManager) MoveTask(taskId int, newListId int) error {
+func (db *sqliteDataManager) MoveTask(taskID int, newListID int) error {
 
 	task := &models.Task{}
 
-	if err := db.SelectOne(task, "select * from tasks where id=?", taskId); err != nil {
+	if err := db.SelectOne(task, "select * from tasks where ID=?", taskID); err != nil {
 		return err
 	}
 
-	task.TaskListId = newListId
+	task.TaskListID = newListID
 
 	_, err := db.Update(task)
 	return err
 }
 
-func (db *sqliteDataManager) DeleteTask(taskId int) error {
+func (db *sqliteDataManager) DeleteTask(taskID int) error {
 	task := &models.Task{}
 
-	if err := db.SelectOne(task, "select * from tasks where id=?", taskId); err != nil {
+	if err := db.SelectOne(task, "select * from tasks where ID=?", taskID); err != nil {
 		return err
 	}
 

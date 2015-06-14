@@ -11,11 +11,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type TaskListApi struct {
+/*
+TaskListAPI manages all routes for task lists
+*/
+type TaskListAPI struct {
 	DB db.DataManager
 }
 
-func (api *TaskListApi) CreateHandler(c *gin.Context) {
+/*
+CreateHandler creates a new task list
+*/
+func (api *TaskListAPI) CreateHandler(c *gin.Context) {
 
 	list := &models.TaskList{}
 
@@ -32,7 +38,10 @@ func (api *TaskListApi) CreateHandler(c *gin.Context) {
 
 }
 
-func (api *TaskListApi) ListHandler(c *gin.Context) {
+/*
+ListHandler retrieves a list of task lists
+*/
+func (api *TaskListAPI) ListHandler(c *gin.Context) {
 	taskLists, err := api.DB.GetTaskLists()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -41,10 +50,16 @@ func (api *TaskListApi) ListHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"lists": taskLists})
 }
 
-func (api *TaskListApi) DeleteHandler(c *gin.Context) {
+/*
+DeleteHandler removes a tasklist and all its tasks
+*/
+func (api *TaskListAPI) DeleteHandler(c *gin.Context) {
 
-	listId, _ := strconv.Atoi(c.Params.ByName("id"))
-	if err := api.DB.DeleteTaskList(listId); err != nil {
+	listID, err := strconv.Atoi(c.Params.ByName("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+	if err := api.DB.DeleteTaskList(listID); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -52,12 +67,24 @@ func (api *TaskListApi) DeleteHandler(c *gin.Context) {
 	c.String(http.StatusOK, statusOK)
 }
 
-func (api *TaskListApi) MoveHandler(c *gin.Context) {
+/*
+MoveHandler changes the position of a task list
+*/
+func (api *TaskListAPI) MoveHandler(c *gin.Context) {
 
-	listId, _ := strconv.Atoi(c.Params.ByName("id"))
-	targetListId, _ := strconv.Atoi(c.Params.ByName("target_list_id"))
+	listID, err := strconv.Atoi(c.Params.ByName("id"))
 
-	if err := api.DB.MoveTaskList(listId, targetListId); err != nil {
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	targetListID, err := strconv.Atoi(c.Params.ByName("target_list_id"))
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	if err := api.DB.MoveTaskList(listID, targetListID); err != nil {
 		if err == sql.ErrNoRows {
 			c.AbortWithStatus(http.StatusNotFound)
 		} else {
@@ -70,9 +97,16 @@ func (api *TaskListApi) MoveHandler(c *gin.Context) {
 
 }
 
-func (api *TaskListApi) UpdateHandler(c *gin.Context) {
+/*
+UpdateHandler changes the details of a task list
+*/
+func (api *TaskListAPI) UpdateHandler(c *gin.Context) {
 
-	listId, _ := strconv.Atoi(c.Params.ByName("id"))
+	listID, err := strconv.Atoi(c.Params.ByName("id"))
+
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
 
 	s := &struct {
 		Name string `json:"name" binding:"required"`
@@ -82,7 +116,7 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	if err := api.DB.UpdateTaskList(listId, s.Name); err != nil {
+	if err := api.DB.UpdateTaskList(listID, s.Name); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -91,11 +125,18 @@ func (api *TaskListApi) UpdateHandler(c *gin.Context) {
 
 }
 
-func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
+/*
+AddTaskHandler adds a new task to a task list
+*/
+func (api *TaskListAPI) AddTaskHandler(c *gin.Context) {
 
-	listId, _ := strconv.Atoi(c.Params.ByName("id"))
+	listID, err := strconv.Atoi(c.Params.ByName("id"))
 
-	task := &models.Task{TaskListId: listId}
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	task := &models.Task{TaskListID: listID}
 	if err := c.Bind(task); err != nil {
 		return
 	}
@@ -107,8 +148,11 @@ func (api *TaskListApi) AddTaskHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func NewTaskListApi(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskListApi {
-	api := &TaskListApi{dataMgr}
+/*
+NewTaskListAPI creates a new set of task list routes
+*/
+func NewTaskListAPI(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskListAPI {
+	api := &TaskListAPI{dataMgr}
 
 	rest.CRUD(g, prefix, api)
 	g.PUT(prefix+":id/move/:target_list_id", api.MoveHandler)

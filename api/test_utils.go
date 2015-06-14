@@ -74,10 +74,10 @@ func (db *fakeDb) CreateTask(list *models.Task) error {
 	return nil
 }
 
-func (db *fakeDb) MoveTaskList(id int, targetId int) error {
+func (db *fakeDb) MoveTaskList(id int, targetID int) error {
 	return nil
 }
 
-func (db *fakeDb) MoveTask(id int, targetId int) error {
+func (db *fakeDb) MoveTask(id int, targetID int) error {
 	return nil
 }

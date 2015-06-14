@@ -14,18 +14,18 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func initDB(dbName string) *gorp.DbMap {
+func initDB(dbName string) (*gorp.DbMap, error) {
 	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	dbMap := &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
 	dbMap.AddTableWithName(models.TaskList{}, "tasklists").SetKeys(true, "id")
 	dbMap.AddTableWithName(models.Task{}, "tasks").SetKeys(true, "id")
 	if err = dbMap.CreateTablesIfNotExists(); err != nil {
-		panic(err)
+		return nil, err
 	}
-	return dbMap
+	return dbMap, nil
 }
 
 var dbName = flag.String("db", "/tmp/kanban.sqlite", "sqlite database filename")
@@ -38,7 +38,13 @@ func main() {
 
 	r.Use(static.Serve("/", static.LocalFile("static", false)))
 
-	api.New(r, "/api/v1", db.NewDataManager(initDB(*dbName)))
+	dbMap, err := initDB(*dbName)
+
+	if err != nil {
+		panic(err)
+	}
+
+	api.New(r, "/api/v1", db.NewDataManager(dbMap))
 
 	r.Run(":8080")
 }
