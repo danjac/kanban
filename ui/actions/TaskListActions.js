@@ -1,7 +1,7 @@
 import alt from '../flux';
 import api from '../api';
 
-export default class TaskListActions {
+class TaskListActions {
 
     constructor() {
         this.generateActions(

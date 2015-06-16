@@ -20,7 +20,7 @@ const Task = new Immutable.Record({
 });
 
 
-export default class TaskListStore {
+class TaskListStore {
     constructor() {
 
         this.bindActions(actions);

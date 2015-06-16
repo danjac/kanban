@@ -3,7 +3,7 @@ import React from 'react';
 import {Input, Panel, Glyphicon, ListGroup} from 'react-bootstrap';
 import {DropTarget, DragSource} from 'react-dnd';
 
-import actions from '../actions/TaskListActions';
+import TaskListActions from '../actions/TaskListActions';
 import {ItemTypes} from '../constants';
 import Task from './Task';
 
@@ -25,7 +25,7 @@ const TaskListSource = {
             // remove item from Task lists A and put in B
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
             // update the task list
-            actions.moveTaskList(dropResult.list, item.list);
+            TaskListActions.moveTaskList(dropResult.list, item.list);
         }
 
     }
@@ -67,29 +67,29 @@ export default class TaskList extends React.Component {
         const text = this.refs.newTask.getValue().trim();
         this.refs.newTask.getInputDOMNode().value = "";
         if (text) {
-            actions.createTask(this.props.list, text);
+            TaskListActions.createTask(this.props.list, text);
         }
     }
 
     handleDeleteList(event) {
         event.preventDefault();
-        actions.deleteTaskList(this.props.list);
+        TaskListActions.deleteTaskList(this.props.list);
     }
 
     handleEditMode(event) {
         event.preventDefault();
-        actions.toggleTaskListEditMode(this.props.list);
+        TaskListActions.toggleTaskListEditMode(this.props.list);
     }
 
     handleUpdateName(event) {
 
         event.preventDefault();
-        actions.toggleTaskListEditMode(this.props.list);
+        TaskListActions.toggleTaskListEditMode(this.props.list);
 
         const name = this.refs.editName.getValue().trim();
 
         if (name) {
-            actions.updateTaskListName(this.props.list, name);
+            TaskListActions.updateTaskListName(this.props.list, name);
         }
     }
 

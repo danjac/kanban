@@ -3,7 +3,7 @@ import {Glyphicon, ListGroupItem} from 'react-bootstrap';
 import {DragSource} from 'react-dnd';
 import {ItemTypes} from '../constants';
 
-import actions from '../actions/TaskListActions';
+import TaskListActions from '../actions/TaskListActions';
 
 const TaskSource = {
     beginDrag(props) {
@@ -18,7 +18,7 @@ const TaskSource = {
             // remove item from Task lists A and put in B
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
             // update the task list
-            actions.moveTask(dropResult.list, item.task);
+            TaskListActions.moveTask(dropResult.list, item.task);
         }
 
     }
@@ -41,7 +41,7 @@ export default class Task extends React.Component {
 
     handleDelete(event) {
         event.preventDefault();
-        actions.deleteTask(this.props.task);
+        TaskListActions.deleteTask(this.props.task);
     }
 
     render() {

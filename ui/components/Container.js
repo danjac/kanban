@@ -8,7 +8,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 import connectToStores from 'alt/utils/connectToStores';
 
-import actions from '../actions/TaskListActions';
+import TaskListActions from '../actions/TaskListActions';
 import TaskListStore  from '../stores/TaskListStore';
 import TaskList from './TaskList';
 
@@ -53,7 +53,7 @@ export default class Container extends React.Component {
     }
 
     static getPropsFromStores() {
-        return .getState();
+        return TaskListStore.getState();
     }
 
     constructor(props) {
@@ -62,7 +62,7 @@ export default class Container extends React.Component {
     }
 
     componentDidMount() {
-        actions.getBoard();
+        TaskListActions.getBoard();
     }
 
     handleNewList(event) {
@@ -70,7 +70,7 @@ export default class Container extends React.Component {
         const name = this.refs.name.getValue().trim();
         this.refs.name.getInputDOMNode().value = "";
         if (name) {
-            actions.createTaskList(name);
+            TaskListActions.createTaskList(name);
         }
     }
 
