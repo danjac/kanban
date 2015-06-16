@@ -3,6 +3,7 @@ import React from 'react';
 import {Input, Panel, Glyphicon, ListGroup} from 'react-bootstrap';
 import {DropTarget, DragSource} from 'react-dnd';
 
+import actions from '../actions/TaskListActions';
 import {ItemTypes} from '../constants';
 import Task from './Task';
 
@@ -24,7 +25,6 @@ const TaskListSource = {
             // remove item from Task lists A and put in B
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
             // update the task list
-            const actions = item.flux.getActions("taskLists");
             actions.moveTaskList(dropResult.list, item.list);
         }
 
@@ -48,7 +48,6 @@ const TaskListSource = {
 export default class TaskList extends React.Component {
 
     static propTypes = {
-        flux: React.PropTypes.any,
         connectDropTarget: React.PropTypes.func.isRequired,
         isOver: React.PropTypes.bool.isRequired,
         canDrop: React.PropTypes.bool.isRequired
@@ -56,7 +55,6 @@ export default class TaskList extends React.Component {
 
     constructor(props) {
         super(props);
-        this.actions = props.flux.getActions("taskLists");
         this.handleNewTask = this.handleNewTask.bind(this);
         this.handleDeleteList = this.handleDeleteList.bind(this);
         this.handleUpdateName = this.handleUpdateName.bind(this);
@@ -69,29 +67,29 @@ export default class TaskList extends React.Component {
         const text = this.refs.newTask.getValue().trim();
         this.refs.newTask.getInputDOMNode().value = "";
         if (text) {
-            this.actions.createTask(this.props.list, text);
+            actions.createTask(this.props.list, text);
         }
     }
 
     handleDeleteList(event) {
         event.preventDefault();
-        this.actions.deleteTaskList(this.props.list);
+        actions.deleteTaskList(this.props.list);
     }
 
     handleEditMode(event) {
         event.preventDefault();
-        this.actions.toggleTaskListEditMode(this.props.list);
+        actions.toggleTaskListEditMode(this.props.list);
     }
 
     handleUpdateName(event) {
 
         event.preventDefault();
-        this.actions.toggleTaskListEditMode(this.props.list);
+        actions.toggleTaskListEditMode(this.props.list);
 
         const name = this.refs.editName.getValue().trim();
 
         if (name) {
-            this.actions.updateTaskListName(this.props.list, name);
+            actions.updateTaskListName(this.props.list, name);
         }
     }
 
@@ -107,7 +105,7 @@ export default class TaskList extends React.Component {
 
     render() {
 
-        const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging, flux} = this.props;
+        const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging} = this.props;
         const {id, name, tasks, isEditing, ordering} = list;
 
         const isActive = canDrop && isOver,
@@ -150,7 +148,7 @@ export default class TaskList extends React.Component {
                 {(tasks || []).map((task) => {
                     return <Task key={task.id}
                                  task={task}
-                                 flux={flux} />;
+                                  />;
                 })}
                 </ListGroup>
             </Panel>

@@ -1,5 +1,7 @@
 import Immutable from 'immutable';
-import {Store} from 'flummox';
+
+import alt from '../flux';
+import actions from '../actions/TaskListActions';
 
 
 const TaskList = new Immutable.Record({
@@ -18,28 +20,24 @@ const Task = new Immutable.Record({
 });
 
 
-export default class TaskListStore extends Store {
-    constructor(flux) {
-        super();
+export default class TaskListStore {
+    constructor() {
 
-        const actions = flux.getActions('taskLists');
-
-        this.register(actions.getBoard, this.onNewBoard);
-        this.register(actions.createTaskList, this.onNewTaskList);
-        this.register(actions.createTask, this.onNewTask);
-        this.register(actions.moveTaskList, this.onTaskListMoved);
-        this.register(actions.moveTask, this.onTaskMoved);
-        this.register(actions.deleteTask, this.onTaskRemoved);
-        this.register(actions.deleteTaskList, this.onTaskListRemoved);
-        this.register(actions.updateTaskListName, this.onUpdateTaskListName);
-        this.register(actions.toggleTaskListEditMode, this.onToggleTaskListEditMode);
+        this.bindListeners({
+            onNewBoard: actions.getBoard,
+            onNewTaskList: actions.createTaskList,
+            onNewTask: actions.createTask,
+            onTaskListMoved: actions.moveTaskList,
+            onTaskMoved: actions.moveTask,
+            onTaskRemoved: actions.deleteTask,
+            onTaskListRemoved: actions.deleteTaskList,
+            onUpdateTaskListName: actions.updateTaskListName,
+            onToggleTaskListEditMode: actions.toggleTaskListEditMode
+        });
 
         this.taskListMap = new Immutable.OrderedMap();
-
-        this.state = {
-            isLoaded: false,
-            taskLists: new Immutable.List()
-        };
+        this.taskLists = new Immutable.List();
+        this.isLoaded = false;
 
     }
 
@@ -49,8 +47,8 @@ export default class TaskListStore extends Store {
         taskLists.forEach((result) => {
 
             const tasks = new Immutable.List(result.tasks.map((task) => new Task(task)));
-
             const taskList = new TaskList(result).set("tasks", tasks);
+
             this.saveList(taskList);
 
         }.bind(this));
@@ -78,7 +76,9 @@ export default class TaskListStore extends Store {
     }
 
     onUpdateTaskListName(payload) {
+
         const {list, name} = payload;
+
         this.saveList(this.getList(list.id).set("name", name));
         this.dispatch();
     }
@@ -90,12 +90,14 @@ export default class TaskListStore extends Store {
     }
 
     onNewTask(payload) {
+        console.log("new task", payload);
         const {list, task} = payload;
         this.saveList(this.addTask(this.getList(list.id), new Task(task)));
         this.dispatch();
     }
 
     onTaskListRemoved(list) {
+        console.log("removing list", list);
         this.taskListMap = this.taskListMap.delete(list.id);
         this.dispatch();
     }
@@ -137,7 +139,12 @@ export default class TaskListStore extends Store {
         const result = this.taskListMap.toList().sort((a, b) => {
             return (a.ordering === b.ordering) ? 0 : (a.ordering > b.ordering ? 1 : -1);
         });
-        this.setState({ taskLists: result, isLoaded: true });
+        this.setState({
+            taskLists: result,
+            isLoaded: true
+        });
     }
 
 }
+
+export default alt.createStore(TaskListStore);

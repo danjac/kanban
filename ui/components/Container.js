@@ -6,18 +6,15 @@ import _ from 'lodash';
 import {Grid, Row, Col, Input} from 'react-bootstrap';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
-import FluxComponent from 'flummox/component';
+import connectToStores from 'alt/utils/connectToStores';
 
+import actions from '../actions/TaskListActions';
+import TaskListStore from '../stores/TaskListStore';
 import TaskList from './TaskList';
 
 class TaskBoard extends React.Component {
 
-    static contentTypes = {
-        flux: React.PropTypes.any
-    }
-
     render() {
-
         if (!this.props.isLoaded) {
             return  (
             <p className="text-center">
@@ -34,7 +31,7 @@ class TaskBoard extends React.Component {
                     {row.map((list, colIndex) => {
                         return (
                             <Col key={colIndex} xs={3}>
-                                <TaskList flux={this.props.flux} key={list.id} list={list} />
+                                <TaskList key={list.id} list={list} />
                             </Col>
                         )
                     })}
@@ -48,16 +45,24 @@ class TaskBoard extends React.Component {
 
 
 @DragDropContext(HTML5Backend)
+@connectToStores
 export default class Container extends React.Component {
+
+    static getStores() {
+        return [TaskListStore];
+    }
+
+    static getPropsFromStores() {
+        return TaskListStore.getState();
+    }
 
     constructor(props) {
         super(props);
-        this.actions = props.flux.getActions('taskLists');
         this.handleNewList = this.handleNewList.bind(this);
     }
 
     componentDidMount() {
-        this.actions.getBoard();
+        actions.getBoard();
     }
 
     handleNewList(event) {
@@ -65,7 +70,7 @@ export default class Container extends React.Component {
         const name = this.refs.name.getValue().trim();
         this.refs.name.getInputDOMNode().value = "";
         if (name) {
-            this.actions.createTaskList(name);
+            actions.createTaskList(name);
         }
     }
 
@@ -103,9 +108,7 @@ export default class Container extends React.Component {
         return (
             <Grid>
                 {this.header()}
-                <FluxComponent flux={this.props.flux} connectToStores={['taskLists']}>
-                    <TaskBoard />
-                </FluxComponent>
+                <TaskBoard {...this.props} />
                 {this.footer()}
             </Grid>
         );

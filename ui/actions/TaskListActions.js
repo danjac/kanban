@@ -1,56 +1,54 @@
-import {Actions} from 'flummox';
-
+import alt from '../flux';
 import api from '../api';
 
-export default class TaskListActions extends Actions {
+export default class TaskListActions {
 
     async getBoard() {
-        try {
-            return await api.getBoard();
-        } catch(err) {
-            console.log(err);
-        }
+        const taskLists = await api.getBoard();
+        this.dispatch(taskLists);
     }
 
     async createTaskList(name) {
         const list = await api.newTaskList(name);
-        return list;
+        this.dispatch(list);
     }
 
     async createTask(list, text) {
         const task = await api.newTask(list.id, text);
-        return {list, task};
+        this.dispatch({list, task});
     }
 
     toggleTaskListEditMode(list) {
-        return list;
+        this.dispatch(list);
     }
 
     updateTaskListName(list, name) {
         api.updateTaskListName(list.id, name);
-        return {list, name};
+        this.dispatch({list, name});
     }
 
     moveTask(list, task) {
         api.moveTask(list.id, task.id);
-        return {list, task};
+        this.dispatch({list, task});
     }
 
     moveTaskList(list, targetList) {
         if (list.id === targetList.id) {
-            return {};
+            return;
         }
         api.moveTaskList(list.id, targetList.id);
-        return {list, targetList};
+        this.dispatch({list, targetList});
     }
 
     deleteTaskList(list) {
         api.deleteTaskList(list.id);
-        return list;
+        this.dispatch(list);
     }
 
     deleteTask(task) {
         api.deleteTask(task.id);
-        return task;
+        this.dispatch(task);
     }
 }
+
+export default alt.createActions(TaskListActions);

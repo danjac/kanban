@@ -46,5 +46,7 @@ func main() {
 
 	api.New(r, "/api/v1", db.NewDataManager(dbMap))
 
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		panic(err)
+	}
 }

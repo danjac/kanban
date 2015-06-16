@@ -3,6 +3,8 @@ import {Glyphicon, ListGroupItem} from 'react-bootstrap';
 import {DragSource} from 'react-dnd';
 import {ItemTypes} from '../constants';
 
+import actions from '../actions/TaskListActions';
+
 const TaskSource = {
     beginDrag(props) {
         return props;
@@ -16,7 +18,6 @@ const TaskSource = {
             // remove item from Task lists A and put in B
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
             // update the task list
-            const actions = item.flux.getActions("taskLists");
             actions.moveTask(dropResult.list, item.task);
         }
 
@@ -33,16 +34,13 @@ const TaskSource = {
 export default class Task extends React.Component {
 
     static propTypes = {
-        flux: React.PropTypes.any,
         task: React.PropTypes.object.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
         connectDragSource: React.PropTypes.func.isRequired
     }
 
     handleDelete(event) {
-        console.log("deleting...");
         event.preventDefault();
-        const actions = this.props.flux.getActions("taskLists");
         actions.deleteTask(this.props.task);
     }
 
