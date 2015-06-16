@@ -61,7 +61,11 @@ func (api *TaskAPI) DeleteHandler(c *gin.Context) {
 	}
 
 	if err := api.DB.DeleteTask(taskID); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		if err == sql.ErrNoRows {
+			c.AbortWithStatus(http.StatusNotFound)
+		} else {
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
 		return
 	}
 

@@ -1,51 +1,23 @@
-import Immutable from 'immutable';
-
+import _ from 'lodash';
 import alt from '../flux';
 import actions from '../actions/TaskListActions';
-
-
-const TaskList = new Immutable.Record({
-    id: undefined,
-    name: '',
-    isEditing: false,
-    ordering: 0,
-    tasks: new Immutable.List()
-});
-
-
-const Task = new Immutable.Record({
-    id: undefined,
-    text: '',
-    taskListId: undefined
-});
-
 
 class TaskListStore {
     constructor() {
 
         this.bindActions(actions);
-        this.taskListMap = new Immutable.OrderedMap();
-        this.taskLists = new Immutable.List();
+        this.taskLists = [];
         this.isLoaded = false;
 
     }
 
     getBoard(taskLists) {
-        this.taskListMap = this.taskListMap.clear();
-        taskLists.forEach((result) => {
-
-            const tasks = new Immutable.List(result.tasks.map((task) => new Task(task)));
-            const taskList = new TaskList(result).set("tasks", tasks);
-
-            this.saveList(taskList);
-
-        }.bind(this));
-        this.dispatch();
+        this.taskLists = taskLists;
+        this.isLoaded = true;
     }
 
     createTaskList(list) {
-        this.saveList(new TaskList(list).set("tasks", new Immutable.List()));
-        this.dispatch();
+        this.taskLists.push(list);
     }
 
     moveTaskList({list, targetList}) {
@@ -53,79 +25,63 @@ class TaskListStore {
         if (list === undefined || targetList === undefined) {
             return;
         }
+        if (list.id === targetList.id) {
+            return;
+        }
         const ordering = list.ordering,
               targetOrdering = targetList.ordering;
 
-        this.saveList(this.getList(list.id).set("ordering", targetOrdering));
-        this.saveList(this.getList(targetList.id).set("ordering", ordering));
-        this.dispatch();
+        this.taskLists.map((item) => {
+            if (item.id === list.id) {
+                item.ordering = targetOrdering;
+            } else if (item.id === targetList.id) {
+                item.ordering = ordering;
+            }
+        });
 
+        this.taskLists = _.sortBy(this.taskLists, (item) => {
+            return item.ordering;
+        });
     }
 
     updateTaskListName({list, name}) {
-
-        this.saveList(this.getList(list.id).set("name", name));
-        this.dispatch();
+        this.updateList(list.id, (found) => found.name = name);
     }
 
     toggleTaskListEditMode(list) {
-        const rec = this.getList(list.id);
-        this.saveList(rec.set("isEditing", !rec.isEditing));
-        this.dispatch();
+        this.updateList(list.id, (found) => found.isEditing = !found.isEditing);
     }
 
     createTask({list, task}) {
-        this.saveList(this.addTask(this.getList(list.id), new Task(task)));
-        this.dispatch();
+        this.updateList(list.id, (found) => {
+            found.tasks = found.tasks || [];
+            found.tasks.unshift(task);
+        });
     }
 
     deleteTaskList(list) {
-        this.taskListMap = this.taskListMap.delete(list.id);
-        this.dispatch();
+        this.taskLists = _.remove(this.taskLists, (item) => item.id !== list.id);
     }
 
     deleteTask(task) {
-        this.saveList(this.removeTask(task));
-        this.dispatch();
+        this.updateList(task.taskListId, (found) => {
+            found.tasks = _.remove(found.tasks, (item) => item.id !== task.id);
+        });
     }
 
     moveTask({list, task}) {
-
-        this.saveList(this.removeTask(task));
-        const newTaskRec = new Task(task).set("taskListId", list.id);
-        this.saveList(this.addTask(this.getList(list.id), newTaskRec));
-
-        this.dispatch();
+        this.deleteTask(task);
+        task.taskListId = list.id;
+        this.createTask({list, task});
     }
 
-    saveList(newList) {
-        this.taskListMap = this.taskListMap.set(newList.id, newList);
+    updateList(listId, cb) {
+        const found = _.find(this.taskLists, (item) => item.id === listId);
+        if (found) {
+            cb(found);
+        }
     }
 
-    getList(id) {
-        return this.taskListMap.get(id);
-    }
-
-    addTask(list, task) {
-        return list.set("tasks", list.tasks.unshift(task));
-    }
-
-    removeTask(task) {
-        const list = this.getList(task.taskListId);
-        const tasks = list.tasks.filterNot((t) => t.id === task.id);
-        return list.set("tasks", tasks);
-     }
-
-    dispatch() {
-        const result = this.taskListMap.toList().sort((a, b) => {
-            return (a.ordering === b.ordering) ? 0 : (a.ordering > b.ordering ? 1 : -1);
-        });
-        console.log("setting state", result);
-        this.setState({
-            taskLists: result,
-            isLoaded: true
-        });
-    }
 
 }
 

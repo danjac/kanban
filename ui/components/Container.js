@@ -22,7 +22,7 @@ class TaskBoard extends React.Component {
             </p>
             );
         }
-        const rows = _.chunk(this.props.taskLists.toJS(), 4);
+        const rows = _.chunk(this.props.taskLists, 4);
         return (
             <Grid>
             {rows.map((row, rowIndex) => {
