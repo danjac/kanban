@@ -2,15 +2,13 @@ import React from 'react';
 import sinon from 'sinon';
 import expect from 'expect';
 import TestUtils from 'react/lib/ReactTestUtils';
-import AppFlux from '../../ui/flux';
+import actions from '../../ui/actions/TaskListActions';
 import TaskList from '../../ui/components/TaskList';
 
 import {makeTestContainer} from '../utils';
 
 describe('task list', function() {
     it('handles a new task', function() {
-        const flux = new AppFlux(),
-              actions = flux.getActions("taskLists");
 
         const connect = function(el) { return el; };
 
@@ -23,8 +21,7 @@ describe('task list', function() {
         const TaskListContext = makeTestContainer(TaskList);
 
         const root = TestUtils.renderIntoDocument(
-                <TaskListContext flux={flux}
-                                 list={list}
+                <TaskListContext list={list}
                                  isOver={false}
                                  connectDropTarget={connect} />);
 
@@ -48,16 +45,12 @@ describe('task list', function() {
             tasks: []
         };
 
-        const flux = new AppFlux(),
-              actions = flux.getActions("taskLists");
-
         const connect = function(el) { return el; };
 
         const TaskListContext = makeTestContainer(TaskList);
 
         const root = TestUtils.renderIntoDocument(
-                <TaskListContext flux={flux}
-                                 list={list}
+                <TaskListContext list={list}
                                  isOver={false}
                                  connectDropTarget={connect} />);
 
@@ -72,8 +65,6 @@ describe('task list', function() {
     });
 
     it('renders a list with tasks', function() {
-
-        const flux = new AppFlux();
 
         const connect = function(el) { return el; };
 
@@ -92,8 +83,7 @@ describe('task list', function() {
         const TaskListContext = makeTestContainer(TaskList);
 
         const component = TestUtils.renderIntoDocument(
-                <TaskListContext flux={flux}
-                                 list={list}
+                <TaskListContext list={list}
                                  isOver={false}
                                  connectDropTarget={connect} />
         );

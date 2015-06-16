@@ -3,6 +3,12 @@ import api from '../api';
 
 export default class TaskListActions {
 
+    constructor() {
+        this.generateActions(
+            'toggleTaskListEditMode'
+        );
+    }
+
     async getBoard() {
         const taskLists = await api.getBoard();
         this.dispatch(taskLists);
@@ -16,10 +22,6 @@ export default class TaskListActions {
     async createTask(list, text) {
         const task = await api.newTask(list.id, text);
         this.dispatch({list, task});
-    }
-
-    toggleTaskListEditMode(list) {
-        this.dispatch(list);
     }
 
     updateTaskListName(list, name) {

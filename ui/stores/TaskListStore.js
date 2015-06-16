@@ -43,7 +43,6 @@ export default class TaskListStore {
 
     onNewBoard(taskLists) {
         this.taskListMap = this.taskListMap.clear();
-        taskLists = taskLists || [];
         taskLists.forEach((result) => {
 
             const tasks = new Immutable.List(result.tasks.map((task) => new Task(task)));
@@ -90,14 +89,12 @@ export default class TaskListStore {
     }
 
     onNewTask(payload) {
-        console.log("new task", payload);
         const {list, task} = payload;
         this.saveList(this.addTask(this.getList(list.id), new Task(task)));
         this.dispatch();
     }
 
     onTaskListRemoved(list) {
-        console.log("removing list", list);
         this.taskListMap = this.taskListMap.delete(list.id);
         this.dispatch();
     }
@@ -139,6 +136,7 @@ export default class TaskListStore {
         const result = this.taskListMap.toList().sort((a, b) => {
             return (a.ordering === b.ordering) ? 0 : (a.ordering > b.ordering ? 1 : -1);
         });
+        console.log("setting state", result);
         this.setState({
             taskLists: result,
             isLoaded: true
