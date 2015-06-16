@@ -23,25 +23,14 @@ const Task = new Immutable.Record({
 export default class TaskListStore {
     constructor() {
 
-        this.bindListeners({
-            onNewBoard: actions.getBoard,
-            onNewTaskList: actions.createTaskList,
-            onNewTask: actions.createTask,
-            onTaskListMoved: actions.moveTaskList,
-            onTaskMoved: actions.moveTask,
-            onTaskRemoved: actions.deleteTask,
-            onTaskListRemoved: actions.deleteTaskList,
-            onUpdateTaskListName: actions.updateTaskListName,
-            onToggleTaskListEditMode: actions.toggleTaskListEditMode
-        });
-
+        this.bindActions(actions);
         this.taskListMap = new Immutable.OrderedMap();
         this.taskLists = new Immutable.List();
         this.isLoaded = false;
 
     }
 
-    onNewBoard(taskLists) {
+    getBoard(taskLists) {
         this.taskListMap = this.taskListMap.clear();
         taskLists.forEach((result) => {
 
@@ -54,12 +43,12 @@ export default class TaskListStore {
         this.dispatch();
     }
 
-    onNewTaskList(list) {
+    createTaskList(list) {
         this.saveList(new TaskList(list).set("tasks", new Immutable.List()));
         this.dispatch();
     }
 
-    onTaskListMoved({list, targetList}) {
+    moveTaskList({list, targetList}) {
 
         if (list === undefined || targetList === undefined) {
             return;
@@ -73,34 +62,34 @@ export default class TaskListStore {
 
     }
 
-    onUpdateTaskListName({list, name}) {
+    updateTaskListName({list, name}) {
 
         this.saveList(this.getList(list.id).set("name", name));
         this.dispatch();
     }
 
-    onToggleTaskListEditMode(list) {
+    toggleTaskListEditMode(list) {
         const rec = this.getList(list.id);
         this.saveList(rec.set("isEditing", !rec.isEditing));
         this.dispatch();
     }
 
-    onNewTask({list, task}) {
+    createTask({list, task}) {
         this.saveList(this.addTask(this.getList(list.id), new Task(task)));
         this.dispatch();
     }
 
-    onTaskListRemoved(list) {
+    deleteTaskList(list) {
         this.taskListMap = this.taskListMap.delete(list.id);
         this.dispatch();
     }
 
-    onTaskRemoved(task) {
+    deleteTask(task) {
         this.saveList(this.removeTask(task));
         this.dispatch();
     }
 
-    onTaskMoved({list, task}) {
+    moveTask({list, task}) {
 
         this.saveList(this.removeTask(task));
         const newTaskRec = new Task(task).set("taskListId", list.id);

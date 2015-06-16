@@ -9,7 +9,7 @@ import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 import connectToStores from 'alt/utils/connectToStores';
 
 import actions from '../actions/TaskListActions';
-import TaskListStore from '../stores/TaskListStore';
+import TaskListStore  from '../stores/TaskListStore';
 import TaskList from './TaskList';
 
 class TaskBoard extends React.Component {
@@ -53,7 +53,7 @@ export default class Container extends React.Component {
     }
 
     static getPropsFromStores() {
-        return TaskListStore.getState();
+        return .getState();
     }
 
     constructor(props) {
