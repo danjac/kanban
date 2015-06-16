@@ -59,8 +59,7 @@ export default class TaskListStore {
         this.dispatch();
     }
 
-    onTaskListMoved(payload) {
-        const {list, targetList} = payload;
+    onTaskListMoved({list, targetList}) {
 
         if (list === undefined || targetList === undefined) {
             return;
@@ -74,9 +73,7 @@ export default class TaskListStore {
 
     }
 
-    onUpdateTaskListName(payload) {
-
-        const {list, name} = payload;
+    onUpdateTaskListName({list, name}) {
 
         this.saveList(this.getList(list.id).set("name", name));
         this.dispatch();
@@ -88,8 +85,7 @@ export default class TaskListStore {
         this.dispatch();
     }
 
-    onNewTask(payload) {
-        const {list, task} = payload;
+    onNewTask({list, task}) {
         this.saveList(this.addTask(this.getList(list.id), new Task(task)));
         this.dispatch();
     }
@@ -104,8 +100,7 @@ export default class TaskListStore {
         this.dispatch();
     }
 
-    onTaskMoved(payload) {
-        const {list, task} = payload;
+    onTaskMoved({list, task}) {
 
         this.saveList(this.removeTask(task));
         const newTaskRec = new Task(task).set("taskListId", list.id);
