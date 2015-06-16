@@ -46,7 +46,7 @@ func NewDataManager(dbMap *gorp.DbMap) DataManager {
 
 func (db *defaultDataManager) GetTaskLists() ([]models.TaskList, error) {
 	var lists []models.TaskList
-	if _, err := db.Select(&lists, "select * from tasklists order by id desc"); err != nil {
+	if _, err := db.Select(&lists, "select * from tasklists order by ordering"); err != nil {
 		return nil, err
 	}
 	var tasks []models.Task
