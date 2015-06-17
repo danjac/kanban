@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"net/http"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var dbName = flag.String("db", "/tmp/kanban.sqlite", "sqlite database filename")
+var (
+	dbName = flag.String("db", "/tmp/kanban.sqlite", "sqlite database filename")
+	env    = flag.String("env", "prod", "environment ('prod' or 'dev')")
+)
 
 func initDB(dbName string) (*gorp.DbMap, error) {
 	db, err := sql.Open("sqlite3", dbName)
@@ -36,7 +40,9 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(static.Serve("/", static.LocalFile("static", false)))
+	r.LoadHTMLGlob("templates/*")
+
+	r.Use(static.Serve("/static", static.LocalFile("static", false)))
 
 	dbMap, err := initDB(*dbName)
 
@@ -45,6 +51,15 @@ func main() {
 	}
 
 	api.New(r, "/api/v1", db.NewDataManager(dbMap))
+
+	r.GET("/", func(c *gin.Context) {
+		s := &struct {
+			Env string
+		}{
+			Env: *env,
+		}
+		c.HTML(http.StatusOK, "index.html", s)
+	})
 
 	if err := r.Run(":8080"); err != nil {
 		panic(err)
