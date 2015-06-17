@@ -53,12 +53,7 @@ func main() {
 	api.New(r, "/api/v1", db.NewDataManager(dbMap))
 
 	r.GET("/", func(c *gin.Context) {
-		s := &struct {
-			Env string
-		}{
-			Env: *env,
-		}
-		c.HTML(http.StatusOK, "index.html", s)
+		c.HTML(http.StatusOK, "index.html", gin.H{"env": *env})
 	})
 
 	if err := r.Run(":8080"); err != nil {
