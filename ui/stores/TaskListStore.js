@@ -12,7 +12,7 @@ class TaskListStore {
     }
 
     getBoard(taskLists) {
-        this.taskLists = taskLists;
+        this.taskLists = taskLists || [];
         this.isLoaded = true;
     }
 

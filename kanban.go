@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/contrib/static"
@@ -23,6 +24,9 @@ var (
 func initDB(dbName string) (*gorp.DbMap, error) {
 	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
+		return nil, err
+	}
+	if err := db.Ping(); err != nil {
 		return nil, err
 	}
 	dbMap := &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
@@ -47,7 +51,7 @@ func main() {
 	dbMap, err := initDB(*dbName)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	api.New(r, "/api/v1", db.NewDataManager(dbMap))
