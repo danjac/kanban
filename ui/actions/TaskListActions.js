@@ -20,35 +20,35 @@ class TaskListActions {
     }
 
     async createTask(list, text) {
-        const task = await api.newTask(list.id, text);
+        const task = await api.newTask(list._id, text);
         this.dispatch({list, task});
     }
 
     updateTaskListName(list, name) {
-        api.updateTaskListName(list.id, name);
+        api.updateTaskListName(list._id, name);
         this.dispatch({list, name});
     }
 
     moveTask(list, task) {
-        api.moveTask(list.id, task.id);
+        api.moveTask(list._id, task._id);
         this.dispatch({list, task});
     }
 
     moveTaskList(list, targetList) {
-        if (list.id === targetList.id) {
+        if (list._id === targetList._id) {
             return;
         }
-        api.moveTaskList(list.id, targetList.id);
+        api.moveTaskList(list._id, targetList._id);
         this.dispatch({list, targetList});
     }
 
     deleteTaskList(list) {
-        api.deleteTaskList(list.id);
+        api.deleteTaskList(list._id);
         this.dispatch(list);
     }
 
     deleteTask(task) {
-        api.deleteTask(task.id);
+        api.deleteTask(task._id);
         this.dispatch(task);
     }
 }

@@ -18,7 +18,7 @@ class TaskBoard extends React.Component {
         if (!this.props.isLoaded) {
             return  (
             <p className="text-center">
-                <img alt="loading..." src="/static/images/ajax-loader.gif" />
+                <img alt="loading..." src="/images/ajax-loader.gif" />
             </p>
             );
         }
@@ -85,7 +85,7 @@ export default class Container extends React.Component {
                     <Input ref="name"
                            type="text"
                            bsSize="large"
-                           placeholder="Add a new list" />
+                           placeholder="Add a new list..." />
                 </form>
             </header>
         );

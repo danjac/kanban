@@ -25,16 +25,16 @@ class TaskListStore {
         if (list === undefined || targetList === undefined) {
             return;
         }
-        if (list.id === targetList.id) {
+        if (list._id === targetList._id) {
             return;
         }
         const ordering = list.ordering,
               targetOrdering = targetList.ordering;
 
         this.taskLists.map((item) => {
-            if (item.id === list.id) {
+            if (item._id === list._id) {
                 item.ordering = targetOrdering;
-            } else if (item.id === targetList.id) {
+            } else if (item._id === targetList._id) {
                 item.ordering = ordering;
             }
         });
@@ -45,38 +45,38 @@ class TaskListStore {
     }
 
     updateTaskListName({list, name}) {
-        this.updateList(list.id, (found) => found.name = name);
+        this.updateList(list._id, (found) => found.name = name);
     }
 
     toggleTaskListEditMode(list) {
-        this.updateList(list.id, (found) => found.isEditing = !found.isEditing);
+        this.updateList(list._id, (found) => found.isEditing = !found.isEditing);
     }
 
     createTask({list, task}) {
-        this.updateList(list.id, (found) => {
+        this.updateList(list._id, (found) => {
             found.tasks = found.tasks || [];
             found.tasks.unshift(task);
         });
     }
 
     deleteTaskList(list) {
-        this.taskLists = _.remove(this.taskLists, (item) => item.id !== list.id);
+        this.taskLists = _.remove(this.taskLists, (item) => item._id !== list._id);
     }
 
     deleteTask(task) {
         this.updateList(task.taskListId, (found) => {
-            found.tasks = _.remove(found.tasks, (item) => item.id !== task.id);
+            found.tasks = _.remove(found.tasks, (item) => item._id !== task._id);
         });
     }
 
     moveTask({list, task}) {
         this.deleteTask(task);
-        task.taskListId = list.id;
+        task.taskListId = list._id;
         this.createTask({list, task});
     }
 
     updateList(listId, cb) {
-        const found = _.find(this.taskLists, (item) => item.id === listId);
+        const found = _.find(this.taskLists, (item) => item._id === listId);
         if (found) {
             cb(found);
         }
