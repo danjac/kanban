@@ -1,29 +1,26 @@
 import mongoose from 'mongoose';
 import {Schema} from 'mongoose';
 
-function maxOrdering() {
-    TaskList
-    .findOne()
-    .sort('-ordering')
-    .exec()
-    .then((result) => {
-        if (result) {
-            return result.ordering;
-        }
-        return 0;
-    });
-}
-
 const taskListSchema = new Schema({
     name: {
         type: String,
         required: true
     },
     ordering: {
-        type: Number,
-        default: maxOrdering
+        type: Number
     },
     tasks:  [{ type: Schema.ObjectId, ref: 'Task' }]
+});
+
+taskListSchema.pre('save', function(next) {
+    TaskList
+    .findOne()
+    .sort('-ordering')
+    .exec()
+    .then((result) => {
+        this.ordering = result ? result.ordering + 1 : 0;
+        next();
+    });
 });
 
 const taskSchema = new Schema({

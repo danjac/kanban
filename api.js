@@ -27,7 +27,39 @@ api.delete("/board/:id", (req, res) => {
     TaskList
     .findByIdAndRemove(req.params.id)
     .then(() => {
-        res.status(201);
+        res.status(201).end();
+    });
+});
+
+api.put("/board/:id", (req, res) => {
+    TaskList
+    .findByIdAndUpdate(req.params.id, {
+        name: req.body.name
+    })
+    .then(() => {
+        res.status(200).end();
+    });
+});
+
+api.put("/board/:id/move/:targetId", (req, res) => {
+    Promise.all([
+        TaskList.findById(req.params.id),
+        TaskList.findById(req.params.targetId)
+    ])
+    .then((result) => {
+        const [list, targetList] = result;
+        const ordering = list.ordering;
+        return Promise.all([
+            list.update({
+                ordering: targetList.ordering
+            }),
+            targetList.update({
+                ordering: ordering
+            })
+        ])
+    })
+    .then(() => {
+        res.status(200).end();
     });
 });
 
