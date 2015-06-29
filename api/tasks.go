@@ -14,7 +14,7 @@ import (
 TaskAPI represents a set of task-related routes
 */
 type TaskAPI struct {
-	DB db.DataManager
+	DB *db.DB
 }
 
 /*
@@ -36,7 +36,7 @@ func (api *TaskAPI) MoveHandler(c *gin.Context) {
 		return
 	}
 
-	if err := api.DB.MoveTask(taskID, newListID); err != nil {
+	if err := api.DB.Tasks.Move(taskID, newListID); err != nil {
 		if err == sql.ErrNoRows {
 			c.AbortWithStatus(http.StatusNotFound)
 		} else {
@@ -60,7 +60,7 @@ func (api *TaskAPI) DeleteHandler(c *gin.Context) {
 		return
 	}
 
-	if err := api.DB.DeleteTask(taskID); err != nil {
+	if err := api.DB.Tasks.Delete(taskID); err != nil {
 		if err == sql.ErrNoRows {
 			c.AbortWithStatus(http.StatusNotFound)
 		} else {
@@ -75,8 +75,8 @@ func (api *TaskAPI) DeleteHandler(c *gin.Context) {
 /*
 NewTaskAPI returns a new TaskAPI instance
 */
-func NewTaskAPI(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskAPI {
-	api := &TaskAPI{dataMgr}
+func NewTaskAPI(g *gin.RouterGroup, prefix string, db *db.DB) *TaskAPI {
+	api := &TaskAPI{db}
 
 	rest.CRUD(g, prefix, api)
 

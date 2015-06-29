@@ -10,12 +10,12 @@ const statusOK = "OK"
 /*
 New creares a new API instance with all routes configured
 */
-func New(r *gin.Engine, prefix string, dataMgr db.DataManager) *gin.RouterGroup {
+func New(r *gin.Engine, prefix string, db *db.DB) *gin.RouterGroup {
 
 	g := r.Group(prefix)
 
-	NewTaskListAPI(g, "/board/", dataMgr)
-	NewTaskAPI(g, "/task/", dataMgr)
+	NewTaskListAPI(g, "/board/", db)
+	NewTaskAPI(g, "/task/", db)
 
 	return g
 

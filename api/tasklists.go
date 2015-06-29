@@ -15,7 +15,7 @@ import (
 TaskListAPI manages all routes for task lists
 */
 type TaskListAPI struct {
-	DB db.DataManager
+	DB *db.DB
 }
 
 /*
@@ -29,7 +29,7 @@ func (api *TaskListAPI) CreateHandler(c *gin.Context) {
 		return
 	}
 
-	if err := api.DB.CreateTaskList(list); err != nil {
+	if err := api.DB.TaskLists.Create(list); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -42,7 +42,7 @@ func (api *TaskListAPI) CreateHandler(c *gin.Context) {
 ListHandler retrieves a list of task lists
 */
 func (api *TaskListAPI) ListHandler(c *gin.Context) {
-	taskLists, err := api.DB.GetTaskLists()
+	taskLists, err := api.DB.TaskLists.Get()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -59,7 +59,7 @@ func (api *TaskListAPI) DeleteHandler(c *gin.Context) {
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 	}
-	if err := api.DB.DeleteTaskList(listID); err != nil {
+	if err := api.DB.TaskLists.Delete(listID); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -71,7 +71,6 @@ func (api *TaskListAPI) DeleteHandler(c *gin.Context) {
 MoveHandler changes the position of a task list
 */
 func (api *TaskListAPI) MoveHandler(c *gin.Context) {
-
 	listID, err := strconv.Atoi(c.Params.ByName("id"))
 
 	if err != nil {
@@ -84,7 +83,7 @@ func (api *TaskListAPI) MoveHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 	}
 
-	if err := api.DB.MoveTaskList(listID, targetListID); err != nil {
+	if err := api.DB.TaskLists.Move(listID, targetListID); err != nil {
 		if err == sql.ErrNoRows {
 			c.AbortWithStatus(http.StatusNotFound)
 		} else {
@@ -116,7 +115,7 @@ func (api *TaskListAPI) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	if err := api.DB.UpdateTaskList(listID, s.Name); err != nil {
+	if err := api.DB.TaskLists.Update(listID, s.Name); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -140,7 +139,7 @@ func (api *TaskListAPI) AddTaskHandler(c *gin.Context) {
 	if err := c.Bind(task); err != nil {
 		return
 	}
-	if err := api.DB.CreateTask(task); err != nil {
+	if err := api.DB.Tasks.Create(task); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -151,8 +150,8 @@ func (api *TaskListAPI) AddTaskHandler(c *gin.Context) {
 /*
 NewTaskListAPI creates a new set of task list routes
 */
-func NewTaskListAPI(g *gin.RouterGroup, prefix string, dataMgr db.DataManager) *TaskListAPI {
-	api := &TaskListAPI{dataMgr}
+func NewTaskListAPI(g *gin.RouterGroup, prefix string, db *db.DB) *TaskListAPI {
+	api := &TaskListAPI{db}
 
 	rest.CRUD(g, prefix, api)
 	g.PUT(prefix+":id/move/:target_list_id", api.MoveHandler)

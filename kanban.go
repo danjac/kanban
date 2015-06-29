@@ -54,7 +54,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	api.New(r, "/api/v1", db.NewDataManager(dbMap))
+	api.New(r, "/api/v1", db.New(dbMap))
 
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{"env": *env})

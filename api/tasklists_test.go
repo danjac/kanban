@@ -13,14 +13,14 @@ func TestListHandler(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 
-	writer := &fakeWriter{
+	writer := &mockWriter{
 		ResponseWriter: w,
 	}
 	c := &gin.Context{
 		Request: req,
 		Writer:  gin.ResponseWriter(writer),
 	}
-	api := &TaskListAPI{&fakeDb{}}
+	api := &TaskListAPI{newMockDB()}
 	api.ListHandler(c)
 	if w.Code != http.StatusOK {
 		t.Fail()

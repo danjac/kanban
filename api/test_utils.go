@@ -5,17 +5,18 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/danjac/kanban/db"
 	"github.com/danjac/kanban/models"
 )
 
-type fakeWriter struct {
+type mockWriter struct {
 	http.ResponseWriter
 	size   int
 	status int
 }
 
 // Implements the http.Hijacker interface
-func (w *fakeWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+func (w *mockWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if w.size < 0 {
 		w.size = 0
 	}
@@ -23,61 +24,70 @@ func (w *fakeWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 
 // Implements the http.CloseNotify interface
-func (w *fakeWriter) CloseNotify() <-chan bool {
+func (w *mockWriter) CloseNotify() <-chan bool {
 	return w.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
 
 // Implements the http.Flush interface
-func (w *fakeWriter) Flush() {
+func (w *mockWriter) Flush() {
 	w.ResponseWriter.(http.Flusher).Flush()
 }
 
-func (w *fakeWriter) Size() int {
+func (w *mockWriter) Size() int {
 	return w.size
 }
 
-func (w *fakeWriter) Status() int {
+func (w *mockWriter) Status() int {
 	return w.status
 }
 
-func (w *fakeWriter) Writestring(name string) (int, error) {
+func (w *mockWriter) WriteString(name string) (int, error) {
 	return 0, nil
 }
 
-func (w *fakeWriter) Written() bool   { return true }
-func (w *fakeWriter) WriteHeaderNow() {}
+func (w *mockWriter) Written() bool   { return true }
+func (w *mockWriter) WriteHeaderNow() {}
 
-type fakeDb struct{}
+type mockTaskListDB struct{}
 
-func (db *fakeDb) GetTaskLists() ([]models.TaskList, error) {
+func (DB *mockTaskListDB) Get() ([]models.TaskList, error) {
 	var result []models.TaskList
 	return result, nil
 }
 
-func (db *fakeDb) DeleteTaskList(id int) error {
+func (DB *mockTaskListDB) Delete(id int) error {
 	return nil
 }
 
-func (db *fakeDb) UpdateTaskList(id int, name string) error {
+func (DB *mockTaskListDB) Update(id int, name string) error {
 	return nil
 }
 
-func (db *fakeDb) DeleteTask(id int) error {
+func (DB *mockTaskListDB) Create(list *models.TaskList) error {
 	return nil
 }
 
-func (db *fakeDb) CreateTaskList(list *models.TaskList) error {
+func (DB *mockTaskListDB) Move(id int, targetID int) error {
 	return nil
 }
 
-func (db *fakeDb) CreateTask(list *models.Task) error {
+type mockTaskDB struct{}
+
+func (DB *mockTaskDB) Create(list *models.Task) error {
 	return nil
 }
 
-func (db *fakeDb) MoveTaskList(id int, targetID int) error {
+func (DB *mockTaskDB) Move(id int, targetID int) error {
 	return nil
 }
 
-func (db *fakeDb) MoveTask(id int, targetID int) error {
+func (DB *mockTaskDB) Delete(id int) error {
 	return nil
+}
+
+func newMockDB() *db.DB {
+	return &db.DB{
+		&mockTaskListDB{},
+		&mockTaskDB{},
+	}
 }
