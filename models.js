@@ -23,8 +23,25 @@ taskListSchema.pre('save', function(next) {
     });
 });
 
+taskListSchema.methods.addTask = function(task) {
+    task.taskList = this._id;
+    return task.save()
+    .then((task) => {
+        const tasks = this.tasks;
+        tasks.push(task._id);
+        return Promise.all([
+            this.update({ tasks: tasks }),
+            task
+        ])
+    })
+    .then(result => {
+        const [, task] = result;
+        return task;
+    });
+};
+
 const taskSchema = new Schema({
-    name: String,
+    text: String,
     taskList: {
         type: Schema.ObjectId,
         ref: 'TaskList'

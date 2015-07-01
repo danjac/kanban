@@ -6,9 +6,11 @@ const api = express.Router();
 api.get("/board/", (req, res) => {
     TaskList
     .find({})
+    .populate('tasks')
     .sort('ordering')
     .exec()
     .then((result) => {
+        console.log(result);
         res.json({
             lists: result
         });
@@ -21,6 +23,19 @@ api.post("/board/", (req, res) => {
     .then((result) => {
         res.json(result);
     });
+});
+
+api.post("/board/:id/add/", (req, res) => {
+
+    TaskList
+    .findById(req.params.id)
+    .then((list) => {
+        return list.addTask(new Task({ text: req.body.text }));
+    })
+    .then((task) => {
+        res.json(task);
+    });
+
 });
 
 api.delete("/board/:id", (req, res) => {
