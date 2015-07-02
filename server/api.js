@@ -61,15 +61,7 @@ api.put("/board/:id/move/:targetId", (req, res) => {
     ])
     .then(result => {
         const [list, targetList] = result;
-        const ordering = list.ordering;
-        return Promise.all([
-            list.update({
-                ordering: targetList.ordering
-            }),
-            targetList.update({
-                ordering: ordering
-            })
-        ])
+        return list.move(targetList);
     })
     .then(() => {
         res.status(200).end();

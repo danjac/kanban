@@ -37,6 +37,18 @@ taskListSchema.methods.addTask = function(task) {
     });
 };
 
+taskListSchema.methods.move = function(targetList) {
+    const ordering = this.ordering;
+    return Promise.all([
+        this.update({
+            ordering: targetList.ordering
+        }),
+        targetList.update({
+            ordering: ordering
+        })
+    ]);
+};
+
 const taskSchema = new Schema({
     text: String,
     taskList: {
