@@ -2,8 +2,8 @@ import React from 'react';
 import sinon from 'sinon';
 import expect from 'expect';
 import TestUtils from 'react/lib/ReactTestUtils';
-import actions from '../../ui/actions/TaskListActions';
-import TaskList from '../../ui/components/TaskList';
+import actions from '../../client/actions/TaskListActions';
+import TaskList from '../../client/components/TaskList';
 
 import {makeTestContainer} from '../utils';
 

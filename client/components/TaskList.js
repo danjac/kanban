@@ -73,6 +73,7 @@ export default class TaskList extends React.Component {
 
     handleDeleteList(event) {
         event.preventDefault();
+        console.log(this.props.list);
         TaskListActions.deleteTaskList(this.props.list);
     }
 
@@ -106,7 +107,7 @@ export default class TaskList extends React.Component {
     render() {
 
         const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging} = this.props;
-        const {id, name, tasks, isEditing, ordering} = list;
+        const {_id, name, tasks, isEditing, ordering} = list;
 
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#FFFE85' : '#fff';
@@ -146,7 +147,7 @@ export default class TaskList extends React.Component {
                 </form>
                 <ListGroup>
                 {(tasks || []).map((task) => {
-                    return <Task key={task.id}
+                    return <Task key={task._id}
                                  task={task}
                                   />;
                 })}

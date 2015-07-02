@@ -9,8 +9,7 @@ api.get("/board/", (req, res) => {
     .populate('tasks')
     .sort('ordering')
     .exec()
-    .then((result) => {
-        console.log(result);
+    .then(result => {
         res.json({
             lists: result
         });
@@ -20,19 +19,18 @@ api.get("/board/", (req, res) => {
 api.post("/board/", (req, res) => {
     new TaskList({ name: req.body.name })
     .save()
-    .then((result) => {
+    .then(result => {
         res.json(result);
     });
 });
 
 api.post("/board/:id/add/", (req, res) => {
-
     TaskList
     .findById(req.params.id)
-    .then((list) => {
+    .then(list => {
         return list.addTask(new Task({ text: req.body.text }));
     })
-    .then((task) => {
+    .then(task => {
         res.json(task);
     });
 
@@ -61,7 +59,7 @@ api.put("/board/:id/move/:targetId", (req, res) => {
         TaskList.findById(req.params.id),
         TaskList.findById(req.params.targetId)
     ])
-    .then((result) => {
+    .then(result => {
         const [list, targetList] = result;
         const ordering = list.ordering;
         return Promise.all([
@@ -78,4 +76,25 @@ api.put("/board/:id/move/:targetId", (req, res) => {
     });
 });
 
+api.put("/task/:id/move/:targetId", (req, res) => {
+    Promise.all([
+        Task.findById(req.params.id),
+        TaskList.findById(req.params.targetId)
+    ])
+    .then(result => {
+        const [task, target] = result;
+        return task.move(target);
+    })
+    .then(() => {
+        res.status(200).end();
+    });
+});
+
+api.delete("/task/:id", (req, res) => {
+    Task
+    .findByIdAndRemove(req.params.id)
+    .then(() => {
+        res.status(201).end();
+    });
+});
 export default api;

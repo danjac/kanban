@@ -23,11 +23,11 @@ app.use(bodyParser.json());
 app.use(methodOverride());
 app.use(errorHandler());
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.get("/", (req, res) => {
     res.render('index', {
-        'devMode': true
+        'devMode': process.env.NODE_ENV == 'dev'
     });
 });
 

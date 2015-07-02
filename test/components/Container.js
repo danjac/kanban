@@ -3,8 +3,8 @@ import sinon from 'sinon';
 import TestUtils from 'react/lib/ReactTestUtils';
 import expect from 'expect';
 
-import api from '../../ui/api';
-import Container from '../../ui/components/Container';
+import api from '../../client/api';
+import Container from '../../client/components/Container';
 
 describe('container should just work', function () {
 

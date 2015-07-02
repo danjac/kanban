@@ -25,17 +25,14 @@ taskListSchema.pre('save', function(next) {
 
 taskListSchema.methods.addTask = function(task) {
     task.taskList = this._id;
-    return task.save()
-    .then((task) => {
+    return task
+    .save()
+    .then(task => {
         const tasks = this.tasks;
         tasks.push(task._id);
-        return Promise.all([
-            this.update({ tasks: tasks }),
-            task
-        ])
+        return this.update({ tasks: tasks });
     })
     .then(result => {
-        const [, task] = result;
         return task;
     });
 };
@@ -47,6 +44,19 @@ const taskSchema = new Schema({
         ref: 'TaskList'
     }
 });
+
+taskSchema.methods.move = function(targetList) {
+    return TaskList
+    .findById(this.taskList)
+    .then(list => {
+        const tasks = list.tasks;
+        tasks.remove(this._id);
+        return list.update({ tasks: tasks })
+    })
+    .then(() => {
+        return targetList.addTask(this)
+    });
+};
 
 export const TaskList = mongoose.model('TaskList', taskListSchema);
 export const Task = mongoose.model('Task', taskSchema);

@@ -31,7 +31,7 @@ class TaskBoard extends React.Component {
                     {row.map((list, colIndex) => {
                         return (
                             <Col key={colIndex} xs={3}>
-                                <TaskList key={list.id} list={list} />
+                                <TaskList key={list._id} list={list} />
                             </Col>
                         )
                     })}

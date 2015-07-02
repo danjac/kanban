@@ -64,14 +64,14 @@ class TaskListStore {
     }
 
     deleteTask(task) {
-        this.updateList(task.taskListId, (found) => {
+        this.updateList(task.taskList, (found) => {
             found.tasks = _.remove(found.tasks, (item) => item._id !== task._id);
         });
     }
 
     moveTask({list, task}) {
         this.deleteTask(task);
-        task.taskListId = list._id;
+        task.taskList = list._id;
         this.createTask({list, task});
     }
 

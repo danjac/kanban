@@ -8,7 +8,7 @@ module.exports = {
     entry: [
         'webpack-dev-server/client?http://localhost:8090',
         'webpack/hot/only-dev-server',
-        './ui/app.js'
+        './client/app.js'
     ],
     output: {
         path: path.join(__dirname, 'static', 'js'),
@@ -27,7 +27,7 @@ module.exports = {
             {
                 test: /\.(js|jsx)$/,
                 loaders: ['react-hot', 'babel?stage=0&optional[]=runtime'],
-                include: path.join(__dirname, 'ui')
+                include: path.join(__dirname, 'client')
             }
         ]
     }
