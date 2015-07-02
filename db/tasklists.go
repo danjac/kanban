@@ -74,7 +74,6 @@ func (db *defaultTaskListDB) Delete(listID int) error {
 func (db *defaultTaskListDB) Move(listID int, targetListID int) error {
 
 	selectSql := "select ordering from tasklists where id=?"
-	updateSql := "update tasklists set ordering=? where id=?"
 
 	ordering, err := db.SelectInt(selectSql, listID)
 	if err != nil {
@@ -90,6 +89,8 @@ func (db *defaultTaskListDB) Move(listID int, targetListID int) error {
 	if err != nil {
 		return err
 	}
+
+	updateSql := "update tasklists set ordering=? where id=?"
 
 	if _, err := t.Exec(updateSql, targetOrdering, listID); err != nil {
 		return err

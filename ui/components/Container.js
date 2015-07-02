@@ -79,7 +79,7 @@ export default class Container extends React.Component {
 
             <header className="container">
                 <div className="page-header">
-                    <h1 style={{ color: 'white'}}>Kanban Board 看板</h1>
+                    <h1 style={{ color: 'white'}}>Kanban 看板</h1>
                 </div>
                 <form onSubmit={this.handleNewList}>
                     <Input ref="name"
