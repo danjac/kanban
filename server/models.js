@@ -17,7 +17,7 @@ taskListSchema.pre('save', function(next) {
     .findOne()
     .sort('-ordering')
     .exec()
-    .then((result) => {
+    .then(result => {
         this.ordering = result ? result.ordering + 1 : 0;
         next();
     });

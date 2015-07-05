@@ -6,6 +6,11 @@ class Api {
         this.prefix = prefix('/api/v1');
     }
 
+    json(request) {
+        request.set("Content-Type", "application/json");
+        return request;
+    }
+
     getBoard() {
         return request
         .get("/board/")
@@ -19,8 +24,7 @@ class Api {
     newTaskList(name) {
         return request
         .post("/board/")
-        .use(this.prefix)
-        .set("Content-Type", "application/json")
+        .use(this.prefix, this.json)
         .send({ name: name })
         .end()
         .then(res => {
@@ -31,8 +35,7 @@ class Api {
     updateTaskListName(listId, name) {
         return request
         .put("/board/" + listId + "/")
-        .use(this.prefix)
-        .set("Content-Type", "application/json")
+        .use(this.prefix, this.json)
         .send({ name: name })
         .end()
     }
@@ -40,8 +43,7 @@ class Api {
     newTask(listId, text) {
         return request
         .post("/board/" + listId + "/add/")
-        .use(this.prefix)
-        .set("Content-Type", "application/json")
+        .use(this.prefix, this.json)
         .send({ text: text })
         .end()
         .then(res => {

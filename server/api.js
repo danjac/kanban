@@ -3,7 +3,7 @@ import {TaskList, Task} from './models';
 
 const api = express.Router();
 
-api.get("/board/", (req, res) => {
+api.get("/board/", (req, res, next) => {
     TaskList
     .find({})
     .populate('tasks')
@@ -13,18 +13,18 @@ api.get("/board/", (req, res) => {
         res.json({
             lists: result
         });
-    });
+    }, err => next(err));
 });
 
-api.post("/board/", (req, res) => {
+api.post("/board/", (req, res, next) => {
     new TaskList({ name: req.body.name })
     .save()
     .then(result => {
         res.json(result);
-    });
+    }, err => next(err));
 });
 
-api.post("/board/:id/add/", (req, res) => {
+api.post("/board/:id/add/", (req, res, next) => {
     TaskList
     .findById(req.params.id)
     .then(list => {
@@ -32,29 +32,29 @@ api.post("/board/:id/add/", (req, res) => {
     })
     .then(task => {
         res.json(task);
-    });
+    }, err => next(err));
 
 });
 
-api.delete("/board/:id", (req, res) => {
+api.delete("/board/:id", (req, res, next) => {
     TaskList
     .findByIdAndRemove(req.params.id)
     .then(() => {
         res.status(201).end();
-    });
+    }, err => next(err));
 });
 
-api.put("/board/:id", (req, res) => {
+api.put("/board/:id", (req, res, next) => {
     TaskList
     .findByIdAndUpdate(req.params.id, {
         name: req.body.name
     })
     .then(() => {
         res.status(200).end();
-    });
+    }, err => next(err));
 });
 
-api.put("/board/:id/move/:targetId", (req, res) => {
+api.put("/board/:id/move/:targetId", (req, res, next) => {
     Promise.all([
         TaskList.findById(req.params.id),
         TaskList.findById(req.params.targetId)
@@ -65,10 +65,10 @@ api.put("/board/:id/move/:targetId", (req, res) => {
     })
     .then(() => {
         res.status(200).end();
-    });
+    }, err => next(err));
 });
 
-api.put("/task/:id/move/:targetId", (req, res) => {
+api.put("/task/:id/move/:targetId", (req, res, next) => {
     Promise.all([
         Task.findById(req.params.id),
         TaskList.findById(req.params.targetId)
@@ -79,14 +79,15 @@ api.put("/task/:id/move/:targetId", (req, res) => {
     })
     .then(() => {
         res.status(200).end();
-    });
+    }, err => next(err));
 });
 
-api.delete("/task/:id", (req, res) => {
+api.delete("/task/:id", (req, res, next) => {
     Task
     .findByIdAndRemove(req.params.id)
     .then(() => {
         res.status(201).end();
-    });
+    }, err => next(err));
 });
+
 export default api;

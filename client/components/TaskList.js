@@ -73,7 +73,6 @@ export default class TaskList extends React.Component {
 
     handleDeleteList(event) {
         event.preventDefault();
-        console.log(this.props.list);
         TaskListActions.deleteTaskList(this.props.list);
     }
 
