@@ -106,9 +106,7 @@ export default class TaskList extends React.Component {
     render() {
 
         const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging} = this.props;
-        const {_id, name, tasks, isEditing, ordering} = list;
-
-        console.log(list, _id);
+        const {id, name, Tasks, isEditing, ordering} = list;
 
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#FFFE85' : '#fff';
@@ -147,8 +145,8 @@ export default class TaskList extends React.Component {
                            placeholder="Add a task" />
                 </form>
                 <ListGroup>
-                {(tasks || []).map((task) => {
-                    return <Task key={task._id}
+                {(Tasks || []).map((task) => {
+                    return <Task key={task.id}
                                  task={task}
                                   />;
                 })}

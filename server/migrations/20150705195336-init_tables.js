@@ -3,7 +3,7 @@
 module.exports = {
     up: function (queryInterface, Sequelize) {
     return queryInterface
-    .createTable('TaskList', {
+    .createTable('TaskLists', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -18,11 +18,15 @@ module.exports = {
         name: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        ordering: {
+            type: Sequelize.INTEGER,
+            defaultValue: 0
         }
       })
     .then(function() {
     return queryInterface
-    .createTable('Task', {
+    .createTable('Tasks', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -38,11 +42,11 @@ module.exports = {
             type: Sequelize.STRING,
             allowNulls: false
         },
-        taskList: {
+        taskListId: {
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {
-                model: 'TaskList',
+                model: 'TaskLists',
                 key: 'id'
             }
         }

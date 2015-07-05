@@ -7,7 +7,7 @@ api.get("/board/", (req, res, next) => {
     models.TaskList
     .findAll({
         include: [models.Task],
-        order: ['ordering', 'ASC']
+        order: [['ordering', 'ASC']]
     })
     .then(result => {
         res.json({
@@ -18,77 +18,103 @@ api.get("/board/", (req, res, next) => {
 });
 
 api.post("/board/", (req, res, next) => {
-    new TaskList({ name: req.body.name })
-    .save()
+    models.TaskList
+    .create({ name: req.body.name })
     .then(result => {
         res.json(result);
-    }, err => next(err));
+    })
+    .catch(err => next(err));
 });
 
 api.post("/board/:id/add/", (req, res, next) => {
-    TaskList
-    .findById(req.params.id)
-    .then(list => {
-        return list.addTask(new Task({ text: req.body.text }));
+    models.Task
+    .create({
+        text: req.body.text,
+        taskListId: req.params.id
     })
     .then(task => {
         res.json(task);
-    }, err => next(err));
-
+    })
+    .catch(err => next(err));
 });
 
 api.delete("/board/:id", (req, res, next) => {
-    TaskList
-    .findByIdAndRemove(req.params.id)
+    // normally we'd just have cascade
+    models.Task
+    .destroy({
+        where: { taskListId: req.params.id }
+    })
+    .then(() => {
+        return models.TaskList.findById(req.params.id)
+    })
+    .then(list => {
+        return list.destroy();
+    })
     .then(() => {
         res.status(201).end();
-    }, err => next(err));
+    })
+    .catch(err => next(err));
 });
 
 api.put("/board/:id", (req, res, next) => {
-    TaskList
-    .findByIdAndUpdate(req.params.id, {
+    models.TaskList
+    .update({
         name: req.body.name
+    },{
+        where: { id: req.params.id }
     })
     .then(() => {
         res.status(200).end();
-    }, err => next(err));
+    })
+    .catch(err => next(err));
 });
 
 api.put("/board/:id/move/:targetId", (req, res, next) => {
     Promise.all([
-        TaskList.findById(req.params.id),
-        TaskList.findById(req.params.targetId)
+        models.TaskList.findById(req.params.id),
+        models.TaskList.findById(req.params.targetId)
     ])
     .then(result => {
         const [list, targetList] = result;
-        return list.move(targetList);
+        const ordering = list.ordering,
+              targetOrdering = targetList.ordering;
+        return Promise.all([
+            list.update({ ordering: targetOrdering }),
+            targetList.update({ ordering: ordering }),
+        ])
     })
     .then(() => {
         res.status(200).end();
-    }, err => next(err));
+    })
+    .catch(err => next(err));
 });
 
 api.put("/task/:id/move/:targetId", (req, res, next) => {
     Promise.all([
-        Task.findById(req.params.id),
-        TaskList.findById(req.params.targetId)
+        models.Task.findById(req.params.id),
+        models.TaskList.findById(req.params.targetId)
     ])
     .then(result => {
         const [task, target] = result;
-        return task.move(target);
+        return task.update({
+            taskListId: target.id
+        });
     })
     .then(() => {
         res.status(200).end();
-    }, err => next(err));
+    })
+    .catch(err => next(err));
 });
 
 api.delete("/task/:id", (req, res, next) => {
-    Task
-    .findByIdAndRemove(req.params.id)
+    models.Task
+    .destroy({
+        where: { id: req.params.id }
+    })
     .then(() => {
         res.status(201).end();
-    }, err => next(err));
+    })
+    .catch(err => next(err));
 });
 
 export default api;
