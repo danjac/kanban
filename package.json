@@ -71,6 +71,7 @@
     "tap": "^1.2.0"
   },
   "scripts": {
+    "sq": "node_modules/.bin/sequelize",
     "test": "/usr/bin/mocha"
   }
 }

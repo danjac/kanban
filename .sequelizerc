@@ -1,0 +1,7 @@
+var path = require('path');
+
+module.exports = {
+  "config": path.join(__dirname, "server/config/sequelize.json"),
+  "models-path": path.join(__dirname, "server/models"),
+  "migrations-path": path.join(__dirname, "server/migrations")
+};

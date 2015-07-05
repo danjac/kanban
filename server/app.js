@@ -5,12 +5,9 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 import errorHandler from 'errorhandler';
 import methodOverride from 'method-override';
-import mongoose from 'mongoose';
 
-import config from './config';
 import api from './api';
 
-mongoose.connect(config.db);
 
 const app = express();
 
@@ -21,7 +18,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(methodOverride());
 
-if (process.env.NODE_ENV === 'dev') {
+if (process.env.NODE_ENV === 'development') {
     app.use(logger('dev'));
     app.use(errorHandler());
 }
