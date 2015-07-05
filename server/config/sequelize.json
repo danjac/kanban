@@ -1,7 +1,7 @@
 {
   "development": {
-    "database": "/tmp/kanban.sqlite",
-    "dialect": "sqlite3"
+    "storage": "/tmp/kanban.sqlite",
+    "dialect": "sqlite"
   },
   "test": {
     "username": "root",

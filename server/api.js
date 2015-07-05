@@ -1,19 +1,20 @@
 import express from 'express';
-import {TaskList, Task} from './models';
+import models from './models';
 
 const api = express.Router();
 
 api.get("/board/", (req, res, next) => {
-    TaskList
-    .find({})
-    .populate('tasks')
-    .sort('ordering')
-    .exec()
+    models.TaskList
+    .findAll({
+        include: [models.Task],
+        order: ['ordering', 'ASC']
+    })
     .then(result => {
         res.json({
             lists: result
         });
-    }, err => next(err));
+    })
+    .catch(err => next(err));
 });
 
 api.post("/board/", (req, res, next) => {

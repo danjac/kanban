@@ -2,11 +2,11 @@ export default function(sequelize, DataTypes) {
 
     const TaskList = sequelize.define('TaskList', {
         name: DataTypes.STRING,
-        ordering: DataTypes.INT
+        ordering: DataTypes.INTEGER,
         }, {
             classMethods: {
                 associate: models => {
-                // associations can be defined here
+                    TaskList.hasMany(models.Task);
                 }
         }
     });

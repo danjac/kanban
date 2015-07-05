@@ -1,14 +1,12 @@
-'use strict';
-module.exports = function(sequelize, DataTypes) {
-  var Task = sequelize.define('Task', {
-    text: DataTypes.STRING,
-    taskListId: DataTypes.INT
-  }, {
-    classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-      }
-    }
-  });
-  return Task;
+export default function(sequelize, DataTypes) {
+    const Task = sequelize.define('Task', {
+            text: DataTypes.STRING
+        }, {
+            classMethods: {
+            associate: models => {
+                Task.belongsTo(models.TaskList);
+            }
+        }
+    });
+    return Task;
 };
