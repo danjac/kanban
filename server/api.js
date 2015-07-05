@@ -3,6 +3,12 @@ import models from './models';
 
 const api = express.Router();
 
+function notFound(msg) {
+    const e = new Error(msg || "Object not found");
+    e.statusCode = 404;
+    throw e;
+}
+
 api.get("/board/", (req, res, next) => {
     models.TaskList
     .findAll({
@@ -30,7 +36,7 @@ api.post("/board/:id/add/", (req, res, next) => {
     models.Task
     .create({
         text: req.body.text,
-        taskListId: req.params.id
+        taskListId: parseInt(req.params.id)
     })
     .then(task => {
         res.json(task);
@@ -48,7 +54,10 @@ api.delete("/board/:id", (req, res, next) => {
         return models.TaskList.findById(req.params.id)
     })
     .then(list => {
-        return list.destroy();
+        if (list) {
+            return list.destroy();
+        }
+        notFound();
     })
     .then(() => {
         res.status(201).end();
@@ -78,10 +87,13 @@ api.put("/board/:id/move/:targetId", (req, res, next) => {
         const [list, targetList] = result;
         const ordering = list.ordering,
               targetOrdering = targetList.ordering;
-        return Promise.all([
-            list.update({ ordering: targetOrdering }),
-            targetList.update({ ordering: ordering }),
-        ])
+        if (list && targetList) {
+            return Promise.all([
+                list.update({ ordering: targetOrdering }),
+                targetList.update({ ordering: ordering }),
+            ])
+        }
+        notFound();
     })
     .then(() => {
         res.status(200).end();
@@ -96,9 +108,12 @@ api.put("/task/:id/move/:targetId", (req, res, next) => {
     ])
     .then(result => {
         const [task, target] = result;
-        return task.update({
-            taskListId: target.id
-        });
+        if (task && target) {
+            return task.update({
+                taskListId: target.id
+            });
+        }
+        notFound();
     })
     .then(() => {
         res.status(200).end();
