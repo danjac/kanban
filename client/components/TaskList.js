@@ -109,6 +109,8 @@ export default class TaskList extends React.Component {
         const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging} = this.props;
         const {_id, name, tasks, isEditing, ordering} = list;
 
+        console.log(list, _id);
+
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#FFFE85' : '#fff';
 

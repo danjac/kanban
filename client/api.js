@@ -11,7 +11,7 @@ class Api {
         .get("/board/")
         .use(this.prefix)
         .end()
-        .then((res) => {
+        .then(res => {
             return res.body.lists;
         });
     }
@@ -23,7 +23,7 @@ class Api {
         .set("Content-Type", "application/json")
         .send({ name: name })
         .end()
-        .then((res) => {
+        .then(res => {
             return res.body;
         });
     }
@@ -44,7 +44,7 @@ class Api {
         .set("Content-Type", "application/json")
         .send({ text: text })
         .end()
-        .then((res) => {
+        .then(res => {
             return res.body;
         });
     }

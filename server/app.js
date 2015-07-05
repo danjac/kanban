@@ -18,16 +18,19 @@ app.set('port', process.env.port || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(methodOverride());
-app.use(errorHandler());
+
+if (process.env.NODE_ENV === 'dev') {
+    app.use(logger('dev'));
+    app.use(errorHandler());
+}
 
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.get("/", (req, res) => {
     res.render('index', {
-        'devMode': process.env.NODE_ENV == 'dev'
+        'env': process.env.NODE_ENV
     });
 });
 
