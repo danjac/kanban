@@ -3,7 +3,6 @@ import React from 'react';
 import {Input, Panel, Glyphicon, ListGroup} from 'react-bootstrap';
 import {DropTarget, DragSource} from 'react-dnd';
 
-import {moveTaskList, updateTaskListName, deleteTaskList} from '../actions';
 import {ItemTypes} from '../constants';
 import Task from './Task';
 
@@ -22,9 +21,6 @@ const TaskListSource = {
         const item = monitor.getItem(),
               dropResult = monitor.getDropResult();
         if (dropResult) {
-            // remove item from Task lists A and put in B
-            //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
-            // update the task list
             props.actions.moveTaskList(dropResult.list, item.list);
         }
 

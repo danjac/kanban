@@ -22,7 +22,6 @@ const initialState = {
 
 
 function updateTaskList(state, action) {
-  console.log("yoyoyoyoyo")
   const { list, name } = action;
   return _.map(state.taskLists, l => {
     if (l.id == list.id) {
