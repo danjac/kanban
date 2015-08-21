@@ -88,6 +88,15 @@ export function toggleTaskListEditMode(list) {
   };
 }
 
+export function updateTaskListName(list, name) {
+  api.updateTaskListName(list.id, name);
+  return {
+    type:  UPDATE_TASKLIST,
+    list: list,
+    name: name
+  }
+}
+
 export function newTask(task) {
   return {
     type: TASK_ADDED,

@@ -21,6 +21,17 @@ const initialState = {
 };
 
 
+function updateTaskList(state, action) {
+  console.log("yoyoyoyoyo")
+  const { list, name } = action;
+  return _.map(state.taskLists, l => {
+    if (l.id == list.id) {
+      l.name = name;
+    }
+    return l;
+  });
+}
+
 function moveTask(state, action) {
   const { list, task } = action;
   let taskLists = deleteTask(state, task);
@@ -71,7 +82,6 @@ function toggleEditMode(state, action) {
   return _.map(state.taskLists, list => {
     if (listToEdit.id === list.id) {
       list.isEditing = !list.isEditing;
-      console.log("editing?", list.isEditing);
     }
     return list;
   });
@@ -101,8 +111,12 @@ export default function(state=initialState, action) {
         taskLists: moveTaskList(state, action)
       });
 
+    case UPDATE_TASKLIST:
+      return _.assign({}, state, { taskLists: updateTaskList(state, action) });
+
     case TASKLIST_EDIT_MODE:
       return _.assign({}, state, { taskLists: toggleEditMode(state, action) });
+
  
     case TASK_ADDED: 
       return _.assign({}, state, { taskLists: addTask(state.taskLists, action.task) });
