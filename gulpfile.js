@@ -44,7 +44,8 @@ gulp.task('pkg', function() {
         .pipe(gulp.dest(dest.css))
         .pipe(cssFilter.restore())
         .pipe(fontFilter)
-        .pipe(gulp.dest(dest.fonts));
+        .pipe(gulp.dest(dest.fonts))
+        .pipe(fontFilter.restore());
 });
 
 gulp.task("build", ["install", "pkg"], function(callback) {

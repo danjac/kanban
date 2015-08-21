@@ -3,7 +3,7 @@ import React from 'react';
 import {Input, Panel, Glyphicon, ListGroup} from 'react-bootstrap';
 import {DropTarget, DragSource} from 'react-dnd';
 
-import TaskListActions from '../actions/TaskListActions';
+import {moveTaskList, updateTaskListName, deleteTaskList} from '../actions';
 import {ItemTypes} from '../constants';
 import Task from './Task';
 
@@ -25,7 +25,7 @@ const TaskListSource = {
             // remove item from Task lists A and put in B
             //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
             // update the task list
-            TaskListActions.moveTaskList(dropResult.list, item.list);
+            props.actions.moveTaskList(dropResult.list, item.list);
         }
 
     }
@@ -50,7 +50,8 @@ export default class TaskList extends React.Component {
     static propTypes = {
         connectDropTarget: React.PropTypes.func.isRequired,
         isOver: React.PropTypes.bool.isRequired,
-        canDrop: React.PropTypes.bool.isRequired
+        canDrop: React.PropTypes.bool.isRequired,
+        actions: React.PropTypes.object.isRequired
     }
 
     constructor(props) {
@@ -67,29 +68,29 @@ export default class TaskList extends React.Component {
         const text = this.refs.newTask.getValue().trim();
         this.refs.newTask.getInputDOMNode().value = "";
         if (text) {
-            TaskListActions.createTask(this.props.list, text);
+            this.props.actions.createTask(this.props.list, text);
         }
     }
 
     handleDeleteList(event) {
         event.preventDefault();
-        TaskListActions.deleteTaskList(this.props.list);
+        this.props.actions.deleteTaskList(this.props.list);
     }
 
     handleEditMode(event) {
         event.preventDefault();
-        TaskListActions.toggleTaskListEditMode(this.props.list);
+        this.props.actions.toggleTaskListEditMode(this.props.list);
     }
 
     handleUpdateName(event) {
 
         event.preventDefault();
-        TaskListActions.toggleTaskListEditMode(this.props.list);
+        this.props.actions.toggleTaskListEditMode(this.props.list);
 
         const name = this.refs.editName.getValue().trim();
 
         if (name) {
-            TaskListActions.updateTaskListName(this.props.list, name);
+            this.props.actions.updateTaskListName(this.props.list, name);
         }
     }
 
@@ -105,7 +106,7 @@ export default class TaskList extends React.Component {
 
     render() {
 
-        const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging} = this.props;
+        const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging, actions} = this.props;
         const {id, name, tasks, isEditing, ordering} = list;
 
         const isActive = canDrop && isOver,
@@ -148,7 +149,8 @@ export default class TaskList extends React.Component {
                 {(tasks || []).map((task) => {
                     return <Task key={task.id}
                                  task={task}
-                                  />;
+                                 actions={actions} 
+                                 />;
                 })}
                 </ListGroup>
             </Panel>

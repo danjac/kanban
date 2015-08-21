@@ -1,16 +1,30 @@
 // code here
 //require("./app.css");
 
-import React from 'react';
 import _ from 'lodash';
+import React, {PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
+import {Provider, connect} from 'react-redux';
 import {Grid, Row, Col, Input} from 'react-bootstrap';
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
-import connectToStores from 'alt/utils/connectToStores';
 
-import TaskListActions from '../actions/TaskListActions';
-import TaskListStore  from '../stores/TaskListStore';
+import configureStore from '../store';
 import TaskList from './TaskList';
+
+import * as ActionCreators from '../actions';
+
+const store = configureStore();
+
+function mapStateToProps(state) {
+  const taskLists  = state.taskLists || [], 
+        isLoaded = state.isLoaded || false;
+  return {
+    taskLists,
+    isLoaded
+  };
+}
+
 
 class TaskBoard extends React.Component {
 
@@ -31,7 +45,7 @@ class TaskBoard extends React.Component {
                     {row.map((list, colIndex) => {
                         return (
                             <Col key={colIndex} xs={3}>
-                                <TaskList key={list.id} list={list} />
+                                <TaskList key={list.id} list={list} actions={this.props.actions} />
                             </Col>
                         )
                     })}
@@ -45,24 +59,24 @@ class TaskBoard extends React.Component {
 
 
 @DragDropContext(HTML5Backend)
-@connectToStores
-export default class Container extends React.Component {
+@connect(mapStateToProps)
+class Container extends React.Component {
 
-    static getStores() {
-        return [TaskListStore];
-    }
-
-    static getPropsFromStores() {
-        return TaskListStore.getState();
+    static propTypes = {
+      taskLists: PropTypes.object.isRequired,
+      isLoaded: PropTypes.bool.isRequired,
+      dispatch: PropTypes.func.isRequired
     }
 
     constructor(props) {
         super(props);
+        const {dispatch} = this.props;
         this.handleNewList = this.handleNewList.bind(this);
+        this.actions = bindActionCreators(ActionCreators, dispatch);
     }
 
     componentDidMount() {
-        TaskListActions.getBoard();
+        this.actions.getBoard();
     }
 
     handleNewList(event) {
@@ -70,7 +84,7 @@ export default class Container extends React.Component {
         const name = this.refs.name.getValue().trim();
         this.refs.name.getInputDOMNode().value = "";
         if (name) {
-            TaskListActions.createTaskList(name);
+            this.actions.createTaskList(name);
         }
     }
 
@@ -108,10 +122,19 @@ export default class Container extends React.Component {
         return (
             <Grid>
                 {this.header()}
-                <TaskBoard {...this.props} />
+                <TaskBoard actions={this.actions} {...this.props} />
                 {this.footer()}
             </Grid>
         );
     }
 }
 
+export default class Root extends React.Component {
+  render() {
+    return (
+      <Provider store={store}>
+      {() => <Container />}
+      </Provider>
+    );
+  }
+}

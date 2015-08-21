@@ -1,9 +1,10 @@
 import request from 'superagent-promise';
 import prefix from 'superagent-prefix';
 
+
 class Api {
     constructor() {
-        this.prefix = prefix('/api/v1');
+      this.prefix = prefix('/api/v1');
     }
 
     getBoard() {
@@ -11,21 +12,17 @@ class Api {
         .get("/board/")
         .use(this.prefix)
         .end()
-        .then((res) => {
-            return res.body.lists;
-        });
+        .then(res => res.body.lists);
     }
 
     newTaskList(name) {
         return request
-        .post("/board/")
+        .post("/board/") 
         .use(this.prefix)
-        .set("Content-Type", "application/json")
+        .set('Content-Type', 'application/json')
         .send({ name: name })
         .end()
-        .then((res) => {
-            return res.body;
-        });
+        .then(res => res.body);
     }
 
     updateTaskListName(listId, name) {
@@ -34,7 +31,7 @@ class Api {
         .use(this.prefix)
         .set("Content-Type", "application/json")
         .send({ name: name })
-        .end()
+        .end();
     }
 
     newTask(listId, text) {
@@ -44,9 +41,7 @@ class Api {
         .set("Content-Type", "application/json")
         .send({ text: text })
         .end()
-        .then((res) => {
-            return res.body;
-        });
+        .then(res => res.body);
     }
 
     deleteTaskList(listId) {

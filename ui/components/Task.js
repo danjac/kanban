@@ -3,7 +3,7 @@ import {Glyphicon, ListGroupItem} from 'react-bootstrap';
 import {DragSource} from 'react-dnd';
 import {ItemTypes} from '../constants';
 
-import TaskListActions from '../actions/TaskListActions';
+import {moveTask, deleteTask} from '../actions';
 
 const TaskSource = {
     beginDrag(props) {
@@ -15,10 +15,7 @@ const TaskSource = {
               dropResult = monitor.getDropResult();
 
         if (dropResult) {
-            // remove item from Task lists A and put in B
-            //window.alert(`You dropped ${item.text} into ${dropResult.name}`);
-            // update the task list
-            TaskListActions.moveTask(dropResult.list, item.task);
+            props.actions.moveTask(dropResult.list, item.task);
         }
 
     }
@@ -35,13 +32,14 @@ export default class Task extends React.Component {
 
     static propTypes = {
         task: React.PropTypes.object.isRequired,
+        actions: React.PropTypes.object.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
         connectDragSource: React.PropTypes.func.isRequired
     }
 
     handleDelete(event) {
         event.preventDefault();
-        TaskListActions.deleteTask(this.props.task);
+        this.props.actions.deleteTask(this.props.task);
     }
 
     render() {
