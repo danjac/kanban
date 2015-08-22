@@ -7,16 +7,24 @@ import (
 
 const statusOK = "OK"
 
+func getDB(c *gin.Context) *db.DB {
+	return c.MustGet("db").(*db.DB)
+}
+
 /*
 New creares a new API instance with all routes configured
 */
 func New(r *gin.Engine, prefix string, db *db.DB) *gin.RouterGroup {
 
-	g := r.Group(prefix)
+	api := r.Group(prefix)
 
-	NewTaskListAPI(g, "/board/", db)
-	NewTaskAPI(g, "/task/", db)
+	api.Use(func(c *gin.Context) {
+		c.Set("db", db)
+	})
 
-	return g
+	taskListRoutes(api, "/board/")
+	taskRoutes(api, "/task/")
+
+	return api
 
 }

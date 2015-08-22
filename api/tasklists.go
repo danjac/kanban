@@ -5,23 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/danjac/kanban/db"
 	"github.com/danjac/kanban/models"
-	"github.com/gin-gonic/contrib/rest"
 	"github.com/gin-gonic/gin"
 )
 
-/*
-TaskListAPI manages all routes for task lists
-*/
-type TaskListAPI struct {
-	DB *db.DB
-}
-
-/*
-CreateHandler creates a new task list
-*/
-func (api *TaskListAPI) CreateHandler(c *gin.Context) {
+func addTaskList(c *gin.Context) {
 
 	list := &models.TaskList{}
 
@@ -29,7 +17,7 @@ func (api *TaskListAPI) CreateHandler(c *gin.Context) {
 		return
 	}
 
-	if err := api.DB.TaskLists.Create(list); err != nil {
+	if err := getDB(c).TaskLists.Create(list); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -38,11 +26,8 @@ func (api *TaskListAPI) CreateHandler(c *gin.Context) {
 
 }
 
-/*
-ListHandler retrieves a list of task lists
-*/
-func (api *TaskListAPI) ListHandler(c *gin.Context) {
-	taskLists, err := api.DB.TaskLists.Get()
+func getTaskLists(c *gin.Context) {
+	taskLists, err := getDB(c).TaskLists.Get()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -50,17 +35,14 @@ func (api *TaskListAPI) ListHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"lists": taskLists})
 }
 
-/*
-DeleteHandler removes a tasklist and all its tasks
-*/
-func (api *TaskListAPI) DeleteHandler(c *gin.Context) {
+func deleteTaskList(c *gin.Context) {
 
-	listID, err := strconv.Atoi(c.Params.ByName("id"))
+	listID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	if err := api.DB.TaskLists.Delete(listID); err != nil {
+	if err := getDB(c).TaskLists.Delete(listID); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -71,22 +53,22 @@ func (api *TaskListAPI) DeleteHandler(c *gin.Context) {
 /*
 MoveHandler changes the position of a task list
 */
-func (api *TaskListAPI) MoveHandler(c *gin.Context) {
-	listID, err := strconv.Atoi(c.Params.ByName("id"))
+func moveTaskList(c *gin.Context) {
+	listID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	targetListID, err := strconv.Atoi(c.Params.ByName("target_list_id"))
+	targetListID, err := strconv.Atoi(c.Param("target_list_id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	if err := api.DB.TaskLists.Move(listID, targetListID); err != nil {
+	if err := getDB(c).TaskLists.Move(listID, targetListID); err != nil {
 		if err == sql.ErrNoRows {
 			c.AbortWithStatus(http.StatusNotFound)
 		} else {
@@ -102,9 +84,9 @@ func (api *TaskListAPI) MoveHandler(c *gin.Context) {
 /*
 UpdateHandler changes the details of a task list
 */
-func (api *TaskListAPI) UpdateHandler(c *gin.Context) {
+func updateTaskList(c *gin.Context) {
 
-	listID, err := strconv.Atoi(c.Params.ByName("id"))
+	listID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -119,7 +101,7 @@ func (api *TaskListAPI) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	if err := api.DB.TaskLists.Update(listID, s.Name); err != nil {
+	if err := getDB(c).TaskLists.Update(listID, s.Name); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -131,9 +113,9 @@ func (api *TaskListAPI) UpdateHandler(c *gin.Context) {
 /*
 AddTaskHandler adds a new task to a task list
 */
-func (api *TaskListAPI) AddTaskHandler(c *gin.Context) {
+func addTask(c *gin.Context) {
 
-	listID, err := strconv.Atoi(c.Params.ByName("id"))
+	listID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -144,7 +126,7 @@ func (api *TaskListAPI) AddTaskHandler(c *gin.Context) {
 	if err := c.Bind(task); err != nil {
 		return
 	}
-	if err := api.DB.Tasks.Create(task); err != nil {
+	if err := getDB(c).Tasks.Create(task); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -152,14 +134,16 @@ func (api *TaskListAPI) AddTaskHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-/*
-NewTaskListAPI creates a new set of task list routes
-*/
-func NewTaskListAPI(g *gin.RouterGroup, prefix string, db *db.DB) *TaskListAPI {
-	api := &TaskListAPI{db}
+func taskListRoutes(api *gin.RouterGroup, prefix string) {
 
-	rest.CRUD(g, prefix, api)
-	g.PUT(prefix+":id/move/:target_list_id", api.MoveHandler)
-	g.POST(prefix+":id/add/", api.AddTaskHandler)
-	return api
+	g := api.Group(prefix)
+	{
+		g.GET("", getTaskLists)
+		g.POST("", addTaskList)
+		g.DELETE(":id", deleteTaskList)
+		g.PUT(":id", updateTaskList)
+		g.PUT(":id/move/:target_list_id", moveTaskList)
+		g.POST(":id/add/", addTask)
+	}
+
 }
