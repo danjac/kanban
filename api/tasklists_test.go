@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func TestListHandler(t *testing.T) {
+func TestGetTaskLists(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
@@ -20,12 +20,11 @@ func TestListHandler(t *testing.T) {
 		Request: req,
 		Writer:  gin.ResponseWriter(writer),
 	}
-	/*
-		api := &TaskListAPI{newMockDB()}
-		api.ListHandler(c)
-		if w.Code != http.StatusOK {
-			t.Fail()
-		}
-	*/
+
+	getTaskLists(c)
+
+	if w.Code != http.StatusOK {
+		t.Fail()
+	}
 
 }
