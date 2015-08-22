@@ -8,7 +8,7 @@
         "jsx": true
     },
     "plugins": [
-        "react"
+        //"react"
     ],
     "rules": {
         "strict": 0,

@@ -1,3 +1,4 @@
+/* jslint ignore:start */
 // code here
 //require("./app.css");
 
@@ -17,7 +18,7 @@ import * as ActionCreators from '../actions';
 const store = configureStore();
 
 function mapStateToProps(state) {
-  const taskLists  = state.taskLists || [], 
+  const taskLists  = state.taskLists || [],
         isLoaded = state.isLoaded || false;
   return {
     taskLists,
@@ -63,7 +64,7 @@ class TaskBoard extends React.Component {
 class Container extends React.Component {
 
     static propTypes = {
-      taskLists: PropTypes.object.isRequired,
+      taskLists: PropTypes.array.isRequired,
       isLoaded: PropTypes.bool.isRequired,
       dispatch: PropTypes.func.isRequired
     }
