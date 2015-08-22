@@ -14,6 +14,7 @@ func addTaskList(c *gin.Context) {
 	list := &models.TaskList{}
 
 	if err := c.Bind(list); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -94,7 +95,7 @@ func updateTaskList(c *gin.Context) {
 	}
 
 	s := &struct {
-		Name string `json:"name" binding:"required"`
+		Name string `json:"name" binding:"required,max=60"`
 	}{}
 
 	if err := c.Bind(s); err != nil {
