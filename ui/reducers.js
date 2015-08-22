@@ -23,7 +23,7 @@ const initialState = {
 
 
 function updateTaskList(taskLists, list, name) {
-  return _.map(state.taskLists, l => {
+  return _.map(taskLists, l => {
     if (l.id == list.id) {
       l.name = name;
     }
@@ -33,8 +33,8 @@ function updateTaskList(taskLists, list, name) {
 
 
 function moveTask(taskLists, taskList, task) {
-  let taskLists = deleteTask(state, task);
-  task.taskListId = list.id;
+  taskLists = deleteTask(taskLists, task);
+  task.taskListId = taskList.id;
   return addTask(taskLists, task);
 }
 
@@ -43,7 +43,7 @@ function moveTaskList(taskLists, taskList, target) {
   const newTargetOrder = taskList.ordering;
   const newTaskListOrder = target.ordering;
 
-  const taskLists = _.map(taskLists, list => {
+  taskLists = _.map(taskLists, list => {
     if (list.id === taskList.id) {
       list.ordering = newTaskListOrder;
     } else if (list.id == target.id) {
@@ -113,8 +113,7 @@ export default function(state=initialState, action) {
       return _.assign({}, state, { taskLists: updateTaskList(state.taskLists, action.list, action.name) });
 
     case TASKLIST_EDIT_MODE:
-      return _.assign({}, state, { taskLists: toggleEditMode(state.taskLists, action.taskList) });
-
+      return _.assign({}, state, { taskLists: toggleEditMode(state.taskLists, action.listToEdit) });
 
     case TASK_ADDED:
       return _.assign({}, state, { taskLists: addTask(state.taskLists, action.task) });
@@ -123,7 +122,7 @@ export default function(state=initialState, action) {
       return _.assign({}, state, { taskLists: deleteTask(state.taskLists, action.task) });
 
     case MOVE_TASK:
-      return _.assign({}, state, { taskLists: moveTask(state.taskLists, action.taskList, action.task) });
+      return _.assign({}, state, { taskLists: moveTask(state.taskLists, action.list, action.task) });
 
     default:
       return state;
