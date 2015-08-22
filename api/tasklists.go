@@ -58,6 +58,7 @@ func (api *TaskListAPI) DeleteHandler(c *gin.Context) {
 	listID, err := strconv.Atoi(c.Params.ByName("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 	if err := api.DB.TaskLists.Delete(listID); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -75,12 +76,14 @@ func (api *TaskListAPI) MoveHandler(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	targetListID, err := strconv.Atoi(c.Params.ByName("target_list_id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	if err := api.DB.TaskLists.Move(listID, targetListID); err != nil {
@@ -105,6 +108,7 @@ func (api *TaskListAPI) UpdateHandler(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	s := &struct {
@@ -133,6 +137,7 @@ func (api *TaskListAPI) AddTaskHandler(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	task := &models.Task{TaskListID: listID}

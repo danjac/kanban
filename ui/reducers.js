@@ -60,6 +60,7 @@ function addTask(taskLists, task) {
 
   return _.map(taskLists, list => {
     if (list.id === task.taskListId) {
+      list.tasks = list.tasks || [];
       list.tasks.unshift(task);
     }
     return list;
@@ -70,7 +71,7 @@ function addTask(taskLists, task) {
 function deleteTask(state, task) {
 
   return _.map(state.taskLists, list => {
-    list.tasks = list.tasks.filter(t => t.id !== task.id);
+    list.tasks = (list.tasks || []).filter(t => t.id !== task.id);
     return list;
   });
 
