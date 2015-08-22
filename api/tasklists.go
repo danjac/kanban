@@ -99,6 +99,7 @@ func updateTaskList(c *gin.Context) {
 	}{}
 
 	if err := c.Bind(s); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
