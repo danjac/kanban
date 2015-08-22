@@ -25,7 +25,7 @@ const initialState = {
 };
 
 function updateTaskList(taskLists, list, name) {
-    return _.map(taskLists, l => {
+    return taskLists.map(l => {
         if (l.id == list.id) {
             l.name = name;
         }
@@ -44,7 +44,7 @@ function moveTaskList(taskLists, taskList, target) {
     const newTargetOrder = taskList.ordering,
         newTaskListOrder = target.ordering;
 
-    taskLists = _.map(taskLists, list => {
+    taskLists = taskLists.map(list => {
         if (list.id === taskList.id) {
             list.ordering = newTaskListOrder;
         } else if (list.id == target.id) {
@@ -53,12 +53,14 @@ function moveTaskList(taskLists, taskList, target) {
         return list;
     });
 
-    return _.sortBy(taskLists, "ordering");
+    taskLists.sort((left, right) => left.ordering === right.ordering ? 0 : (
+        left.ordering > right.ordering ? -1 : 1));
+    return taskLists;
 }
 
 function addTask(taskLists, task) {
 
-    return _.map(taskLists, list => {
+    return taskLists.map(list => {
         if (list.id === task.taskListId) {
             list.tasks = list.tasks || [];
             list.tasks.unshift(task);
@@ -70,7 +72,7 @@ function addTask(taskLists, task) {
 
 function deleteTask(taskLists, task) {
 
-    return _.map(taskLists, list => {
+    return taskLists.map(list => {
         list.tasks = (list.tasks || []).filter(t => t.id !== task.id);
         return list;
     });
@@ -78,7 +80,7 @@ function deleteTask(taskLists, task) {
 }
 
 function toggleEditMode(taskLists, listToEdit) {
-    return _.map(taskLists, list => {
+    return taskLists.map(list => {
         if (listToEdit.id === list.id) {
             list.isEditing = !list.isEditing;
         }
