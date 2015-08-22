@@ -1,6 +1,5 @@
 /* jslint ignore:start */
 //import { combineReducers } from 'redux';
-import _ from 'lodash';
 
 import {
     ActionTypes
