@@ -1,9 +1,9 @@
 /* jshint ignore:start */
 
 import { Schema, arrayOf, normalize } from 'normalizr';
-import request from 'superagent-promise';
-import prefix from 'superagent-prefix';
+import fetch from 'isomorphic-fetch';
 
+import {API_URL} from './constants';
 
 const taskListSchema = new Schema('taskLists');
 const taskSchema = new Schema('tasks');
@@ -16,76 +16,74 @@ taskSchema.define({
   taskList: taskListSchema
 });
 
+const jsonHeaders = {
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  }
+};
 
-class Api {
-    constructor() {
-      this.prefix = prefix('/api/v1');
-    }
-
-    getBoard() {
-        return request
-        .get("/board/")
-        .use(this.prefix)
-        .end()
-        .then(res => normalize(res.body.lists, arrayOf(taskListSchema)));
-    }
-
-    newTaskList(name) {
-        return request
-        .post("/board/") 
-        .use(this.prefix)
-        .set('Content-Type', 'application/json')
-        .send({ name: name })
-        .end()
-        .then(res => res.body);
-    }
-
-    updateTaskListName(listId, name) {
-        return request
-        .put("/board/" + listId + "/")
-        .use(this.prefix)
-        .set("Content-Type", "application/json")
-        .send({ name: name })
-        .end();
-    }
-
-    newTask(listId, text) {
-        return request
-        .post("/board/" + listId + "/add/")
-        .use(this.prefix)
-        .set("Content-Type", "application/json")
-        .send({ text: text })
-        .end()
-        .then(res => res.body);
-    }
-
-    deleteTaskList(listId) {
-        return request
-        .del("/board/" + listId)
-        .use(this.prefix)
-        .end();
-    }
-
-    deleteTask(taskId) {
-        return request
-        .del("/task/" + taskId)
-        .use(this.prefix)
-        .end();
-    }
-
-    moveTaskList(listId, targetListId) {
-        return request
-        .put("/board/" + listId + "/move/" + targetListId)
-        .use(this.prefix)
-        .end();
-    }
-
-    moveTask(listId, taskId) {
-        return request
-        .put("/task/" + taskId + "/move/" + listId)
-        .use(this.prefix)
-        .end();
-    }
+export function getBoard() {
+console.log("FETCH", fetch);
+  return fetch(`${API_URL}/board/`)
+  .then(response => response.json())
+  .then(body => normalize(body.lists, arrayOf(taskListSchema)));
 }
 
-export default new Api();
+export function newTaskList(name) {
+  return fetch(`${API_URL}/board/`, {
+    ...jsonHeaders,
+    method: 'POST',
+    body: JSON.stringify({
+      name: name
+    })
+  })
+  .then(response => response.json());
+}
+
+export function updateTaskListName(id, name) {
+  return fetch(`${API_URL}/board/${id}/`, {
+    ...jsonHeaders, 
+    method: 'PUT',
+    body: JSON.stringify({
+      name: name
+    })
+  });
+}
+
+export function newTask(id, text) {
+  return fetch(`${API_URL}/board/${id}/add/`, {
+    ...jsonHeaders,
+    method: 'POST',
+    body: JSON.stringify({
+      text: text
+    })
+  })
+  .then(response => response.json());
+}
+
+export function deleteTaskList(id) {
+  return fetch(`${API_URL}/board/${id}/`, {
+    method: 'DELETE'
+  });
+}
+
+
+export function deleteTask(id) {
+  return fetch(`${API_URL}/task/${id}/`, {
+    method: 'DELETE'
+  });
+}
+
+export function moveTaskList(id, targetId) {
+  return fetch(`${API_URL}/board/${id}/move/${targetId}`, {
+    method: 'PUT'
+  });
+}
+
+export function moveTask(targetId, id) {
+  return fetch(`${API_URL}/task/${id}/move/${targetId}`, {
+    method: 'PUT'
+  });
+}
+

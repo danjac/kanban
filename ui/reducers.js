@@ -38,7 +38,7 @@ const reducerMap = {
     const {taskList} = action;
     return state
       .mergeIn(["entities", "taskLists", taskList.id], taskList)
-      .update("result", result => result.unshift(taskList.id));
+      .update("result", result => result.push(taskList.id));
   },
 
   [TASK_ADDED]: (state, action) => {

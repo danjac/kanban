@@ -1,3 +1,4 @@
+/* jshint ignore:start */
 export const ItemTypes = {
     TASK: 'task',
     TASKLIST: 'taskList'
@@ -14,5 +15,7 @@ export const ActionTypes = {
   MOVE_TASK: 'MOVE_TASK ',
   DELETE_TASK: 'DELETE_TASK '
 }
+
+export const API_URL = '/api/v1';
 
 

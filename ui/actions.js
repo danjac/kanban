@@ -1,6 +1,6 @@
 /* jslint ignore:start */
 
-import api from './api';
+import * as api from './api';
 
 import { ActionTypes } from './constants';
 
