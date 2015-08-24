@@ -11,7 +11,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 
 import configureStore from '../store';
-import TaskList from './TaskList';
+import Card from './Card';
 
 import * as ActionCreators from '../actions';
 
@@ -22,26 +22,26 @@ function mapStateToProps(state) {
   state = state.toJS();
   const isLoaded = state.isLoaded || false;
 
-  const taskLists  = state.result
+  const cards  = state.result
   .map(id => {
-    return state.entities.taskLists[id]
+    return state.entities.cards[id]
   })
-  .filter(taskList => taskList)
-  .map(taskList => {
-      let tasks = taskList.tasks
+  .filter(card => card)
+  .map(card => {
+      let tasks = card.tasks
         .map(id => state.entities.tasks[id])
         .filter(task => task);
-      taskList.tasks = tasks;
-      return taskList;
+      card.tasks = tasks;
+      return card;
   });
   return {
-    taskLists,
+    cards,
     isLoaded
   };
 }
 
 
-class TaskBoard extends React.Component {
+class Board extends React.Component {
 
     render() {
         if (!this.props.isLoaded) {
@@ -51,16 +51,16 @@ class TaskBoard extends React.Component {
             </p>
             );
         }
-        const rows = _.chunk(this.props.taskLists, 4);
+        const rows = _.chunk(this.props.cards, 4);
         return (
             <Grid>
             {rows.map((row, rowIndex) => {
             return (
                 <Row key={rowIndex} style={{ minHeight: 320 }}>
-                    {row.map((list, colIndex) => {
+                    {row.map((card, colIndex) => {
                         return (
                             <Col key={colIndex} xs={3}>
-                                <TaskList key={list.id} list={list} actions={this.props.actions} />
+                                <Card key={card.id} card={card} actions={this.props.actions} />
                             </Col>
                         )
                     })}
@@ -78,7 +78,7 @@ class TaskBoard extends React.Component {
 class Container extends React.Component {
 
     static propTypes = {
-      taskLists: PropTypes.array.isRequired,
+      cards: PropTypes.array.isRequired,
       isLoaded: PropTypes.bool.isRequired,
       dispatch: PropTypes.func.isRequired
     }
@@ -86,7 +86,7 @@ class Container extends React.Component {
     constructor(props) {
         super(props);
         const {dispatch} = this.props;
-        this.handleNewList = this.handleNewList.bind(this);
+        this.handleNewCard = this.handleNewCard.bind(this);
         this.actions = bindActionCreators(ActionCreators, dispatch);
     }
 
@@ -94,12 +94,12 @@ class Container extends React.Component {
         this.actions.getBoard();
     }
 
-    handleNewList(event) {
+    handleNewCard(event) {
         event.preventDefault();
         const name = this.refs.name.getValue().trim();
         this.refs.name.getInputDOMNode().value = "";
         if (name) {
-            this.actions.createTaskList(name);
+            this.actions.createCard(name);
         }
     }
 
@@ -110,11 +110,11 @@ class Container extends React.Component {
                 <div className="page-header">
                     <h1 style={{ color: 'white'}}>Kanban 看板</h1>
                 </div>
-                <form onSubmit={this.handleNewList}>
+                <form onSubmit={this.handleNewCard}>
                     <Input ref="name"
                            type="text"
                            bsSize="large"
-                           placeholder="Add a new list" />
+                           placeholder="Add a new card" />
                 </form>
             </header>
         );
@@ -137,7 +137,7 @@ class Container extends React.Component {
         return (
             <Grid>
                 {this.header()}
-                <TaskBoard actions={this.actions} {...this.props} />
+                <Board actions={this.actions} {...this.props} />
                 {this.footer()}
             </Grid>
         );

@@ -5,15 +5,15 @@ import fetch from 'isomorphic-fetch';
 
 import {API_URL} from './constants';
 
-const taskListSchema = new Schema('taskLists');
+const cardSchema = new Schema('cards');
 const taskSchema = new Schema('tasks');
 
-taskListSchema.define({
+cardSchema.define({
   tasks: arrayOf(taskSchema)
 });
 
 taskSchema.define({
-  taskList: taskListSchema
+  card: cardSchema
 });
 
 const jsonHeaders = {
@@ -24,13 +24,12 @@ const jsonHeaders = {
 };
 
 export function getBoard() {
-console.log("FETCH", fetch);
   return fetch(`${API_URL}/board/`)
   .then(response => response.json())
-  .then(body => normalize(body.lists, arrayOf(taskListSchema)));
+  .then(body => normalize(body.cards, arrayOf(cardSchema)));
 }
 
-export function newTaskList(name) {
+export function newCard(name) {
   return fetch(`${API_URL}/board/`, {
     ...jsonHeaders,
     method: 'POST',
@@ -41,7 +40,7 @@ export function newTaskList(name) {
   .then(response => response.json());
 }
 
-export function updateTaskListName(id, name) {
+export function updateCardName(id, name) {
   return fetch(`${API_URL}/board/${id}/`, {
     ...jsonHeaders, 
     method: 'PUT',
@@ -62,7 +61,7 @@ export function newTask(id, text) {
   .then(response => response.json());
 }
 
-export function deleteTaskList(id) {
+export function deleteCard(id) {
   return fetch(`${API_URL}/board/${id}/`, {
     method: 'DELETE'
   });
@@ -75,7 +74,7 @@ export function deleteTask(id) {
   });
 }
 
-export function moveTaskList(id, targetId) {
+export function moveCard(id, targetId) {
   return fetch(`${API_URL}/board/${id}/move/${targetId}`, {
     method: 'PUT'
   });

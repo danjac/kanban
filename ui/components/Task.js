@@ -15,7 +15,7 @@ const TaskSource = {
               dropResult = monitor.getDropResult();
 
         if (dropResult) {
-            props.actions.moveTask(item.list.id, dropResult.list.id, item.task.id);
+            props.actions.moveTask(item.card.id, dropResult.card.id, item.task.id);
         }
 
     }
@@ -32,7 +32,7 @@ export default class Task extends React.Component {
 
     static propTypes = {
         task: React.PropTypes.object.isRequired,
-        list: React.PropTypes.object.isRequired,
+        card: React.PropTypes.object.isRequired,
         actions: React.PropTypes.object.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
         connectDragSource: React.PropTypes.func.isRequired

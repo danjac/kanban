@@ -6,13 +6,13 @@ import {DropTarget, DragSource} from 'react-dnd';
 import {ItemTypes} from '../constants';
 import Task from './Task';
 
-const TaskListTarget = {
+const CardTarget = {
     drop(props) {
-        return {list: props.list};
+        return {card: props.card};
     }
 };
 
-const TaskListSource = {
+const CardSource = {
     beginDrag(props) {
         return props;
     },
@@ -21,27 +21,27 @@ const TaskListSource = {
         const item = monitor.getItem(),
               dropResult = monitor.getDropResult();
         if (dropResult) {
-            props.actions.moveTaskList(dropResult.list.id, item.list.id);
+            props.actions.moveCard(dropResult.card.id, item.card.id);
         }
 
     }
 };
 
 
-@DragSource(ItemTypes.TASKLIST, TaskListSource, (connect,monitor) => {
+@DragSource(ItemTypes.CARD, CardSource, (connect,monitor) => {
     return {
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging()
     };
 })
-@DropTarget([ItemTypes.TASKLIST, ItemTypes.TASK], TaskListTarget, (connect, monitor) => {
+@DropTarget([ItemTypes.CARD, ItemTypes.TASK], CardTarget, (connect, monitor) => {
     return {
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop()
     };
 })
-export default class TaskList extends React.Component {
+export default class Card extends React.Component {
 
     static propTypes = {
         connectDropTarget: React.PropTypes.func.isRequired,
@@ -53,7 +53,7 @@ export default class TaskList extends React.Component {
     constructor(props) {
         super(props);
         this.handleNewTask = this.handleNewTask.bind(this);
-        this.handleDeleteList = this.handleDeleteList.bind(this);
+        this.handleDeleteCard = this.handleDeleteCard.bind(this);
         this.handleUpdateName = this.handleUpdateName.bind(this);
         this.handleEditMode = this.handleEditMode.bind(this);
         ///
@@ -64,34 +64,34 @@ export default class TaskList extends React.Component {
         const text = this.refs.newTask.getValue().trim();
         this.refs.newTask.getInputDOMNode().value = "";
         if (text) {
-            this.props.actions.createTask(this.props.list.id, text);
+            this.props.actions.createTask(this.props.card.id, text);
         }
     }
 
-    handleDeleteList(event) {
+    handleDeleteCard(event) {
         event.preventDefault();
-        this.props.actions.deleteTaskList(this.props.list.id);
+        this.props.actions.deleteCard(this.props.card.id);
     }
 
     handleEditMode(event) {
         event.preventDefault();
-        this.props.actions.toggleTaskListEditMode(this.props.list.id);
+        this.props.actions.toggleCardEditMode(this.props.card.id);
     }
 
     handleUpdateName(event) {
 
         event.preventDefault();
-        this.props.actions.toggleTaskListEditMode(this.props.list.id);
+        this.props.actions.toggleCardEditMode(this.props.card.id);
 
         const name = this.refs.editName.getValue().trim();
 
         if (name) {
-            this.props.actions.updateTaskListName(this.props.list.id, name);
+            this.props.actions.updateCardName(this.props.card.id, name);
         }
     }
 
     shouldFocusEditName() {
-        if (this.props.list.isEditing && this.refs.editName) {
+        if (this.props.card.isEditing && this.refs.editName) {
             React.findDOMNode(this.refs.editName.getInputDOMNode()).select();
         }
     }
@@ -102,8 +102,8 @@ export default class TaskList extends React.Component {
 
     render() {
 
-        const {list, canDrop, isOver, connectDropTarget, connectDragSource, isDragging, actions} = this.props;
-        const {id, name, tasks, isEditing, ordering} = list;
+        const {card, canDrop, isOver, connectDropTarget, connectDragSource, isDragging, actions} = this.props;
+        const {id, name, tasks, isEditing, ordering} = card;
 
         const isActive = canDrop && isOver,
               bgColor = isActive ? '#FFFE85' : '#fff';
@@ -119,7 +119,7 @@ export default class TaskList extends React.Component {
 
 
         let header = (
-            <h3><a onClick={this.handleDeleteList}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name}</span></h3>
+            <h3><a onClick={this.handleDeleteCard}><Glyphicon glyph="trash" /></a>&nbsp;<span onClick={this.handleEditMode}>{name}</span></h3>
         );
 
         if (isEditing) {
@@ -145,7 +145,7 @@ export default class TaskList extends React.Component {
                 {(tasks || []).map((task) => {
                     return <Task key={task.id}
                                  task={task}
-                                 list={list}
+                                 card={card}
                                  actions={actions} 
                                  />;
                 })}

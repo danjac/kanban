@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func TestGetTaskLists(t *testing.T) {
+func TestGetCards(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
@@ -21,7 +21,7 @@ func TestGetTaskLists(t *testing.T) {
 		Writer:  gin.ResponseWriter(writer),
 	}
 
-	getTaskLists(c)
+	getCards(c)
 
 	if w.Code != http.StatusOK {
 		t.Fail()

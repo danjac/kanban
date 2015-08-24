@@ -9,69 +9,65 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func addTaskList(c *gin.Context) {
+func addCard(c *gin.Context) {
 
-	list := &models.TaskList{}
+	card := &models.Card{}
 
-	if err := c.Bind(list); err != nil {
+	if err := c.Bind(card); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	if err := getDB(c).TaskLists.Create(list); err != nil {
+	if err := getDB(c).Cards.Create(card); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	list.Tasks = make([]models.Task, 0)
+	card.Tasks = make([]models.Task, 0)
 
-	c.JSON(http.StatusOK, list)
+	c.JSON(http.StatusOK, card)
 
 }
 
-func getTaskLists(c *gin.Context) {
-	taskLists, err := getDB(c).TaskLists.Get()
+func getCards(c *gin.Context) {
+	cards, err := getDB(c).Cards.Get()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"lists": taskLists})
+	c.JSON(http.StatusOK, gin.H{"cards": cards})
 }
 
-func deleteTaskList(c *gin.Context) {
+func deleteCard(c *gin.Context) {
 
-	listID, err := strconv.Atoi(c.Param("id"))
+	cardID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	if err := getDB(c).TaskLists.Delete(listID); err != nil {
+	if err := getDB(c).Cards.Delete(cardID); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.String(http.StatusOK, statusOK)
 }
 
-/*
-MoveHandler changes the position of a task list
-*/
-func moveTaskList(c *gin.Context) {
-	listID, err := strconv.Atoi(c.Param("id"))
+func moveCard(c *gin.Context) {
+	cardID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	targetListID, err := strconv.Atoi(c.Param("target_list_id"))
+	targetCardID, err := strconv.Atoi(c.Param("target_id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	if err := getDB(c).TaskLists.Move(listID, targetListID); err != nil {
+	if err := getDB(c).Cards.Move(cardID, targetCardID); err != nil {
 		if err == sql.ErrNoRows {
 			c.AbortWithStatus(http.StatusNotFound)
 		} else {
@@ -84,12 +80,9 @@ func moveTaskList(c *gin.Context) {
 
 }
 
-/*
-UpdateHandler changes the details of a task list
-*/
-func updateTaskList(c *gin.Context) {
+func updateCard(c *gin.Context) {
 
-	listID, err := strconv.Atoi(c.Param("id"))
+	cardID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -105,7 +98,7 @@ func updateTaskList(c *gin.Context) {
 		return
 	}
 
-	if err := getDB(c).TaskLists.Update(listID, s.Name); err != nil {
+	if err := getDB(c).Cards.Update(cardID, s.Name); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -114,19 +107,16 @@ func updateTaskList(c *gin.Context) {
 
 }
 
-/*
-AddTaskHandler adds a new task to a task list
-*/
 func addTask(c *gin.Context) {
 
-	listID, err := strconv.Atoi(c.Param("id"))
+	cardID, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	task := &models.Task{TaskListID: listID}
+	task := &models.Task{CardID: cardID}
 	if err := c.Bind(task); err != nil {
 		return
 	}
@@ -138,15 +128,15 @@ func addTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func taskListRoutes(api *gin.RouterGroup, prefix string) {
+func cardRoutes(api *gin.RouterGroup, prefix string) {
 
 	g := api.Group(prefix)
 	{
-		g.GET("", getTaskLists)
-		g.POST("", addTaskList)
-		g.DELETE(":id", deleteTaskList)
-		g.PUT(":id", updateTaskList)
-		g.PUT(":id/move/:target_list_id", moveTaskList)
+		g.GET("", getCards)
+		g.POST("", addCard)
+		g.DELETE(":id", deleteCard)
+		g.PUT(":id", updateCard)
+		g.PUT(":id/move/:target_id", moveCard)
 		g.POST(":id/add/", addTask)
 	}
 

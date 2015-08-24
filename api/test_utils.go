@@ -48,26 +48,26 @@ func (w *mockWriter) WriteString(name string) (int, error) {
 func (w *mockWriter) Written() bool   { return true }
 func (w *mockWriter) WriteHeaderNow() {}
 
-type mockTaskListDB struct{}
+type mockCardDB struct{}
 
-func (DB *mockTaskListDB) Get() ([]models.TaskList, error) {
-	var result []models.TaskList
+func (DB *mockCardDB) Get() ([]models.Card, error) {
+	var result []models.Card
 	return result, nil
 }
 
-func (DB *mockTaskListDB) Delete(id int) error {
+func (DB *mockCardDB) Delete(id int) error {
 	return nil
 }
 
-func (DB *mockTaskListDB) Update(id int, name string) error {
+func (DB *mockCardDB) Update(id int, name string) error {
 	return nil
 }
 
-func (DB *mockTaskListDB) Create(list *models.TaskList) error {
+func (DB *mockCardDB) Create(card *models.Card) error {
 	return nil
 }
 
-func (DB *mockTaskListDB) Move(id int, targetID int) error {
+func (DB *mockCardDB) Move(id int, targetID int) error {
 	return nil
 }
 
@@ -87,7 +87,7 @@ func (DB *mockTaskDB) Delete(id int) error {
 
 func newMockDB() *db.DB {
 	return &db.DB{
-		&mockTaskListDB{},
+		&mockCardDB{},
 		&mockTaskDB{},
 	}
 }

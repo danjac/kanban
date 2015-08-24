@@ -6,11 +6,11 @@ import { ActionTypes } from './constants';
 
 const {
   BOARD_LOADED,
-  TASKLIST_ADDED,
-  UPDATE_TASKLIST,
-  MOVE_TASKLIST,
-  DELETE_TASKLIST,
-  TASKLIST_EDIT_MODE,
+  CARD_ADDED,
+  UPDATE_CARD,
+  MOVE_CARD,
+  DELETE_CARD,
+  CARD_EDIT_MODE,
   TASK_ADDED,
   MOVE_TASK,
   DELETE_TASK
@@ -20,8 +20,8 @@ const {
 export function getBoard() {
   return dispatch => {
     api.getBoard()
-    .then(taskLists => {
-      dispatch(boardLoaded(taskLists))
+    .then(cards => {
+      dispatch(boardLoaded(cards))
     }).
     catch(err => console.log(err));
   };
@@ -35,44 +35,44 @@ export function boardLoaded(board) {
   };
 }
 
-export function createTaskList(name) {
+export function createCard(name) {
   return dispatch => {
-    return api.newTaskList(name)
-    .then(taskList => dispatch(newTaskList(taskList)));
+    return api.newCard(name)
+    .then(card => dispatch(newCard(card)));
   };
 
 }
 
-export function newTaskList(taskList) {
+export function newCard(card) {
   return {
-    type: TASKLIST_ADDED,
-    taskList: taskList
+    type: CARD_ADDED,
+    card: card
   };
 }
 
-export function moveTaskList(id, targetId) {
-  api.moveTaskList(id, targetId);
+export function moveCard(id, targetId) {
+  api.moveCard(id, targetId);
   return {
-    type: MOVE_TASKLIST,
+    type: MOVE_CARD,
     id: id,
     targetId: targetId
   };
 }
 
-export function updateTaskListName(id, name) {
-  api.updateTaskListName(id, name);
+export function updateCardName(id, name) {
+  api.updateCardName(id, name);
   return {
-    type: UPDATE_TASKLIST,
+    type: UPDATE_CARD,
     id: id,
     name: name
   };
 }
 
 
-export function deleteTaskList(id) {
-  api.deleteTaskList(id);
+export function deleteCard(id) {
+  api.deleteCard(id);
   return {
-    type: DELETE_TASKLIST,
+    type: DELETE_CARD,
     id: id
   };
 }
@@ -84,9 +84,9 @@ export function createTask(id, text) {
   };
 }
 
-export function toggleTaskListEditMode(id) {
+export function toggleCardEditMode(id) {
   return {
-    type: TASKLIST_EDIT_MODE,
+    type: CARD_EDIT_MODE,
     id: id
   };
 }

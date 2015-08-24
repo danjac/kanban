@@ -30,7 +30,7 @@ func initDB(dbName string) (*gorp.DbMap, error) {
 		return nil, err
 	}
 	dbMap := &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
-	dbMap.AddTableWithName(models.TaskList{}, "tasklists").SetKeys(true, "id")
+	dbMap.AddTableWithName(models.Card{}, "cards").SetKeys(true, "id")
 	dbMap.AddTableWithName(models.Task{}, "tasks").SetKeys(true, "id")
 	if err = dbMap.CreateTablesIfNotExists(); err != nil {
 		return nil, err

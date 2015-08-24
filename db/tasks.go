@@ -22,7 +22,7 @@ func (db *defaultTaskDB) Create(task *models.Task) error {
 	return db.Insert(task)
 }
 
-func (db *defaultTaskDB) Move(taskID int, newListID int) error {
+func (db *defaultTaskDB) Move(taskID int, newCardID int) error {
 
 	task := &models.Task{}
 
@@ -30,7 +30,7 @@ func (db *defaultTaskDB) Move(taskID int, newListID int) error {
 		return err
 	}
 
-	task.TaskListID = newListID
+	task.CardID = newCardID
 
 	_, err := db.Update(task)
 	return err

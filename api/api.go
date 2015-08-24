@@ -22,7 +22,7 @@ func New(r *gin.Engine, prefix string, db *db.DB) *gin.RouterGroup {
 		c.Set("db", db)
 	})
 
-	taskListRoutes(api, "/board/")
+	cardRoutes(api, "/board/")
 	taskRoutes(api, "/task/")
 
 	return api
