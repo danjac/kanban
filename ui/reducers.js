@@ -76,7 +76,14 @@ const reducerMap = {
   },
 
   [MOVE_TASK]: (state, action) => {
-    return state;
+    const {list, task} = action;
+    return state
+    .updateIn(["entities", "taskLists", task.taskListId, "tasks"], tasks => {
+      return tasks.filterNot(id => id === task.id);
+    })
+    .updateIn(["entities", "taskLists", list.id, "tasks"], tasks => {
+      return tasks.unshift(task.id);
+    });
   },
 
   [TASKLIST_EDIT_MODE]: (state, action) => {
