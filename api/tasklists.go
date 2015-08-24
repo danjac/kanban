@@ -23,6 +23,8 @@ func addTaskList(c *gin.Context) {
 		return
 	}
 
+	list.Tasks = make([]models.Task, 0)
+
 	c.JSON(http.StatusOK, list)
 
 }

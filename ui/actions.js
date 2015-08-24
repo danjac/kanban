@@ -1,3 +1,5 @@
+/* jslint ignore:start */
+
 import api from './api';
 
 import { ActionTypes } from './constants';
@@ -16,20 +18,23 @@ const {
 
 
 export function getBoard() {
+  console.log("GETBOARD")
   return dispatch => {
     api.getBoard()
     .then(taskLists => {
+      console.log("dispatch", taskLists)
       dispatch(boardLoaded(taskLists))
-    })
-    .catch(err => console.log("err:", err));
+    }).
+    catch(err => console.log(err));
   };
 
 }
 
-export function boardLoaded(taskLists) {
+export function boardLoaded(board) {
+  console.log("BOARDLOADED", board);
   return {
     type: BOARD_LOADED,
-    taskLists: taskLists
+    board: board
   };
 }
 
@@ -57,11 +62,12 @@ export function moveTaskList(taskList, target) {
   };
 }
 
-export function updateTaskListName(taskList) {
-  api.updateTaskListName(taskList.id, taskList.name);
+export function updateTaskListName(taskList, name) {
+  api.updateTaskListName(taskList.id, name);
   return {
     type: UPDATE_TASKLIST,
-    taskList: taskList
+    taskList: taskList,
+    name: name
   };
 }
 
@@ -77,7 +83,7 @@ export function deleteTaskList(taskList) {
 export function createTask(list, text) {
   return dispatch => {
     return api.newTask(list.id, text)
-    .then(task => dispatch(newTask(task)));
+    .then(task => dispatch(newTask(list, task)));
   };
 }
 
@@ -88,18 +94,10 @@ export function toggleTaskListEditMode(list) {
   };
 }
 
-export function updateTaskListName(list, name) {
-  api.updateTaskListName(list.id, name);
-  return {
-    type:  UPDATE_TASKLIST,
-    list: list,
-    name: name
-  }
-}
-
-export function newTask(task) {
+export function newTask(taskList, task) {
   return {
     type: TASK_ADDED,
+    taskList: taskList,
     task: task
   }
 }

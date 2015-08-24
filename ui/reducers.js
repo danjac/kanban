@@ -1,10 +1,8 @@
 /* jslint ignore:start */
 //import { combineReducers } from 'redux';
 
-import {
-    ActionTypes
-}
-from './constants';
+import Immutable from 'immutable';
+import { ActionTypes } from './constants';
 
 const {
     BOARD_LOADED,
@@ -18,143 +16,89 @@ const {
     DELETE_TASK
 } = ActionTypes;
 
-const initialState = {
-    taskLists: [],
+const initialState = Immutable.fromJS({
+    entities: {
+      taskLists: [],
+      tasks: []
+    },
+    result: [],
     isLoaded: false
-};
+});
 
-function updateTaskList(taskLists, list, name) {
-    return taskLists.map(l => {
-        if (l.id == list.id) {
-            l.name = name;
-        }
-        return l;
+const reducerMap = {
+
+  [BOARD_LOADED]: (state, action) => {
+    console.log("board_loaded", action.board);
+    return state.merge({
+      isLoaded: true,
+      ...action.board
     });
-}
+  },
 
-function moveTask(taskLists, taskList, task) {
-    taskLists = deleteTask(taskLists, task);
-    task.taskListId = taskList.id;
-    return addTask(taskLists, task);
-}
+  [TASKLIST_ADDED]: (state, action) => {
+    const {taskList} = action;
+    return state
+      .mergeIn(["entities", "taskLists", taskList.id], taskList)
+      .update("result", result => result.unshift(taskList.id));
+  },
 
-function moveTaskList(taskLists, taskList, target) {
+  [TASK_ADDED]: (state, action) => {
+    const {taskList, task} = action;
+    return state
+      .mergeIn(["entities", "tasks", task.id], task)
+      .updateIn(["entities", "taskLists", taskList.id, "tasks"], tasks => tasks.unshift(task.id));
+  },
 
-    const newTargetOrder = taskList.ordering,
-        newTaskListOrder = target.ordering;
+  [DELETE_TASKLIST]: (state, action) => {
+    const {taskList} = action;
+    return state.deleteIn(["entities", "taskLists", taskList.id]);
+  },
 
-    taskLists = taskLists.map(list => {
-        if (list.id === taskList.id) {
-            list.ordering = newTaskListOrder;
-        } else if (list.id == target.id) {
-            list.ordering = newTargetOrder;
-        }
-        return list;
+  [DELETE_TASK]: (state, action) => {
+    const {task} = action;
+    return state.deleteIn(["entities", "tasks", task.id]);
+  },
+
+  [MOVE_TASKLIST]: (state, action) => {
+    const {taskList, target} = action;
+    const result = state.get("result", []),
+        fromIndex = result.indexOf(taskList.id),
+        toIndex = result.indexOf(target.id);
+
+     return state.update(
+       "result", 
+       result => {
+        return result
+        .delete(fromIndex)
+        .splice(toIndex, 0, taskList.id)
+       });
+
+  },
+
+  [MOVE_TASK]: (state, action) => {
+    return state;
+  },
+
+  [TASKLIST_EDIT_MODE]: (state, action) => {
+    const {listToEdit} = action;
+    return state
+    .updateIn(["entities", "taskLists", listToEdit.id, "isEditing"], value => {
+      return value ? false : true;
     });
+  },
 
-    taskLists.sort((left, right) => left.ordering === right.ordering ? 0 : (
-        left.ordering > right.ordering ? -1 : 1));
-    return taskLists;
-}
+  [UPDATE_TASKLIST]: (state, action) => {
+    const {taskList, name} = action;
+    return state
+    .setIn(["entities", "taskLists", taskList.id, "name"], name);
+  }
 
-function addTask(taskLists, task) {
-
-    return taskLists.map(list => {
-        if (list.id === task.taskListId) {
-            list.tasks = list.tasks || [];
-            list.tasks.unshift(task);
-        }
-        return list;
-    });
-
-}
-
-function deleteTask(taskLists, task) {
-
-    return taskLists.map(list => {
-        list.tasks = (list.tasks || []).filter(t => t.id !== task.id);
-        return list;
-    });
-
-}
-
-function toggleEditMode(taskLists, listToEdit) {
-    return taskLists.map(list => {
-        if (listToEdit.id === list.id) {
-            list.isEditing = !list.isEditing;
-        }
-        return list;
-    });
 }
 
 export default function(state = initialState, action) {
-    switch (action.type) {
-
-        case BOARD_LOADED:
-            return {
-                ...state,
-                taskLists: action.taskLists || [],
-                    isLoaded: true
-            };
-
-        case TASKLIST_ADDED:
-            return {
-                ...state,
-                taskLists: [action.taskList, ...state.taskLists]
-            };
-
-        case DELETE_TASKLIST:
-            return {
-                ...state,
-                taskLists: state.taskLists.filter(todo => action.taskList.id !==
-                    todo.id)
-            };
-
-        case MOVE_TASKLIST:
-            return {
-                ...state,
-                taskLists: moveTaskList(state.taskLists, action.taskList,
-                    action.target)
-            };
-
-        case UPDATE_TASKLIST:
-            return {
-                ...state,
-                taskLists: updateTaskList(state.taskLists, action.list, action.name)
-            };
-
-        case TASKLIST_EDIT_MODE:
-            return {
-                ...state,
-                taskLists: toggleEditMode(state.taskLists, action.listToEdit)
-            };
-
-        case TASK_ADDED:
-            return {
-                ...state,
-                taskLists: addTask(state.taskLists, action.task)
-            }
-
-        case DELETE_TASK:
-            return {
-                ...state,
-                taskLists: deleteTask(state.taskLists, action.task)
-            };
-
-        case MOVE_TASK:
-            return {
-                ...state,
-                taskLists: moveTask(state.taskLists, action.list, action.task)
-            };
-
-        default:
-            return state;
-    }
+  const fn = reducerMap[action.type];
+  if (typeof(fn) === 'function') {
+    return fn(state, action);
+  }
+  return state;
 }
-
-
-/*
-export default combineReducers({
-  board
-});
-*/

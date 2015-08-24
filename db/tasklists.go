@@ -30,7 +30,7 @@ func (db *defaultTaskListDB) Get() ([]models.TaskList, error) {
 		return nil, err
 	}
 
-	var result []models.TaskList
+	result := make([]models.TaskList, 0)
 
 	for _, list := range lists {
 		if list.Tasks == nil {

@@ -18,8 +18,24 @@ import * as ActionCreators from '../actions';
 const store = configureStore();
 
 function mapStateToProps(state) {
-  const taskLists  = state.taskLists || [],
-        isLoaded = state.isLoaded || false;
+
+  state = state.toJS();
+  console.log("STATE", state);
+  const isLoaded = state.isLoaded || false;
+
+  const taskLists  = state.result
+  .map(id => {
+    console.log("listID", id);
+    return state.entities.taskLists[id]
+  })
+  .filter(taskList => taskList)
+  .map(taskList => {
+      let tasks = taskList.tasks
+        .map(id => state.entities.tasks[id])
+        .filter(task => task);
+      taskList.tasks = tasks;
+      return taskList;
+  });
   return {
     taskLists,
     isLoaded
@@ -30,6 +46,7 @@ function mapStateToProps(state) {
 class TaskBoard extends React.Component {
 
     render() {
+        console.log("loaded in TaskBoard?", this.props.isLoaded);
         if (!this.props.isLoaded) {
             return  (
             <p className="text-center">

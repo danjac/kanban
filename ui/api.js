@@ -1,5 +1,20 @@
+/* jshint ignore:start */
+
+import { Schema, arrayOf, normalize } from 'normalizr';
 import request from 'superagent-promise';
 import prefix from 'superagent-prefix';
+
+
+const taskListSchema = new Schema('taskLists');
+const taskSchema = new Schema('tasks');
+
+taskListSchema.define({
+  tasks: arrayOf(taskSchema)
+});
+
+taskSchema.define({
+  taskList: taskListSchema
+});
 
 
 class Api {
@@ -12,7 +27,7 @@ class Api {
         .get("/board/")
         .use(this.prefix)
         .end()
-        .then(res => res.body.lists);
+        .then(res => normalize(res.body.lists, arrayOf(taskListSchema)));
     }
 
     newTaskList(name) {
