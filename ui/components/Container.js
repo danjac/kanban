@@ -20,12 +20,10 @@ const store = configureStore();
 function mapStateToProps(state) {
 
   state = state.toJS();
-  console.log("STATE", state);
   const isLoaded = state.isLoaded || false;
 
   const taskLists  = state.result
   .map(id => {
-    console.log("listID", id);
     return state.entities.taskLists[id]
   })
   .filter(taskList => taskList)
@@ -46,7 +44,6 @@ function mapStateToProps(state) {
 class TaskBoard extends React.Component {
 
     render() {
-        console.log("loaded in TaskBoard?", this.props.isLoaded);
         if (!this.props.isLoaded) {
             return  (
             <p className="text-center">

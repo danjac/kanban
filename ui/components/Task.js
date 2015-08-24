@@ -15,7 +15,7 @@ const TaskSource = {
               dropResult = monitor.getDropResult();
 
         if (dropResult) {
-            props.actions.moveTask(dropResult.list, item.task);
+            props.actions.moveTask(item.list.id, dropResult.list.id, item.task.id);
         }
 
     }
@@ -32,6 +32,7 @@ export default class Task extends React.Component {
 
     static propTypes = {
         task: React.PropTypes.object.isRequired,
+        list: React.PropTypes.object.isRequired,
         actions: React.PropTypes.object.isRequired,
         isDragging: React.PropTypes.bool.isRequired,
         connectDragSource: React.PropTypes.func.isRequired
@@ -39,7 +40,7 @@ export default class Task extends React.Component {
 
     handleDelete(event) {
         event.preventDefault();
-        this.props.actions.deleteTask(this.props.task);
+        this.props.actions.deleteTask(this.props.task.id);
     }
 
     render() {

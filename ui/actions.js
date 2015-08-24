@@ -18,11 +18,9 @@ const {
 
 
 export function getBoard() {
-  console.log("GETBOARD")
   return dispatch => {
     api.getBoard()
     .then(taskLists => {
-      console.log("dispatch", taskLists)
       dispatch(boardLoaded(taskLists))
     }).
     catch(err => console.log(err));
@@ -31,7 +29,6 @@ export function getBoard() {
 }
 
 export function boardLoaded(board) {
-  console.log("BOARDLOADED", board);
   return {
     type: BOARD_LOADED,
     board: board
@@ -53,68 +50,69 @@ export function newTaskList(taskList) {
   };
 }
 
-export function moveTaskList(taskList, target) {
-  api.moveTaskList(taskList.id, target.id);
+export function moveTaskList(id, targetId) {
+  api.moveTaskList(id, targetId);
   return {
     type: MOVE_TASKLIST,
-    taskList: taskList,
-    target: target
+    id: id,
+    targetId: targetId
   };
 }
 
-export function updateTaskListName(taskList, name) {
-  api.updateTaskListName(taskList.id, name);
+export function updateTaskListName(id, name) {
+  api.updateTaskListName(id, name);
   return {
     type: UPDATE_TASKLIST,
-    taskList: taskList,
+    id: id,
     name: name
   };
 }
 
 
-export function deleteTaskList(taskList) {
-  api.deleteTaskList(taskList.id);
+export function deleteTaskList(id) {
+  api.deleteTaskList(id);
   return {
     type: DELETE_TASKLIST,
-    taskList: taskList
+    id: id
   };
 }
 
-export function createTask(list, text) {
+export function createTask(id, text) {
   return dispatch => {
-    return api.newTask(list.id, text)
-    .then(task => dispatch(newTask(list, task)));
+    return api.newTask(id, text)
+    .then(task => dispatch(newTask(id, task)));
   };
 }
 
-export function toggleTaskListEditMode(list) {
+export function toggleTaskListEditMode(id) {
   return {
     type: TASKLIST_EDIT_MODE,
-    listToEdit: list
+    id: id
   };
 }
 
-export function newTask(taskList, task) {
+export function newTask(id, task) {
   return {
     type: TASK_ADDED,
-    taskList: taskList,
+    id: id,
     task: task
   }
 }
 
-export function moveTask(list, task) {
-  api.moveTask(list.id, task.id);
+export function moveTask(from, to, id) {
+  api.moveTask(to, id);
   return {
     type: MOVE_TASK,
-    list: list,
-    task: task
+    from: from,
+    to: to,
+    id: id
   };
 }
 
-export function deleteTask(task) {
-  api.deleteTask(task.id);
+export function deleteTask(id) {
+  api.deleteTask(id);
   return {
     type: DELETE_TASK,
-    task: task
+    id: id
   };
 }

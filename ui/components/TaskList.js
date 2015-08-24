@@ -21,7 +21,7 @@ const TaskListSource = {
         const item = monitor.getItem(),
               dropResult = monitor.getDropResult();
         if (dropResult) {
-            props.actions.moveTaskList(dropResult.list, item.list);
+            props.actions.moveTaskList(dropResult.list.id, item.list.id);
         }
 
     }
@@ -64,29 +64,29 @@ export default class TaskList extends React.Component {
         const text = this.refs.newTask.getValue().trim();
         this.refs.newTask.getInputDOMNode().value = "";
         if (text) {
-            this.props.actions.createTask(this.props.list, text);
+            this.props.actions.createTask(this.props.list.id, text);
         }
     }
 
     handleDeleteList(event) {
         event.preventDefault();
-        this.props.actions.deleteTaskList(this.props.list);
+        this.props.actions.deleteTaskList(this.props.list.id);
     }
 
     handleEditMode(event) {
         event.preventDefault();
-        this.props.actions.toggleTaskListEditMode(this.props.list);
+        this.props.actions.toggleTaskListEditMode(this.props.list.id);
     }
 
     handleUpdateName(event) {
 
         event.preventDefault();
-        this.props.actions.toggleTaskListEditMode(this.props.list);
+        this.props.actions.toggleTaskListEditMode(this.props.list.id);
 
         const name = this.refs.editName.getValue().trim();
 
         if (name) {
-            this.props.actions.updateTaskListName(this.props.list, name);
+            this.props.actions.updateTaskListName(this.props.list.id, name);
         }
     }
 
@@ -145,6 +145,7 @@ export default class TaskList extends React.Component {
                 {(tasks || []).map((task) => {
                     return <Task key={task.id}
                                  task={task}
+                                 list={list}
                                  actions={actions} 
                                  />;
                 })}

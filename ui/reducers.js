@@ -28,7 +28,6 @@ const initialState = Immutable.fromJS({
 const reducerMap = {
 
   [BOARD_LOADED]: (state, action) => {
-    console.log("board_loaded", action.board);
     return state.merge({
       isLoaded: true,
       ...action.board
@@ -43,61 +42,61 @@ const reducerMap = {
   },
 
   [TASK_ADDED]: (state, action) => {
-    const {taskList, task} = action;
+    const {id, task} = action;
     return state
       .mergeIn(["entities", "tasks", task.id], task)
-      .updateIn(["entities", "taskLists", taskList.id, "tasks"], tasks => tasks.unshift(task.id));
+      .updateIn(["entities", "taskLists", id, "tasks"], tasks => tasks.unshift(task.id));
   },
 
   [DELETE_TASKLIST]: (state, action) => {
-    const {taskList} = action;
-    return state.deleteIn(["entities", "taskLists", taskList.id]);
+    const {id} = action;
+    return state.deleteIn(["entities", "taskLists", id]);
   },
 
   [DELETE_TASK]: (state, action) => {
-    const {task} = action;
-    return state.deleteIn(["entities", "tasks", task.id]);
+    const {id} = action;
+    return state.deleteIn(["entities", "tasks", id]);
   },
 
   [MOVE_TASKLIST]: (state, action) => {
-    const {taskList, target} = action;
+    const {id, targetId} = action;
     const result = state.get("result", []),
-        fromIndex = result.indexOf(taskList.id),
-        toIndex = result.indexOf(target.id);
+        fromIndex = result.indexOf(id),
+        toIndex = result.indexOf(targetId);
 
      return state.update(
        "result", 
        result => {
         return result
         .delete(fromIndex)
-        .splice(toIndex, 0, taskList.id)
+        .splice(toIndex, 0, id)
        });
 
   },
 
   [MOVE_TASK]: (state, action) => {
-    const {list, task} = action;
+    const {from, to, id} = action;
     return state
-    .updateIn(["entities", "taskLists", task.taskListId, "tasks"], tasks => {
-      return tasks.filterNot(id => id === task.id);
+    .updateIn(["entities", "taskLists", from, "tasks"], tasks => {
+      return tasks.filterNot(_id => _id === id);
     })
-    .updateIn(["entities", "taskLists", list.id, "tasks"], tasks => {
-      return tasks.unshift(task.id);
+    .updateIn(["entities", "taskLists", to, "tasks"], tasks => {
+      return tasks.unshift(id);
     });
   },
 
   [TASKLIST_EDIT_MODE]: (state, action) => {
-    const {listToEdit} = action;
+    const {id} = action;
     return state
-    .updateIn(["entities", "taskLists", listToEdit.id, "isEditing"], value => {
+    .updateIn(["entities", "taskLists", id, "isEditing"], value => {
       return value ? false : true;
     });
   },
 
   [UPDATE_TASKLIST]: (state, action) => {
-    const {taskList, name} = action;
+    const {id, name} = action;
     return state
-    .setIn(["entities", "taskLists", taskList.id, "name"], name);
+    .setIn(["entities", "taskLists", id, "name"], name);
   }
 
 }
