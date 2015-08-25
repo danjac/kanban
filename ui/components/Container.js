@@ -17,27 +17,28 @@ import * as ActionCreators from '../actions';
 
 const store = configureStore();
 
+function extract(ids, map, fn) {
+
+  return ids.reduce((arr, id) => {
+    const obj = map[id];
+    if (typeof(obj) !== 'undefined') {
+      if (typeof(fn) === 'function') {
+        fn(obj);
+      }
+      arr.push(obj);
+    }
+    return arr;
+  }, []);
+
+}
+
 function mapStateToProps(state) {
 
   state = state.toJS();
   const isLoaded = state.isLoaded || false;
-  const cards = state.result
-  .reduce((cards, id) => {
-
-    const card = state.entities.cards[id];
-    if (card) {
-      card.tasks = card.tasks.reduce((tasks, id) => {
-        const task = state.entities.tasks[id];
-        if (task) {
-          tasks.push(task);
-        }
-        return tasks;
-      }, []);
-      cards.push(card);
-    }
-    return cards;
-
-  }, []);
+  const cards = extract(state.result, state.entities.cards, card => {
+    card.tasks = extract(card.tasks, state.entities.tasks);
+  });
 
   return {
     cards,
