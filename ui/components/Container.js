@@ -21,19 +21,24 @@ function mapStateToProps(state) {
 
   state = state.toJS();
   const isLoaded = state.isLoaded || false;
+  const cards = state.result
+  .reduce((cards, id) => {
 
-  const cards  = state.result
-  .map(id => {
-    return state.entities.cards[id]
-  })
-  .filter(card => card)
-  .map(card => {
-      let tasks = card.tasks
-        .map(id => state.entities.tasks[id])
-        .filter(task => task);
-      card.tasks = tasks;
-      return card;
-  });
+    const card = state.entities.cards[id];
+    if (card) {
+      card.tasks = card.tasks.reduce((tasks, id) => {
+        const task = state.entities.tasks[id];
+        if (task) {
+          tasks.push(task);
+        }
+        return tasks;
+      }, []);
+      cards.push(card);
+    }
+    return cards;
+
+  }, []);
+
   return {
     cards,
     isLoaded
@@ -49,7 +54,7 @@ class Board extends React.Component {
             <p className="text-center">
                 <img alt="loading..." src="/static/images/ajax-loader.gif" />
             </p>
-            );
+         );
         }
         const rows = _.chunk(this.props.cards, 4);
         return (
