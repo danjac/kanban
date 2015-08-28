@@ -8,6 +8,8 @@ const createStoreWithMiddleware = applyMiddleware(
   loggingMiddleware
 )(createStore);
 
+console.log("reducer", reducer);
+
 export default function configureStore(initialState) {
   return createStoreWithMiddleware(reducer, initialState);
 }

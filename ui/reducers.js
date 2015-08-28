@@ -1,5 +1,5 @@
 /* jslint ignore:start */
-//import { combineReducers } from 'redux';
+import { combineReducers } from 'redux';
 
 import Immutable from 'immutable';
 import { ActionTypes } from './constants';
@@ -53,11 +53,6 @@ const reducerMap = {
     return state.deleteIn(["entities", "cards", id]);
   },
 
-  [DELETE_TASK]: (state, action) => {
-    const {id} = action;
-    return state.deleteIn(["entities", "tasks", id]);
-  },
-
   [MOVE_CARD]: (state, action) => {
     const {id, targetId} = action;
     const result = state.get("result", []),
@@ -68,21 +63,12 @@ const reducerMap = {
        "result", 
        result => {
         return result
-        .delete(fromIndex)
+        .delete(toIndex)
         .splice(toIndex, 0, id)
+        .delete(fromIndex)
+        .splice(fromIndex, 0, targetId);
        });
 
-  },
-
-  [MOVE_TASK]: (state, action) => {
-    const {from, to, id} = action;
-    return state
-    .updateIn(["entities", "cards", from, "tasks"], tasks => {
-      return tasks.filterNot(_id => _id === id);
-    })
-    .updateIn(["entities", "cards", to, "tasks"], tasks => {
-      return tasks.unshift(id);
-    });
   },
 
   [CARD_EDIT_MODE]: (state, action) => {
@@ -97,14 +83,34 @@ const reducerMap = {
     const {id, name} = action;
     return state
     .setIn(["entities", "cards", id, "name"], name);
+  },
+
+  [DELETE_TASK]: (state, action) => {
+    const {id} = action;
+    return state.deleteIn(["entities", "tasks", id]);
+  },
+
+  [MOVE_TASK]: (state, action) => {
+    const {from, to, id} = action;
+    return state
+    .updateIn(["entities", "cards", from, "tasks"], tasks => {
+      return tasks.filterNot(_id => _id === id);
+    })
+    .updateIn(["entities", "cards", to, "tasks"], tasks => {
+      return tasks.unshift(id);
+    });
   }
 
+};
+
+function createReducer(reducerMap, initialState) {
+  return (state=initialState, action) => {
+    const fn = reducerMap[action.type];
+    if (typeof(fn) === 'function') {
+      return fn(state, action);
+    }
+    return state;
+  }
 }
 
-export default function(state = initialState, action) {
-  const fn = reducerMap[action.type];
-  if (typeof(fn) === 'function') {
-    return fn(state, action);
-  }
-  return state;
-}
+export default createReducer(reducerMap, initialState);
