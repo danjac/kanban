@@ -3,7 +3,6 @@ package api
 import (
 	"database/sql"
 	"net/http"
-	"strconv"
 
 	"github.com/danjac/kanban/models"
 	"github.com/gin-gonic/gin"
@@ -40,7 +39,8 @@ func getCards(c *gin.Context) {
 
 func deleteCard(c *gin.Context) {
 
-	cardID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	cardID, err := pInt64(c, "id")
+
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -53,14 +53,14 @@ func deleteCard(c *gin.Context) {
 }
 
 func moveCard(c *gin.Context) {
-	cardID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	cardID, err := pInt64(c, "id")
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	targetCardID, err := strconv.ParseInt(c.Param("target_id"), 10, 64)
+	targetCardID, err := pInt64(c, "target_id")
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -82,7 +82,7 @@ func moveCard(c *gin.Context) {
 
 func updateCard(c *gin.Context) {
 
-	cardID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	cardID, err := pInt64(c, "id")
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -109,7 +109,7 @@ func updateCard(c *gin.Context) {
 
 func addTask(c *gin.Context) {
 
-	cardID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	cardID, err := pInt64(c, "id")
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)

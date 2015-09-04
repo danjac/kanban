@@ -3,21 +3,20 @@ package api
 import (
 	"database/sql"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func moveTask(c *gin.Context) {
 
-	taskID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	taskID, err := pInt64(c, "id")
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	newListID, err := strconv.ParseInt(c.Param("new_list_id"), 10, 64)
+	newListID, err := pInt64(c, "new_list_id")
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -38,7 +37,7 @@ func moveTask(c *gin.Context) {
 
 func deleteTask(c *gin.Context) {
 
-	taskID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	taskID, err := pInt64(c, "id")
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)

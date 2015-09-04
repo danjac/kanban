@@ -1,7 +1,7 @@
 GOPATH := ${PWD}:${GOPATH}
 export GOPATH
 
-build:
+build-go:
 	go build -v -o server -i kanban.go
 
 
@@ -13,8 +13,7 @@ migrate:
 	go get bitbucket.org/liamstask/goose/cmd/goose
 	goose up
 
-run: build migrate build-ui
-	./server
+build: build migrate build-ui
 
 
 	
