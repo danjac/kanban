@@ -6,7 +6,7 @@ Task models a single task object
 type Task struct {
 	ID     int    `db:"id" json:"id,string"`
 	CardID int    `db:"card_id" json:"-"`
-	Text   string `db:"text" json:"text" binding:"required,max=60"`
+	Label  string `db:"label" json:"text" binding:"required,max=60"`
 }
 
 /*

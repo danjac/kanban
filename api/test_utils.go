@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/danjac/kanban/db"
+	db "github.com/danjac/kanban/database"
 	"github.com/danjac/kanban/models"
 )
 
@@ -50,7 +50,7 @@ func (w *mockWriter) WriteHeaderNow() {}
 
 type mockCardDB struct{}
 
-func (DB *mockCardDB) Get() ([]models.Card, error) {
+func (DB *mockCardDB) GetAll() ([]models.Card, error) {
 	var result []models.Card
 	return result, nil
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"log"
 	"net/http"
@@ -11,8 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/danjac/kanban/api"
-	"github.com/danjac/kanban/db"
-	"github.com/danjac/kanban/models"
+	"github.com/danjac/kanban/database"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -31,7 +29,7 @@ func main() {
 
 	r.Use(static.Serve("/static", static.LocalFile("static", false)))
 
-	dbx, err := sqlx.Connect("sqlite3", dbName)
+	dbx, err := sqlx.Connect("sqlite3", *dbName)
 
 	if err != nil {
 		log.Fatal(err)

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/danjac/kanban/db"
+	db "github.com/danjac/kanban/database"
 	"github.com/gin-gonic/gin"
 )
 

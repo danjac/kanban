@@ -3,15 +3,16 @@
 -- SQL in section 'Up' is executed when this migration is applied
 
 CREATE TABLE cards (
-    id INT PRIMARY KEY,
-    name TEXT NOT NULL 
+    id INTEGER PRIMARY KEY AUTOINCREMENT ,
+    name TEXT NOT NULL,
+    ordering INT DEFAULT 0
 );
 
 
 CREATE TABLE tasks (
-    id INT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     label TEXT NOT NULL,
-    card_id INT NOT NULL,
+    card_id INTEGER NOT NULL,
     FOREIGN KEY(card_id) REFERENCES cards(id)
 );
 

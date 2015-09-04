@@ -30,7 +30,7 @@ func addCard(c *gin.Context) {
 }
 
 func getCards(c *gin.Context) {
-	cards, err := getDB(c).Cards.Get()
+	cards, err := getDB(c).Cards.GetAll()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
