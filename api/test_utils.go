@@ -55,11 +55,11 @@ func (DB *mockCardDB) GetAll() ([]models.Card, error) {
 	return result, nil
 }
 
-func (DB *mockCardDB) Delete(id int) error {
+func (DB *mockCardDB) Delete(id int64) error {
 	return nil
 }
 
-func (DB *mockCardDB) Update(id int, name string) error {
+func (DB *mockCardDB) Update(id int64, name string) error {
 	return nil
 }
 
@@ -67,7 +67,7 @@ func (DB *mockCardDB) Create(card *models.Card) error {
 	return nil
 }
 
-func (DB *mockCardDB) Move(id int, targetID int) error {
+func (DB *mockCardDB) Move(id int64, targetID int64) error {
 	return nil
 }
 
@@ -77,11 +77,11 @@ func (DB *mockTaskDB) Create(list *models.Task) error {
 	return nil
 }
 
-func (DB *mockTaskDB) Move(id int, targetID int) error {
+func (DB *mockTaskDB) Move(id int64, targetID int64) error {
 	return nil
 }
 
-func (DB *mockTaskDB) Delete(id int) error {
+func (DB *mockTaskDB) Delete(id int64) error {
 	return nil
 }
 

@@ -10,14 +10,14 @@ import (
 
 func moveTask(c *gin.Context) {
 
-	taskID, err := strconv.Atoi(c.Param("id"))
+	taskID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	newListID, err := strconv.Atoi(c.Param("new_list_id"))
+	newListID, err := strconv.ParseInt(c.Param("new_list_id"), 10, 64)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -38,7 +38,7 @@ func moveTask(c *gin.Context) {
 
 func deleteTask(c *gin.Context) {
 
-	taskID, err := strconv.Atoi(c.Param("id"))
+	taskID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)

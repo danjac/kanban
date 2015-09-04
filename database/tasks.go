@@ -9,9 +9,9 @@ import (
 TaskDB handles db operations for tasks
 */
 type TaskDB interface {
-	Delete(int) error
+	Delete(int64) error
 	Create(*models.Task) error
-	Move(int, int) error
+	Move(int64, int64) error
 }
 
 type defaultTaskDB struct {
@@ -19,24 +19,20 @@ type defaultTaskDB struct {
 }
 
 func (db *defaultTaskDB) Create(task *models.Task) error {
-	result, err := db.Exec("insert into tasks(card_id, label) values (?, ?)", task.CardID, task.Label)
+	result, err := db.Exec("insert into tasks(card_id, label) values (?, ?)", task.CardID, task.Text)
 	if err != nil {
 		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-	task.ID = int(id)
-	return nil
+	task.ID, err = result.LastInsertId()
+	return err
 }
 
-func (db *defaultTaskDB) Move(taskID int, newCardID int) error {
+func (db *defaultTaskDB) Move(taskID int64, newCardID int64) error {
 	_, err := db.Exec("update tasks set card_id=? where id=?", newCardID, taskID)
 	return err
 }
 
-func (db *defaultTaskDB) Delete(taskID int) error {
+func (db *defaultTaskDB) Delete(taskID int64) error {
 	_, err := db.Exec("delete from tasks where id=?", taskID)
 	return err
 }

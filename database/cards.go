@@ -12,9 +12,9 @@ CardDB handles db operations for cards
 type CardDB interface {
 	Create(*models.Card) error
 	GetAll() ([]models.Card, error)
-	Delete(int) error
-	Update(int, string) error
-	Move(int, int) error
+	Delete(int64) error
+	Update(int64, string) error
+	Move(int64, int64) error
 }
 
 type defaultCardDB struct {
@@ -50,12 +50,12 @@ func (db *defaultCardDB) GetAll() ([]models.Card, error) {
 	return result, nil
 }
 
-func (db *defaultCardDB) Update(cardID int, name string) error {
+func (db *defaultCardDB) Update(cardID int64, name string) error {
 	_, err := db.Exec("update cards set name=? where id=?", name, cardID)
 	return err
 }
 
-func (db *defaultCardDB) Delete(cardID int) error {
+func (db *defaultCardDB) Delete(cardID int64) error {
 
 	t, err := db.Begin()
 
@@ -74,10 +74,10 @@ func (db *defaultCardDB) Delete(cardID int) error {
 	return t.Commit()
 }
 
-func (db *defaultCardDB) Move(cardID int, targetCardID int) error {
+func (db *defaultCardDB) Move(cardID int64, targetCardID int64) error {
 
 	selectSql := "select ordering from cards where id=?"
-	var ordering, targetOrdering int
+	var ordering, targetOrdering int64
 
 	if err := db.Get(&ordering, selectSql, cardID); err != nil {
 		return err
@@ -107,11 +107,11 @@ func (db *defaultCardDB) Move(cardID int, targetCardID int) error {
 }
 
 func (db *defaultCardDB) Create(card *models.Card) error {
-	var maxOrder int
+	var maxOrder int64
 	if err := db.Get(&maxOrder, "select max(ordering) from cards"); err != nil {
 		maxOrder = 0
 	}
-	card.Ordering = int(maxOrder) + 1
+	card.Ordering = maxOrder + 1
 	sql := "insert into cards(ordering, name) values (:ordering, :name)"
 	query, args, err := sqlx.Named(sql, card)
 	if err != nil {
@@ -121,10 +121,6 @@ func (db *defaultCardDB) Create(card *models.Card) error {
 	if err != nil {
 		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-	card.ID = int(id)
-	return nil
+	card.ID, err = result.LastInsertId()
+	return err
 }
