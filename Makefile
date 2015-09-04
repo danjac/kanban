@@ -9,7 +9,11 @@ build-ui:
 	npm install
 	gulp build
 
-run: build build-ui
+migrate:
+	go get bitbucket.org/liamstask/goose/cmd/goose
+	goose up
+
+run: build migrate build-ui
 	./server
 
 

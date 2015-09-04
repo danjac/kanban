@@ -6,6 +6,7 @@ static/fonts
 kanban
 pkg
 node_modules
+db/dbconf.yml
 *.sqlite3
 *.log
 *.swp
