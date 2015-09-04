@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 
 import Immutable from 'immutable';
 import { ActionTypes } from './constants';
+  
 
 const {
     BOARD_LOADED,
@@ -24,7 +25,6 @@ const initialState = Immutable.fromJS({
     result: [],
     isLoaded: false
 });
-
 const reducerMap = {
 
   [BOARD_LOADED]: (state, action) => {
@@ -60,7 +60,7 @@ const reducerMap = {
         toIndex = result.indexOf(targetId);
 
      return state.update(
-       "result", 
+       "result",
        result => {
         return result
         .delete(toIndex)

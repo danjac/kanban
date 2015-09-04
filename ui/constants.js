@@ -1,5 +1,6 @@
 /* jshint ignore:start */
-export const ItemTypes = {
+
+export const DnDTypes = {
     TASK: 'task',
     CARD: 'taskList'
 };

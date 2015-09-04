@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import React from 'react';
-import {Input, Panel, Glyphicon, ListGroup} from 'react-bootstrap';
-import {DropTarget, DragSource} from 'react-dnd';
+import { Input, Panel, Glyphicon, ListGroup } from 'react-bootstrap';
+import { DropTarget, DragSource } from 'react-dnd';
 
-import {ItemTypes} from '../constants';
+import { DnDTypes } from '../constants';
 import Task from './Task';
 
 const CardTarget = {
@@ -27,14 +27,13 @@ const CardSource = {
     }
 };
 
-
-@DragSource(ItemTypes.CARD, CardSource, (connect,monitor) => {
+@DragSource(DnDTypes.CARD, CardSource, (connect,monitor) => {
     return {
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging()
     };
 })
-@DropTarget([ItemTypes.CARD, ItemTypes.TASK], CardTarget, (connect, monitor) => {
+@DropTarget([DnDTypes.CARD, DnDTypes.TASK], CardTarget, (connect, monitor) => {
     return {
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),

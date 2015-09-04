@@ -1,9 +1,9 @@
 import React from 'react';
-import {Glyphicon, ListGroupItem} from 'react-bootstrap';
-import {DragSource} from 'react-dnd';
-import {ItemTypes} from '../constants';
+import { Glyphicon, ListGroupItem } from 'react-bootstrap';
+import { DragSource } from 'react-dnd';
+import { DnDTypes } from '../constants';
 
-import {moveTask, deleteTask} from '../actions';
+import { moveTask, deleteTask } from '../actions';
 
 const TaskSource = {
     beginDrag(props) {
@@ -22,7 +22,7 @@ const TaskSource = {
 };
 
 
-@DragSource(ItemTypes.TASK, TaskSource, (connect,monitor) => {
+@DragSource(DnDTypes.TASK, TaskSource, (connect,monitor) => {
     return {
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging()

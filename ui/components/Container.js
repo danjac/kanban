@@ -3,11 +3,11 @@
 //require("./app.css");
 
 import _ from 'lodash';
-import React, {PropTypes} from 'react';
-import {bindActionCreators} from 'redux';
-import {Provider, connect} from 'react-redux';
-import {Grid, Row, Col, Input} from 'react-bootstrap';
-import {DragDropContext} from 'react-dnd';
+import React, { PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
+import { Provider, connect } from 'react-redux';
+import { Grid, Row, Col, Input } from 'react-bootstrap';
+import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 
 import configureStore from '../store';

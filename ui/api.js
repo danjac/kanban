@@ -3,7 +3,7 @@
 import { Schema, arrayOf, normalize } from 'normalizr';
 import fetch from 'isomorphic-fetch';
 
-import {API_URL} from './constants';
+import { API_URL } from './constants';
 
 const cardSchema = new Schema('cards');
 const taskSchema = new Schema('tasks');
