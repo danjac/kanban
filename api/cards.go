@@ -48,6 +48,7 @@ func deleteCard(c *gin.Context) {
 		return
 	}
 
+	c.String(http.StatusOK, statusOK)
 }
 
 func moveCard(c *gin.Context) {
