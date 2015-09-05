@@ -8,7 +8,6 @@ import (
 /*
 CardDB handles db operations for cards
 */
-
 type CardDB interface {
 	Create(*models.Card) error
 	GetAll() ([]models.Card, error)
@@ -33,7 +32,7 @@ func (db *defaultCardDB) GetAll() ([]models.Card, error) {
 		return nil, err
 	}
 
-	result := make([]models.Card, 0)
+	var result []models.Card
 
 	for _, card := range cards {
 		if card.Tasks == nil {
@@ -76,14 +75,14 @@ func (db *defaultCardDB) Delete(cardID int64) error {
 
 func (db *defaultCardDB) Move(cardID int64, targetCardID int64) error {
 
-	selectSql := "select ordering from cards where id=?"
+	selectSQL := "select ordering from cards where id=?"
 	var ordering, targetOrdering int64
 
-	if err := db.Get(&ordering, selectSql, cardID); err != nil {
+	if err := db.Get(&ordering, selectSQL, cardID); err != nil {
 		return err
 	}
 
-	if err := db.Get(&targetOrdering, selectSql, targetCardID); err != nil {
+	if err := db.Get(&targetOrdering, selectSQL, targetCardID); err != nil {
 		return err
 	}
 
@@ -92,13 +91,13 @@ func (db *defaultCardDB) Move(cardID int64, targetCardID int64) error {
 		return err
 	}
 
-	updateSql := "update cards set ordering=? where id=?"
+	updateSQL := "update cards set ordering=? where id=?"
 
-	if _, err := t.Exec(updateSql, targetOrdering, cardID); err != nil {
+	if _, err := t.Exec(updateSQL, targetOrdering, cardID); err != nil {
 		return err
 	}
 
-	if _, err := t.Exec(updateSql, ordering, targetCardID); err != nil {
+	if _, err := t.Exec(updateSQL, ordering, targetCardID); err != nil {
 		return err
 	}
 

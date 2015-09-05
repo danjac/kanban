@@ -1,45 +1,45 @@
 {
 	"ImportPath": "github.com/danjac/kanban",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/gin-gonic/contrib/rest",
-			"Rev": "8cd6643cdcdfe5c50973a8e5a11934f7315d58d6"
-		},
-		{
 			"ImportPath": "github.com/gin-gonic/contrib/static",
-			"Rev": "8cd6643cdcdfe5c50973a8e5a11934f7315d58d6"
+			"Rev": "915fc6822dbf9137dafbd7f65cd7a58f5260d35b"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
-			"Comment": "v1.0rc1-18-g40d41bb",
-			"Rev": "40d41bbe96b58cec476932a1c118df315256133a"
+			"Comment": "v1.0rc1-136-gfd5d429",
+			"Rev": "fd5d4294a5d5223d55fc76d7840f4b0ad91647bb"
+		},
+		{
+			"ImportPath": "github.com/jmoiron/sqlx",
+			"Comment": "sqlx-v1.1-45-g3a92b1f",
+			"Rev": "3a92b1fd96032c4490fa618370fbf98ec69b680c"
 		},
 		{
 			"ImportPath": "github.com/manucorporat/sse",
-			"Rev": "b7eeebd8987e6b233e43db2551d43f71b2e115d5"
+			"Rev": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
-			"Rev": "d67e0b7d1797975196499f79bcc322c08b9f218b"
+			"Rev": "40e4aedc8fabf8c23e040057540867186712faa5"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
-			"Rev": "25d045f12a64283630fdedec899655cc5710b683"
+			"Comment": "v1.0.0",
+			"Rev": "b4142c444a8941d0d92b0b7103a24df9cd815e42"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "621fff363a1d9ad7fdd0bfa9d80a42881267deb4"
+			"Rev": "b71143c25f0aad5f54981684b715686d34c56d25"
 		},
 		{
 			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
-			"Comment": "v5.4",
-			"Rev": "07cbdd2e6dfd947b002e83c13b775c7580fab2d5"
-		},
-		{
-			"ImportPath": "gopkg.in/gorp.v1",
-			"Comment": "v1.7.1",
-			"Rev": "c87af80f3cc5036b55b83d77171e156791085e2e"
+			"Comment": "v5.10.3",
+			"Rev": "77108103e5fd435ff31967e1a011fda801391c85"
 		}
 	]
 }

@@ -3,6 +3,29 @@
 ###Gin 1.0rc2 (...)
 
 - [PERFORMANCE] Fast path for writting Content-Type.
+- [PERFORMANCE] Much faster 404 routing
+- [PERFORMANCE] Allocation optimizations
+- [PERFORMANCE] Faster root tree lookup
+- [PERFORMANCE] Zero overhead, String() and JSON() rendering.
+- [PERFORMANCE] Faster ClientIP parsing
+- [PERFORMANCE] Much faster SSE implementation
+- [NEW] Benchmarks suite
+- [NEW] Bind validation can be disabled and replaced with custom validators.
+- [NEW] More flexible HTML render
+- [NEW] Multipart and PostForm bindings
+- [NEW] Adds method to return all the registered routes
+- [NEW] Context.HandlerName() returns the main handler's name
+- [NEW] Adds Error.IsType() helper
+- [FIX] Binding multipart form
+- [FIX] Integration tests
+- [FIX] Crash when binding non struct object in Context.
+- [FIX] RunTLS() implementation
+- [FIX] Logger() unit tests
+- [FIX] Adds SetHTMLTemplate() warning
+- [FIX] Context.IsAborted()
+- [FIX] More unit tests
+- [FIX] JSON, XML, HTML renders accept custom content-types
+- [FIX] gin.AbortIndex is unexported
 - [FIX] Better approach to avoid directory listing in StaticFS()
 - [FIX] Context.ClientIP() always returns the IP with trimmed spaces.
 - [FIX] Better warning when running in debug mode.
@@ -48,7 +71,7 @@
 - [FIX] Better debugging messages
 - [FIX] ErrorLogger
 - [FIX] Debug HTTP render
-- [FIX] Refactored binding and render modules 
+- [FIX] Refactored binding and render modules
 - [FIX] Refactored Context initialization
 - [FIX] Refactored BasicAuth()
 - [FIX] NoMethod/NoRoute handlers

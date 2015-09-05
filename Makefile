@@ -2,7 +2,9 @@ GOPATH := ${PWD}:${GOPATH}
 export GOPATH
 
 build-go:
-	go build -v -o serve -i cmds/server/main.go
+	godep restore
+	go build -v -o bin/serve -i cmds/server/main.go
+
 
 build-ui: 
 	npm install

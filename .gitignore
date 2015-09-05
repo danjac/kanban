@@ -3,7 +3,7 @@ bower_components
 static/js
 static/css
 static/fonts
-serve
+bin
 pkg
 node_modules
 db/dbconf.yml

@@ -5,4 +5,4 @@ To build:
 - `go get github.com/danjac/kanban`
 - `cd $GOPATH/src/github.com/danjac/kanban`
 - `make`
-- `./serve`
+- `./bin/serve`
