@@ -32,7 +32,7 @@ func (db *defaultCardDB) GetAll() ([]models.Card, error) {
 		return nil, err
 	}
 
-	var result []models.Card
+	result := make([]models.Card, 0)
 
 	for _, card := range cards {
 		if card.Tasks == nil {
@@ -120,6 +120,11 @@ func (db *defaultCardDB) Create(card *models.Card) error {
 	if err != nil {
 		return err
 	}
+
 	card.ID, err = result.LastInsertId()
-	return err
+	if err != nil {
+		return err
+	}
+	card.Tasks = make([]models.Task, 0)
+	return nil
 }

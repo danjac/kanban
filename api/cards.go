@@ -22,8 +22,6 @@ func addCard(c *gin.Context) {
 		return
 	}
 
-	card.Tasks = make([]models.Task, 0)
-
 	c.JSON(http.StatusOK, card)
 
 }
