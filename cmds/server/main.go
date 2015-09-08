@@ -17,6 +17,7 @@ import (
 var (
 	dbName = flag.String("db", "/tmp/kanban.sqlite", "sqlite database filename")
 	env    = flag.String("env", "prod", "environment ('prod' or 'dev')")
+	port   = flag.String("port", "8080", "server port")
 )
 
 func main() {
@@ -41,7 +42,7 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", gin.H{"env": *env})
 	})
 
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(":" + *port); err != nil {
 		panic(err)
 	}
 }
